@@ -1,0 +1,31 @@
+.mainMenu {
+    background-color: #2B2B2B;
+    width: 100%;
+    height: 70px;
+    justify-content: left;
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+    padding-right: 15px;
+    color: #FFFFFF;
+}
+.mainMenu ul {
+    justify-content: left;
+    display:flex;
+    align-items: center;
+}
+
+.mainMenu ul li {
+    list-style: none;
+    padding: 10px;
+}
+.mainMenu ul li a {
+    text-decoration: none;
+    color:#ececec;
+    font-size: 16px;
+}
+
+/* .menuItem {
+    padding-left: 10px;
+    padding-right: 10px;
+} */

@@ -3,6 +3,9 @@ import { Typography, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { createAction } from '@babbage/sdk'
 import { toast } from 'react-toastify'
+import LeftMenu from './components/LeftMenu'
+import MainMenu from './components/MainMenu'
+import './App.css'
 
 const useStyles = makeStyles(theme => ({
   content_wrap: {
@@ -47,23 +50,11 @@ const App = () => {
   }
 
   return (
-    <div className={classes.content_wrap}>
-      <Typography variant='h1' align='center'>
-        tempo
-      </Typography>
-      <Button
-        className={classes.action_button}
-        onClick={handleClick}
-        variant='contained'
-        color='primary'
-        size='large'
-        disabled={loading}
-      >
-        Create an Action
-      </Button>
-      <a href='https://projectbabbage.com/sdk'>
-        <Button>Learn the Babbage SDK</Button>
-      </a>
+    // <div className={classes.content_wrap}>
+    <div className='App'>
+      <LeftMenu />
+      <MainMenu />
+      <div className='background' />
     </div>
   )
 }
