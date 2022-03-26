@@ -1,15 +1,19 @@
 import React from 'react'
-import '../styles/mainMenu.css'
+import './style.css'
+import { Link } from 'react-router-dom'
 
 const MainMenu = () => {
   return (
     <div className='mainMenu'>
       <ul>
         <li>
-          <a href='#'>Home</a>
+          <Link to='/'>Home</Link>
         </li>
         <li>
           <a href='#'>Publish a Song</a>
+        </li>
+        <li>
+          <Link to='/ArtistProfile'>Artist Profile</Link>
         </li>
       </ul>
     </div>

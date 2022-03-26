@@ -1,4 +1,4 @@
-.App {
+.Home {
     width: 100%;
     height: 100vh;
     position: relative;
@@ -11,13 +11,24 @@
     display: flex;
     flex-direction:column;
 }
+.tableHeader {
+    background-color: black;
+    color: rgb(228, 228, 228);
+    height: 10vh;
+    width: 94vw;
+    max-height: 50px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
 .background {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('./Images/background.jpg') no-repeat center;
+    background: url('../../Images/background.jpg') no-repeat center;
     background-size: cover;
     z-index: -1;
 }

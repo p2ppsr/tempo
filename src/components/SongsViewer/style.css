@@ -1,0 +1,15 @@
+.songTable {
+    background-color: #101010;
+    height:47vh;
+    width: 92vw;
+    color: rgb(223, 223, 223);
+    /* padding-left: 40px; */
+    overflow-y: scroll;
+    overflow: auto;
+    flex-grow: 1;
+    /* bottom: 0; */
+}
+.songTable img {
+    /* padding-left: 10px; */
+    width: 65px;
+}

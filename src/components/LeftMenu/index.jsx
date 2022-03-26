@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react'
-import '../styles/leftMenu.css'
+import './style.css'
 import { FaUserCircle } from 'react-icons/fa'
-import logo from '../Images/tempoLogo.png'
-import albumArtwork from '../Images/albumArtwork.jpg'
-import musicDemo from '../Music/audioDemo.mp3'
+import logo from '../../Images/tempoLogo.png'
+import albumArtwork from '../../Images/albumArtwork.jpg'
+import musicDemo from '../../Music/audioDemo.mp3'
 import ReactAudioPlayer from 'react-audio-player'
+// import { Switch, Route, Redirect } from 'react-router-dom'
+// import { Link, withRouter } from 'react-router-dom'
 
 const LeftMenu = () => {
   useEffect(() => {
@@ -34,7 +36,7 @@ const LeftMenu = () => {
         </div>
         <ul>
           <li>
-            <a href='#'>Latest Songs</a>
+            <a href='latestSongs'>Latest Songs</a>
           </li>
           <li>
             <a href='#'>Saved Songs</a>

@@ -1,5 +1,5 @@
 # tempo - Feel the beat!
- ![Getting Started](./logoproto2.4.png)
+ ![Getting Started](./src/Images/logoproto2.4.png)
 
  A music streaming and publishing platform built with Babbage
 
