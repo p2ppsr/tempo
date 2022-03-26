@@ -4,6 +4,12 @@
     position: relative;
     overflow: hidden;
     display: flex;
+    /* scroll-behavior: smooth;
+    overflow-y: scroll; */
+}
+.flexBoxContainer {
+    display: flex;
+    flex-direction:column;
 }
 .background {
     position: absolute;

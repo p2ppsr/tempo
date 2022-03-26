@@ -1,13 +1,14 @@
 .mainMenu {
     background-color: #2B2B2B;
     width: 100%;
-    height: 70px;
+    height: 8vh;
     justify-content: left;
     display: flex;
     align-items: center;
     padding-left: 15px;
     padding-right: 15px;
     color: #FFFFFF;
+    z-index: 2;
 }
 .mainMenu ul {
     justify-content: left;

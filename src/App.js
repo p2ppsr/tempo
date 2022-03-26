@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 import LeftMenu from './components/LeftMenu'
 import MainMenu from './components/MainMenu'
 import './App.css'
+import MainContainer from './components/MainContainer'
 
 const useStyles = makeStyles(theme => ({
   content_wrap: {
@@ -53,7 +54,10 @@ const App = () => {
     // <div className={classes.content_wrap}>
     <div className='App'>
       <LeftMenu />
-      <MainMenu />
+      <div className='flexBoxContainer'>
+        <MainMenu />
+        <MainContainer />
+      </div>
       <div className='background' />
     </div>
   )

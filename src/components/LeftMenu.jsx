@@ -3,6 +3,8 @@ import '../styles/leftMenu.css'
 import { FaUserCircle } from 'react-icons/fa'
 import logo from '../Images/tempoLogo.png'
 import albumArtwork from '../Images/albumArtwork.jpg'
+import musicDemo from '../Music/audioDemo.mp3'
+import ReactAudioPlayer from 'react-audio-player'
 
 const LeftMenu = () => {
   useEffect(() => {
@@ -44,6 +46,12 @@ const LeftMenu = () => {
         <div className='audioPlayer'>
           <img className='logoImage' src={albumArtwork} />
           <p>Artist Name</p>
+          <ReactAudioPlayer
+            src={musicDemo}
+            autoPlay
+            controls
+            className='playerControls'
+          />
         </div>
       </div>
     </div>
