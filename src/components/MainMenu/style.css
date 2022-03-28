@@ -26,6 +26,11 @@
     font-size: 16px;
 }
 
+.mainMenu .active {
+    color: white;
+    font-weight: 700;
+}
+
 /* .menuItem {
     padding-left: 10px;
     padding-right: 10px;

@@ -36,7 +36,7 @@ const LeftMenu = () => {
         </div>
         <ul>
           <li>
-            <a href='latestSongs'>Latest Songs</a>
+            <a href='#'>Latest Songs</a>
           </li>
           <li>
             <a href='#'>Saved Songs</a>

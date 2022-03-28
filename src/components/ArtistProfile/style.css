@@ -22,6 +22,8 @@
     margin: 30px;
     color: white;
     font-weight: 600;
+    text-transform: uppercase;
+    width: 170px;
 }
 .tipBtn {
     background-color: #44EE6F;

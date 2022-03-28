@@ -4,6 +4,7 @@ import { animated, useSpring } from 'react-spring'
 import { useScroll } from 'react-use-gesture'
 import './style.css'
 import SongsViewer from '../SongsViewer'
+import { Link } from 'react-router-dom'
 
 const clamp = (value, clampAt = 30) => {
   if (value > 0) {
@@ -45,18 +46,20 @@ const MainContainer = () => {
   return (
     <div className='mainContainer'>
       <div className='horizontallScroller'>
-        <animated.div className='container' ref={ref} {...bind()}>
+        <div className='container' ref={ref} {...bind()}>
           {songArtwork.map(src => (
-            <animated.div
-              key={src}
-              className='card'
-              style={{
-                ...style,
-                backgroundImage: `url(${src})`
-              }}
-            />
+            <Link key={src} to='/'>
+              <animated.div
+                key={src}
+                className='card'
+                style={{
+                  ...style,
+                  backgroundImage: `url(${src})`
+                }}
+              />
+            </Link>
           ))}
-        </animated.div>
+        </div>
       </div>
       <div className='tableHeader'>
         <h3>New Releases</h3>
