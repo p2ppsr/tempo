@@ -1,7 +1,7 @@
 .mainContainer {
     /* height: 50vh; */
     width: 90%;
-    z-index: 1;
+    z-index: 0;
     flex-grow: 1;
     /* background-color: blue; */
     /* background: rgba(46,46,46,0.6); */
@@ -32,15 +32,18 @@
 
 ::-webkit-scrollbar {
     width: 0px;
+    height: 0px;
 }
-  
+
 .container {
-    display: flex;
     overflow-x: scroll;
+    white-space: nowrap;
+    display: flex;
     width: 94vw;
     padding: 20px 0;
     margin-top: 60px;
     margin-bottom: 40px;
+    z-index: -3;
 }
 
 .card {

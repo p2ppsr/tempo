@@ -1,7 +1,5 @@
-import React from 'react'
-import { List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
-import { Link } from 'react-router-dom'
-import { render } from 'react-dom'
+import React, { useRef } from 'react'
+import useSwipeScroll from './useSwipeScroll'
 import { animated, useSpring } from 'react-spring'
 import { useScroll } from 'react-use-gesture'
 import './style.css'
@@ -26,6 +24,13 @@ const songArtwork = [
 ]
 
 const MainContainer = () => {
+
+  // Drag to scroll
+  const ref = useRef(null)
+  useSwipeScroll({
+    sliderRef: ref
+  })
+
   // Testing out a horizontal scroll bar animation.
   const [style, set] = useSpring(() => ({
     transform: 'perspective(500px) rotateY(0deg)'
@@ -40,7 +45,7 @@ const MainContainer = () => {
   return (
     <div className='mainContainer'>
       <div className='horizontallScroller'>
-        <div className='container' {...bind()}>
+        <animated.div className='container' ref={ref} {...bind()}>
           {songArtwork.map(src => (
             <animated.div
               key={src}
@@ -51,7 +56,7 @@ const MainContainer = () => {
               }}
             />
           ))}
-        </div>
+        </animated.div>
       </div>
       <div className='tableHeader'>
         <h3>New Releases</h3>

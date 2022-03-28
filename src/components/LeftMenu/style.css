@@ -5,6 +5,7 @@
     /* background: rgba(46,46,46,0.6);
     backdrop-filter: blur(10px); */
     background-image: linear-gradient(#2C224A, black);
+    z-index: 0;
 }
 .leftMenu .logoContainer {
     color:aliceblue;

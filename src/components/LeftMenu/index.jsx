@@ -50,7 +50,7 @@ const LeftMenu = () => {
           <p>Artist Name</p>
           <ReactAudioPlayer
             src={musicDemo}
-            autoPlay
+            autoPlay={false}
             controls
             className='playerControls'
           />

@@ -12,8 +12,8 @@ const ArtistProfile = () => {
       <div>
         <h1>{artistName}</h1>
         <p className='about'>Cain (stylized in all caps) is a Christian country trio composed of Taylor, Madison, and Logan Cain and signed to Provident Label Group.</p>
-        <Link className='button tipBtn' to='/'>TIP ARTIST</Link>
-        <Link className='button' to='/'>FOLLOW</Link>
+        <Link className='button tipBtn' to='#'>TIP ARTIST</Link>
+        <Link className='button' to='#'>FOLLOW</Link>
       </div>
     </div>
   )
