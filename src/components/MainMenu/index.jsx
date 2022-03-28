@@ -10,7 +10,7 @@ const MainMenu = () => {
           <NavLink to='/'>Home</NavLink>
         </li>
         <li>
-          <a href='#'>Publish a Song</a>
+          <NavLink to='/PublishASong'>Publish A Song</NavLink>
         </li>
         <li>
           <NavLink to='/ArtistProfile'>Artist Profile</NavLink>
