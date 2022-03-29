@@ -3,7 +3,7 @@ import './style.css'
 import { FaUserCircle } from 'react-icons/fa'
 import logo from '../../Images/tempoLogo.png'
 import albumArtwork from '../../Images/albumArtwork.jpg'
-import musicDemo from '../../Music/audioDemo.mp3'
+import musicDemo from '../../Music/song0.mp3'
 import ReactAudioPlayer from 'react-audio-player'
 // import { Switch, Route, Redirect } from 'react-router-dom'
 // import { Link, withRouter } from 'react-router-dom'
@@ -53,6 +53,7 @@ const LeftMenu = () => {
             autoPlay={false}
             controls
             className='playerControls'
+            id='audioPlayer'
           />
         </div>
       </div>

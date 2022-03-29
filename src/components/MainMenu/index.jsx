@@ -12,9 +12,6 @@ const MainMenu = () => {
         <li>
           <NavLink to='/PublishASong'>Publish A Song</NavLink>
         </li>
-        <li>
-          <NavLink to='/ArtistProfile'>Artist Profile</NavLink>
-        </li>
       </ul>
     </div>
   )
