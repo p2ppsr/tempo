@@ -3,14 +3,15 @@ import LeftMenu from '../../components/LeftMenu'
 import MainMenu from '../../components/MainMenu'
 import './style.css'
 import image from '../../Images/albumArtwork.jpg'
-// import styled from 'styled-components'
+import { useNavigate } from 'react-router-dom'
 
 const PublishASong = () => {
   const [song, setSong] = useState({
     title: '',
     artist: '',
     selectedArtwork: null,
-    selectedMusic: null
+    selectedMusic: null,
+    isPublished: false
   })
 
   const handleChange = (e) => {
@@ -21,30 +22,41 @@ const PublishASong = () => {
       [e.target.name]: valueToUpdate
     })
   }
+  const navigate = useNavigate()
 
   const onFileUpload = (e) => {
-    // Create an object of formData
-    const formData = new FormData()
+    try {
+      // Create an object of formData
+      const formData = new FormData()
 
-    // Update the formData object
-    formData.append(
-      'myAlbumArtwork',
-      song.selectedArtwork,
-      song.selectedArtwork.name
-    )
-    formData.append(
-      'myMusic',
-      song.selectedMusic,
-      song.selectedMusic.name
-    )
+      // Update the formData object
+      formData.append(
+        'myAlbumArtwork',
+        song.selectedArtwork,
+        song.selectedArtwork.name
+      )
+      formData.append(
+        'myMusic',
+        song.selectedMusic,
+        song.selectedMusic.name
+      )
 
-    // Details of the uploaded file
-    formData.forEach((value) => {
-      console.log(value)
-    })
+      // Details of the uploaded file
+      formData.forEach((value) => {
+        console.log(value)
+      })
+      song.isPublished = true
+    } catch (error) {
+
+    }
 
     // TODO: Make some API call to upload the selected file.
     // Nanostream via parapet or boomerang?
+    // const history = useHistory()
+    if (song.isPublished) {
+      console.log('success')
+      navigate('/PublishASong/Success')
+    }
   }
 
   return (
@@ -55,19 +67,21 @@ const PublishASong = () => {
         <div>
           <h1 className='header'>Publish A Song</h1>
           <p className='subTitle'>Become your own publisher and upload your music for the world to hear!</p>
-          <div className='publishingSection'>
-            <h3>UPLOAD ALBUM ARTWORK</h3>
-            <div className='row'>
+          <div className='row'>
+            <div className='column'>
+              <h3>UPLOAD ALBUM ARTWORK</h3>
               <img src={image} />
+            </div>
+            <div className='column'>
               <form className='inputForm'>
-                <label>Title </label>
+                <label>TITLE </label>
                 <input type='text' name='title' value={song.title} onChange={handleChange} />
                 <label>ARTIST </label>
                 <input type='text' name='artist' value={song.artist} onChange={handleChange} />
                 <label>ATTACH ARTWORK </label>
-                <input type='file' name='selectedArtwork' onChange={handleChange} />
+                <input type='file' name='selectedArtwork' className='upload' onChange={handleChange} />
                 <label>ATTACH MUSIC </label>
-                <input type='file' name='selectedMusic' onChange={handleChange} />
+                <input type='file' name='selectedMusic' className='upload' onChange={handleChange} />
                 <input type='button' name='submitForm' value='PUBLISH SONG' className='button publish' onClick={onFileUpload} />
               </form>
             </div>

@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import ArtistProfile from './pages/ArtistProfile'
 import PublishASong from './pages/PublishASong'
+import SuccessPage from './pages/PublishASong/PublishSuccess'
 
 // const useStyles = makeStyles(theme => ({
 //   content_wrap: {
@@ -24,6 +25,7 @@ const App = () => {
         <Route exact path='/' element={<Home />} />
         <Route exact path='/ArtistProfile' element={<ArtistProfile />} />
         <Route exact path='/PublishASong' element={<PublishASong />} />
+        <Route exact path='/PublishASong/Success' element={<SuccessPage />} />
       </Routes>
     </Router>
   )
