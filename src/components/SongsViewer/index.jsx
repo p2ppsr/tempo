@@ -3,18 +3,17 @@ import { List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, Typography 
 import { Link } from 'react-router-dom'
 import albumArtwork from '../../Images/albumArtwork.jpg'
 import './style.css'
-import songs from '../../data/songs'
+import parapetMock from '../../data/songs'
 import musicDemo from '../../Music/song0.mp3'
-import { withRouter } from 'react-router-dom'
 
 const songURLS = [
-  'https://www.zapsplat.com/wp-content/uploads/2015/music-one/music_david_gwyn_jones_looking_back_over_the_hill_instrumental.mp3',
+  'https://www.zapsplat.com/wp-content/uploads/2015/music-one/jes_smith_music_fast_country_pickin.mp3',
   'https://www.zapsplat.com/wp-content/uploads/2015/music-one/music_zapsplat_droplets_of_dew.mp3'
 ]
 
 const SongsViewer = () => {
-  // TODO: Refactor a lot of this code to make it extensible, clean, and reliable.
-
+  // Mock querying a bridge using parapet
+  const songs = parapetMock()
   return (
     <div>
       <div className='songTable'>
@@ -29,6 +28,7 @@ const SongsViewer = () => {
               const selectedSong = document.getElementById('song' + i)
               selectedSong.style.color = '#7F54FF'
 
+              // TODO: Send an action which retrieves an unlock token for the specified song?
               const audioPlayer = document.getElementById('audioPlayer')
               audioPlayer.src = songURLS[i]
               audioPlayer.autoplay = true

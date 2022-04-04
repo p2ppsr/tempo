@@ -4,6 +4,9 @@ import MainMenu from '../../components/MainMenu'
 import './style.css'
 import image from '../../Images/albumArtwork.jpg'
 import { useNavigate } from 'react-router-dom'
+import songPublisher from '../../utils/songPublisher'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const PublishASong = () => {
   const [song, setSong] = useState({
@@ -45,7 +48,9 @@ const PublishASong = () => {
       formData.forEach((value) => {
         console.log(value)
       })
+      const result = songPublisher()
       song.isPublished = true
+      toast.success('Song publishing coming soon!')
     } catch (error) {
 
     }
@@ -53,10 +58,10 @@ const PublishASong = () => {
     // TODO: Make some API call to upload the selected file.
     // Nanostream via parapet or boomerang?
     // const history = useHistory()
-    if (song.isPublished) {
-      console.log('success')
-      navigate('/PublishASong/Success')
-    }
+    // if (song.isPublished) {
+    //   console.log('success')
+    //   navigate('/PublishASong/Success')
+    // }
   }
 
   return (
@@ -65,6 +70,10 @@ const PublishASong = () => {
       <div className='flexBoxContainer'>
         <MainMenu />
         <div>
+          <ToastContainer
+            position='top-center'
+            containerId='alertToast'
+          />
           <h1 className='header'>Publish A Song</h1>
           <p className='subTitle'>Become your own publisher and upload your music for the world to hear!</p>
           <div className='row'>

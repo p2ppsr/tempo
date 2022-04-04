@@ -5,8 +5,7 @@ import logo from '../../Images/tempoLogo.png'
 import albumArtwork from '../../Images/albumArtwork.jpg'
 import musicDemo from '../../Music/song0.mp3'
 import ReactAudioPlayer from 'react-audio-player'
-// import { Switch, Route, Redirect } from 'react-router-dom'
-// import { Link, withRouter } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
 const LeftMenu = () => {
   useEffect(() => {
@@ -36,7 +35,8 @@ const LeftMenu = () => {
         </div>
         <ul>
           <li>
-            <a href='#'>Latest Songs</a>
+            {/* <a href='#'>Latest Songs</a> */}
+            <NavLink to='/'>Latest Songs</NavLink>
           </li>
           <li>
             <a href='#'>Saved Songs</a>

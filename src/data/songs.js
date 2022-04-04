@@ -14,11 +14,12 @@ class Artist {
 }
 
 const MorganWallen = new Artist('Morgan Wallen', 'Country Singer')
+const CAIN = new Artist('CAIN', 'Bio coming soon...')
 const ArtistPlaceholder = new Artist('ArtistName', 'Bio coming soon...')
 
 const Songs = [
-  new Song('Talkin\' Tennessee', '1234', MorganWallen, '3:45'),
-  new Song('Song Title', '1234', ArtistPlaceholder, '3:45'),
+  new Song('Song Title', '1234', CAIN, '3:45'),
+  new Song('Song Title', '1234', MorganWallen, '3:45'),
   new Song('Song Title', '1234', ArtistPlaceholder, '3:45'),
   new Song('Song Title', '1234', ArtistPlaceholder, '3:45'),
   new Song('Song Title', '1234', ArtistPlaceholder, '3:45'),
@@ -27,4 +28,8 @@ const Songs = [
   new Song('Song Title', '1234', ArtistPlaceholder, '3:45')
 ]
 
-export default Songs
+const parapetMock = () => {
+  return Songs
+}
+
+export default parapetMock
