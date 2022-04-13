@@ -1,0 +1,118 @@
+.container2 {
+    background-color:#DE5F3B;
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    grid-template: 0.5fr 10fr 1fr / 1fr;
+    grid-template-areas:
+    "header"
+    "middleSection"
+    "footer"
+}
+.header {
+    background-color: #6F44EE;
+    grid-area: header;
+    /* min-height: 50px; */
+    /* max-height: 80px; */
+    /* z-index: 1; */
+}
+.middleSection {
+    background-color: #3ebbb7;
+    grid-area: middleSection;
+
+    /* Center a div vs grid */
+    display: flex; 
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+@media only screen and (min-width: 601px) {
+    .middleSection {
+        grid-template: 1fr / 1fr 2fr 1fr;
+        padding: 10px;
+    }
+  }
+@media only screen and (max-width: 600px) {
+    .middleSection {
+        grid-template: 1fr 1fr 1fr / 1fr;
+        padding: 10px;
+    }
+  }
+.middleSection .left {
+    background-color: #30928e;
+    padding: 10px
+}
+.middleSection .center {
+    background-color: #73c5c3;
+    padding: 10px
+}
+.middleSection .right {
+    background-color: #4a83c4;
+    padding: 10px
+}
+.footer {
+    background-color: #cf44ee;
+    grid-area: footer;
+    padding: 10px
+}
+
+.PublishASong {
+    width: 100%;
+    height: 92;
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    /* scroll-behavior: smooth;
+    overflow-y: scroll; */
+}
+.flexBoxContainer {
+    display: flex;
+    flex-direction:column;
+    width:100%;
+}
+.header {
+    color: white;
+    padding: 30px 0px 10px 15px;
+}
+.subTitle {
+    color: white;
+    padding: 10px 0px 15px 15px;
+}
+.row {
+    display: flex;
+    background-color: #1C1C1C;
+    padding: 15px;
+    height: 78vh;
+    color: rgb(226, 226, 226);
+} 
+.column {
+    flex: 50%;
+    padding: 10px;
+    height: 300px; /* Should be removed. Only for demonstration */
+  }
+.row img {
+    width: 400px;
+    height: 400px;
+    padding-top: 30px;
+}
+.inputForm {
+    padding: 15px;
+    /* flex-direction: column; */
+}
+.row input {
+    height: 40px;
+    width: 250px;
+    margin-right: 300px;
+    margin-bottom: 20px;
+}
+.upload {
+    background-color: #DE5F3B;
+    display: flex;
+    align-items: center;
+    padding: 10px 0px 0px 10px;
+} 
+.publish {
+    background-color: #6F44EE;
+    width: 200px;
+    margin-left: -1px;
+} 

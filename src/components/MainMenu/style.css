@@ -1,6 +1,6 @@
 .mainMenu {
     background-color: #2B2B2B;
-    width: 100%;
+    width: 100vw;
     height: 8vh;
     justify-content: left;
     display: flex;

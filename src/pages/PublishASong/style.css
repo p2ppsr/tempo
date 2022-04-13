@@ -1,60 +1,103 @@
 .PublishASong {
-    width: 100%;
-    height: 92;
-    position: relative;
-    overflow: hidden;
+    /* background-color:#272727; */
+    height: 100vh;
+    width: 100vw;
     display: flex;
-    /* scroll-behavior: smooth;
-    overflow-y: scroll; */
 }
-.flexBoxContainer {
-    display: flex;
-    flex-direction:column;
-    width:100%;
+.mainContentContainer {
+    display: grid;
+    /* flex-direction:column; */
+    /* width:100%; */
+    grid-template: 1fr 5fr / 1fr 1fr;
+    grid-template-areas:
+    "header header"
+    "albumArtwork inputForm"
 }
 .header {
     color: white;
-    padding: 30px 0px 10px 15px;
+    padding: 30px 0px 30px 35px;
+    grid-area: header;
+    /* backdrop-filter: blur(5px); */
+    /* background-size: cover; */
+    /* background-color:#7b3939; */
 }
-.subTitle {
-    color: white;
-    padding: 10px 0px 15px 15px;
+.header h1 {
+    font-size: 40px;
+    font-weight: 750;
+    padding-bottom: 20px;
 }
-.row {
-    display: flex;
+@media only screen and (min-width: 1000px) {
+    /* .formSection {
+
+    } */
+}
+@media only screen and (max-width: 999px) {
+    /* .formSection {
+        grid-template: 1fr 1fr 1fr / 1fr;
+        grid-template-areas:
+        "albumArtwork"
+        "albumArtwork"
+        "inputForm";
+    } */
+}
+.albumArtwork {
     background-color: #1C1C1C;
-    padding: 15px;
-    height: 78vh;
-    color: rgb(226, 226, 226);
-} 
-.column {
-    flex: 50%;
-    padding: 10px;
-    height: 300px; /* Should be removed. Only for demonstration */
-  }
-.row img {
-    width: 400px;
-    height: 400px;
-    padding-top: 30px;
+    display: grid; 
+    justify-content: center;
+    grid-area: albumArtwork;
+    color: white;
+}
+.albumArtwork img {
+    max-width: 500px;
+    max-height: 500px;
+    padding: 20px;
+}
+.albumArtwork h3 {
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 .inputForm {
-    padding: 15px;
-    /* flex-direction: column; */
+    background-color: #1C1C1C;
+    grid-area: inputForm;
+    display: flex;
+    /* grid-template: 0.2fr 0.6fr 0.2fr 0.6fr 0.2fr 0.6fr 0.2fr 0.6fr 0.3fr / 1fr; */
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
+    color: white;
+    padding: 10px 30px 10px 20px;
 }
-.row input {
-    height: 40px;
-    width: 250px;
-    margin-right: 300px;
-    margin-bottom: 20px;
+.inputForm input {
+    height: 50px;
+    margin: 15px 0px 15px 0px;
+    max-width: 400px;
+}
+.inputForm label {
+    font-size: 18px;
+    font-weight: 700;
+}
+.textBox {
+    background-color: rgb(0, 0, 0);
+    border-width: 0px;
+    color: white;
+    padding-left: 10px;
+    font-size: 16px;
+}
+.inputForm input:focus {
+    outline-width: 0;
 }
 .upload {
     background-color: #DE5F3B;
     display: flex;
     align-items: center;
-    padding: 10px 0px 0px 10px;
+    padding: 15px 0px 0px 10px;
+    margin: 10px 0px 0px 0px;
 } 
 .publish {
     background-color: #6F44EE;
-    width: 200px;
-    margin-left: -1px;
+    /* width: 200px; */
+    /* margin-left: -1px; */
+    font-size: 14px;
 } 

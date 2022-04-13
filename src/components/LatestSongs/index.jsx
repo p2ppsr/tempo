@@ -24,7 +24,7 @@ const songArtwork = [
   '/AlbumArtwork/albumArtwork.jpg'
 ]
 
-const MainContainer = () => {
+const LatestSongs = () => {
 
   // Drag to scroll
   const ref = useRef(null)
@@ -68,4 +68,4 @@ const MainContainer = () => {
     </div>
   )
 }
-export default MainContainer
+export default LatestSongs

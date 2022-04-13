@@ -1,7 +1,7 @@
 import React from 'react'
 import LeftMenu from '../../components/LeftMenu'
 import MainMenu from '../../components/MainMenu'
-import MainContainer from '../../components/MainContainer'
+import LatestSongs from '../../components/LatestSongs'
 import './style.css'
 
 const Home = () => {
@@ -10,7 +10,7 @@ const Home = () => {
       <LeftMenu />
       <div className='flexBoxContainer'>
         <MainMenu />
-        <MainContainer />
+        <LatestSongs />
       </div>
       <div className='background' />
     </div>
