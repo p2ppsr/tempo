@@ -2,7 +2,10 @@ import React from 'react'
 // import './index.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
+import SavedSongs from './pages/SavedSongs'
+import Playlists from './pages/Playlists'
 import ArtistProfile from './pages/ArtistProfile'
+import EditProfile from './pages/EditProfile'
 import PublishASong from './pages/PublishASong'
 import SuccessPage from './pages/PublishASong/PublishSuccess'
 
@@ -23,7 +26,10 @@ const App = () => {
     <Router>
       <Routes>
         <Route exact path='/' element={<Home />} />
+        <Route exact path='/SavedSongs' element={<SavedSongs />} />
+        <Route exact path='/Playlists' element={<Playlists />} />
         <Route exact path='/ArtistProfile' element={<ArtistProfile />} />
+        <Route exact path='/EditProfile' element={<EditProfile />} />
         <Route exact path='/PublishASong' element={<PublishASong />} />
         <Route exact path='/PublishASong/Success' element={<SuccessPage />} />
       </Routes>

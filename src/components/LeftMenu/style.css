@@ -1,11 +1,7 @@
 .leftMenu {
-    /* width: 240px; */
     width: 18vw;
     min-width: 235px;
-    /* height: 100%; */
     min-height: 100vh;
-    /* background: rgba(46,46,46,0.6);
-    backdrop-filter: blur(10px); */
     background-image: linear-gradient(#2C224A, black);
     z-index: 0;
 }
@@ -40,37 +36,15 @@
     padding: 15px 0px 15px 25px;
     background: rgba(255, 255, 255, 0.1);
     margin-bottom: 6px;
+    color:rgb(219, 219, 219)
 }
-.leftMenu ul li a {
-    text-decoration: none;
-    color:#b8b8b8;
-    font-size: 16px;
-    font-weight: 600;
+.leftMenu ul .active {
+    /* color:#DE5F3B; */
+    font-weight: 700;
 }
-.leftMenu ul li::before {
-    position: absolute;
-    content: '';
-    /* top: ; */
-    margin-top: -14px;
-    left: -1px; 
-    width: 9px;
-    height: 50px;
-    background: #858585;
-}
-.leftMenu ul li:hover::before, 
-.leftMenu ul li.active::before {
-    width: 6px;
-    background: #DE5F3B;
-    transition: 0.3s;
-}
-.leftMenu ul li:hover a,
-.leftMenu ul li.active a {
-    color:#ffffff;
-    transition: 0.3s;
-    font-weight: 550;
-}
-.leftMenu ul li.active {
-    background: rgba(189, 189, 189, 0.4);
+.leftMenu ul li:hover {
+    background: rgba(195, 195, 195, 0.35);
+    font-weight: 700;
 }
 
 .leftMenu .audioPlayer {
@@ -103,7 +77,6 @@
     left: 0;
     width: 100%;
 } */
-
 
 .logoImage {
     width: 100%;

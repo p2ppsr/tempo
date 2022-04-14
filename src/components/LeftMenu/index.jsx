@@ -10,15 +10,15 @@ import { NavLink } from 'react-router-dom'
 const LeftMenu = () => {
   useEffect(() => {
     // Keep track of the active menu item.
-    const allLi = document
-      .querySelector('.leftMenu ul')
-      .querySelectorAll('li')
-    function changeMenuActive () {
-      allLi.forEach((n) => n.classList.remove('active'))
-      this.classList.add('active')
-    }
+    // const allLi = document
+    //   .querySelector('.leftMenu ul')
+    //   .querySelectorAll('li')
+    // function changeMenuActive () {
+    //   allLi.forEach((n) => n.classList.remove('active'))
+    //   this.classList.add('active')
+    // }
 
-    allLi.forEach(n => n.addEventListener('click', (changeMenuActive)))
+    // allLi.forEach(n => n.addEventListener('click', (changeMenuActive)))
   }, [])
 
   return (
@@ -29,21 +29,20 @@ const LeftMenu = () => {
         </div>
         <div className='welcomeMessage'>
           <p>Welcome, John Smith!</p>
-          <a href='#'>
+          <NavLink to='/EditProfile'>
             <FaUserCircle size={30} />
-          </a>
+          </NavLink>
         </div>
         <ul>
-          <li>
-            {/* <a href='#'>Latest Songs</a> */}
-            <NavLink to='/'>Latest Songs</NavLink>
-          </li>
-          <li>
-            <a href='#'>Saved Songs</a>
-          </li>
-          <li>
-            <a href='#'>Playlists</a>
-          </li>
+          <NavLink to='/'>
+            <li>Latest Songs</li>
+          </NavLink>
+          <NavLink to='/SavedSongs'>
+            <li>Saved Songs</li>
+          </NavLink>
+          <NavLink to='/Playlists'>
+            <li>Playlists</li>
+          </NavLink>
         </ul>
         <div className='audioPlayer'>
           <img className='logoImage' src={albumArtwork} />

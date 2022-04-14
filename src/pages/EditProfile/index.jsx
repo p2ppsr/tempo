@@ -8,7 +8,9 @@ import songPublisher from '../../utils/songPublisher'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-const PublishASong = () => {
+const EditProfile = () => {
+
+  // TODO: Refactor to use user settings instead of the song details.
   const [song, setSong] = useState({
     title: '',
     artist: '',
@@ -64,20 +66,8 @@ const PublishASong = () => {
     // }
   }
 
-  // return (
-  //   <div className='container2'>
-  //     <div className='header'>Header</div>
-  //     <div className='middleSection'>
-  //       <div className='left'>left</div>
-  //       <div className='center'>center</div>
-  //       <div className='right'>middle</div>
-  //     </div>
-  //     <div className='footer'>Footer</div>
-  //   </div>
-  // )
-
   return (
-    <div className='PublishASong'>
+    <div className='EditProfile'>
       <LeftMenu />
       <div>
         <MainMenu />
@@ -87,24 +77,22 @@ const PublishASong = () => {
             containerId='alertToast'
           />
           <div className='header'>
-            <h1>Publish A Song</h1>
-            <p className='subTitle'>Become your own publisher and upload your music for the world to hear!</p>
+            <h1>Artist Profile</h1>
+            <p className='subTitle'>Add all the important bits...and bytes!</p>
           </div>
           <div className='uploadSection'>
             <div className='albumArtwork'>
-              <h3>ALBUM ARTWORK</h3>
+              <h3>PROFILE PICTURE</h3>
               <img src={image} />
             </div>
-            <form className='inputForm'>
-              <label>SONG TITLE</label>
-              <input type='text' className='textBox' name='title' placeholder='song title' value={song.title} onChange={handleChange} />
-              <label>FEATURED ARTIST </label>
-              <input type='text' className='textBox' name='artist' placeholder='name (optional)' value={song.artist} onChange={handleChange} />
-              <label>ATTACH ARTWORK </label>
+            <form className='inputForm' id='inputForm'>
+              <label>NAME</label>
+              <input type='text' className='textBox' name='title' placeholder='artist name' value={song.title} onChange={handleChange} />
+              <label>ABOUT</label>
+              <textarea type='text' className='textArea' name='artist' placeholder="what's your story?" value={song.artist} onChange={handleChange} />
+              <label>ATTACH PROFILE PICTURE </label>
               <input type='file' name='selectedArtwork' className='upload' onChange={handleChange} />
-              <label>ATTACH MUSIC </label>
-              <input type='file' name='selectedMusic' className='upload' onChange={handleChange} />
-              <input type='button' name='submitForm' value='PUBLISH SONG' className='button publish' onClick={onFileUpload} />
+              <input type='button' name='submitForm' value='SAVE CHANGES' className='button publish' onClick={onFileUpload} />
             </form>
           </div>
         </div>
@@ -114,4 +102,4 @@ const PublishASong = () => {
     </div>
   )
 }
-export default PublishASong
+export default EditProfile
