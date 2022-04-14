@@ -78,7 +78,7 @@ const PublishASong = () => {
 
   return (
     <div className='PublishASong'>
-      {/* <LeftMenu /> */}
+      <LeftMenu />
       <div>
         <MainMenu />
         <div className='mainContentContainer'>
@@ -90,26 +90,25 @@ const PublishASong = () => {
             <h1>Publish A Song</h1>
             <p className='subTitle'>Become your own publisher and upload your music for the world to hear!</p>
           </div>
-          <div className='albumArtwork'>
-            <h3>ALBUM ARTWORK</h3>
-            <img src={image} />
+          <div className='uploadSection'>
+            <div className='albumArtwork'>
+              <h3>ALBUM ARTWORK</h3>
+              <img src={image} />
+            </div>
+            <form className='inputForm'>
+              <label>SONG TITLE</label>
+              <input type='text' className='textBox' name='title' placeholder='song title' value={song.title} onChange={handleChange} />
+              <label>FEATURED ARTIST </label>
+              <input type='text' className='textBox' name='artist' placeholder='name (optional)' value={song.artist} onChange={handleChange} />
+              <label>ATTACH ARTWORK </label>
+              <input type='file' name='selectedArtwork' className='upload' onChange={handleChange} />
+              <label>ATTACH MUSIC </label>
+              <input type='file' name='selectedMusic' className='upload' onChange={handleChange} />
+              <input type='button' name='submitForm' value='PUBLISH SONG' className='button publish' onClick={onFileUpload} />
+            </form>
           </div>
-          <form className='inputForm'>
-            <label>SONG TITLE</label>
-            <input type='text' className='textBox' name='title' placeholder='song title' value={song.title} onChange={handleChange} />
-            <label>FEATURED ARTIST </label>
-            <input type='text' className='textBox' name='artist' placeholder='name (optional)' value={song.artist} onChange={handleChange} />
-            <label>ATTACH ARTWORK </label>
-            <input type='file' name='selectedArtwork' className='upload' onChange={handleChange} />
-            <label>ATTACH MUSIC </label>
-            <input type='file' name='selectedMusic' className='upload' onChange={handleChange} />
-            <input type='button' name='submitForm' value='PUBLISH SONG' className='button publish' onClick={onFileUpload} />
-          </form>
-          {/* <div className='row'>
-            <div className='column' />
-            <div className='column' />
-          </div> */}
         </div>
+
       </div>
       <div className='background' />
     </div>

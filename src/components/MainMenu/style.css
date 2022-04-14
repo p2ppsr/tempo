@@ -1,9 +1,10 @@
 .mainMenu {
     background-color: #2B2B2B;
-    width: 100vw;
+    width: 1fr;
     height: 8vh;
     justify-content: left;
     display: flex;
+    /* grid-template: 1fr / 1.5fr 1fr; */
     align-items: center;
     padding-left: 15px;
     padding-right: 15px;
@@ -29,6 +30,12 @@
 .mainMenu .active {
     color: white;
     font-weight: 700;
+}
+.slogan {
+    font-style: italic;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    position: absolute;
+    right: 20px
 }
 
 /* .menuItem {

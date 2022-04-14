@@ -13,6 +13,7 @@ const MainMenu = () => {
           <NavLink to='/PublishASong'>Publish A Song</NavLink>
         </li>
       </ul>
+      <div className='slogan'>Feel the beat!</div>
     </div>
   )
 }

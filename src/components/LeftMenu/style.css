@@ -1,6 +1,8 @@
 .leftMenu {
-    width: 240px;
-    height: 100%;
+    /* width: 240px; */
+    width: 18vw;
+    min-width: 235px;
+    /* height: 100%; */
     min-height: 100vh;
     /* background: rgba(46,46,46,0.6);
     backdrop-filter: blur(10px); */

@@ -1,58 +1,46 @@
 .PublishASong {
-    /* background-color:#272727; */
-    height: 100vh;
-    width: 100vw;
+    /* height: 100vh;
+    width: 100vw; */
     display: flex;
+    overflow: hidden;
 }
 .mainContentContainer {
     display: grid;
-    /* flex-direction:column; */
-    /* width:100%; */
-    grid-template: 1fr 5fr / 1fr 1fr;
+    grid-template: 1fr 5fr / 1fr;
     grid-template-areas:
-    "header header"
-    "albumArtwork inputForm"
+    "header"
+    "uploadSection";
+    height: 100vh;
+    width: 82vw;
+}
+.uploadSection {
+    background-color: #1C1C1C;
+    grid-area: uploadSection;
+    display: grid;
+    grid-template: 1fr / 1fr 1fr;
+    grid-template-areas:
+    "albumArtwork inputForm";
 }
 .header {
     color: white;
     padding: 30px 0px 30px 35px;
     grid-area: header;
-    /* backdrop-filter: blur(5px); */
-    /* background-size: cover; */
-    /* background-color:#7b3939; */
 }
 .header h1 {
     font-size: 40px;
     font-weight: 750;
     padding-bottom: 20px;
 }
-@media only screen and (min-width: 1000px) {
-    /* .formSection {
+/* @media only screen and (min-width: 1000px) {
+} */
 
-    } */
-}
-@media only screen and (max-width: 999px) {
-    .mainContentContainer {
-        grid-template: 1fr 3fr 3fr / 1fr;
-        grid-template-areas:
-        "header"
-        "albumArtwork"
-        "inputForm"
-    }
-}
 .albumArtwork {
-    background-color: #1C1C1C;
     display: grid; 
+    /* grid-template: 1fr / 1fr; */
     justify-content: center;
     grid-area: albumArtwork;
     color: white;
-    padding-top: 10px;
-}
-.albumArtwork img {
-    max-width: 500px;
-    max-height: 500px;
-    width: 80vw;
-    padding: 20px;
+    /* padding-top: 10px; */
 }
 .albumArtwork h3 {
     display: flex; 
@@ -60,19 +48,21 @@
     justify-content: center;
     align-items: center;
 }
+.albumArtwork img {
+    max-width: 480px;
+    max-height: 500px;
+    width: 32vw;
+    padding: 20px;
+}
 .inputForm {
-    background-color: #1C1C1C;
     grid-area: inputForm;
-    display: grid;
-    /* grid-template: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr / 1fr; */
-    /* grid-template: 0.3fr 0.2fr 0.1fr 0.1fr 0.1fr 0.3fr / 1fr; */
-    /* flex-direction: column; */
+    display: flex;
+    flex-direction: column;
     justify-content: center;
-    /* align-items: left; */
     color: white;
-    /* padding: 10px 30px 10px 20px; */
-    padding-top: 5vh;
+    padding-top: 2vh;
     padding-bottom: 5vh;
+    padding-right: 20px;
 }
 .inputForm input {
     height: 50px;
@@ -80,7 +70,7 @@
     /* max-width: 400px; */
     min-width: 200px;
     max-width: 500px;
-    width: 60vw;
+    width: 32vw;
 }
 .inputForm label {
     font-size: 18px;
@@ -110,3 +100,27 @@
     margin-left: -1px;
     font-size: 14px;
 } 
+@media only screen and (max-width: 900px) {
+    .uploadSection {
+        grid-template: 3fr 3fr / 1fr;
+        grid-template-areas:
+        "albumArtwork"
+        "inputForm"
+    }
+    .inputForm {
+        display: grid;
+    }
+    .albumArtwork img {
+        max-width: 480px;
+        max-height: 500px;
+        width: 42vw;
+    }
+    .inputForm input {
+        height: 50px;
+        margin: 15px 0px 15px 0px;
+        /* max-width: 400px; */
+        min-width: 200px;
+        max-width: 500px;
+        width: 50vw;
+    }
+}
