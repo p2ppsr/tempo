@@ -1,7 +1,7 @@
 .mainMenu {
     background-color: #2B2B2B;
     width: 1fr;
-    height: 8vh;
+    /* height: 8vh; */
     justify-content: left;
     display: flex;
     /* grid-template: 1fr / 1.5fr 1fr; */

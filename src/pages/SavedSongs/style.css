@@ -1,7 +1,40 @@
 .SavedSongs {
     width: 100vw;
     height: 100vh;
-    position: relative;
-    overflow: hidden;
+    /* position: relative; */
+    /* overflow: hidden; */
     display: flex;
+}
+.mainContentContainer2 {
+    background-color:red;
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template: 1fr 10fr / 1fr;
+    grid-template-areas:
+    'menu'
+    'centerMe';
+}
+.menu {
+    grid-area: menu
+}
+.centerMe {
+    background-color: rgb(202, 142, 142); 
+    grid-area: centerMe; 
+    display: grid;
+    grid-template: 1fr / 1fr 1fr;
+    grid-template-areas:
+    'space1 space2';
+}
+.space {
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.space1 {
+  grid-area: space1;
+}
+.space2 {
+  grid-area: space2;
 }

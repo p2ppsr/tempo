@@ -8,10 +8,16 @@ const SavedSongs = () => {
   return (
     <div className='SavedSongs'>
       <LeftMenu />
-      <div className='flexBoxContainer'>
-        <MainMenu />
-        <h1 style={{ color: 'white' }}>Saved Songs Coming soon...</h1>
-        <LatestSongs />
+      <div className='mainContentContainer2'>
+        <MainMenu className='menu' />
+        <div className='centerMe'>
+          <div className='space space1'>
+            <h1>SPACE1</h1>
+          </div>
+          <div className='space space2'>
+            <h1>SPACE2</h1>
+          </div>
+        </div>
       </div>
       <div className='background' />
     </div>

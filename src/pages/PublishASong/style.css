@@ -3,15 +3,27 @@
     width: 100vw; */
     display: flex;
     /* overflow: hidden; */
+    /* overflow-x:hidden; */
+    /* height: 100vh; */
 }
-.mainContentContainer {
+.menuAndContentSection {
+    width: 100vw;
     display: grid;
-    grid-template: 1fr 5fr / 1fr;
+    grid-template: 1fr 12fr / 1fr;
+    grid-template-areas:
+    'menu'
+    'mainContent';
+}
+.menu {
+    grid-area: menu;
+}
+.mainContent {
+    grid-area: mainContent; 
+    display: grid;
+    grid-template: 2fr 7fr / 1fr;
     grid-template-areas:
     "header"
     "uploadSection";
-    height: 100vh;
-    width: 82vw;
 }
 .uploadSection {
     background-color: #1C1C1C;
@@ -23,82 +35,67 @@
 }
 .header {
     color: white;
-    padding: 30px 0px 30px 35px;
     grid-area: header;
 }
 .header h1 {
     font-size: 40px;
     font-weight: 750;
-    padding-bottom: 20px;
 }
-/* @media only screen and (min-width: 1000px) {
-} */
-
 .albumArtwork {
-    display: grid; 
-    /* grid-template: 1fr / 1fr; */
-    justify-content: center;
     grid-area: albumArtwork;
     color: white;
-    /* padding-top: 10px; */
-}
-.albumArtwork h3 {
-    display: flex; 
-    flex-direction: column;
     justify-content: center;
-    align-items: center;
 }
 .albumArtwork img {
     max-width: 480px;
     max-height: 500px;
-    width: 32vw;
+    min-width: 350px;
+    width: 38vw;
     padding: 20px;
 }
-.inputForm {
+.publishForm {
     grid-area: inputForm;
     display: flex;
     flex-direction: column;
     justify-content: center;
     color: white;
-    padding-top: 2vh;
-    padding-bottom: 5vh;
-    padding-right: 20px;
+    padding-right: 30px;
+    padding-left: 30px;
+    padding-bottom: 10px;
 }
-.inputForm input {
+.publishForm input {
     height: 50px;
-    margin: 15px 0px 15px 0px;
+    margin: 10px 0px 10px 0px;
     /* max-width: 400px; */
-    min-width: 200px;
+    /* min-width: 200px;
     max-width: 500px;
-    width: 32vw;
+    width: 32vw; */
 }
-.inputForm label {
+.publishForm label {
     font-size: 18px;
     font-weight: 700;
     align-items: left;
 }
-.textBox {
+/* .textBox {
     background-color: rgb(0, 0, 0);
     border-width: 0px;
     color: white;
     padding-left: 10px;
     font-size: 16px;
-}
-.inputForm input:focus {
+} */
+.publishForm input:focus {
     outline-width: 0;
 }
 .upload {
-    background-color: #DE5F3B;
     display: flex;
     align-items: center;
     padding: 15px 0px 0px 10px;
     margin: 10px 0px 0px 0px;
 } 
 .publish {
-    background-color: #6F44EE;
-    /* width: 200px; */
-    margin-left: -1px;
     font-size: 14px;
+    color: white;
+    font-weight: 700;
 } 
 @media only screen and (max-width: 900px) {
     .uploadSection {
@@ -112,15 +109,18 @@
     }
     .albumArtwork img {
         max-width: 480px;
-        max-height: 500px;
-        width: 42vw;
-    }
-    .inputForm input {
-        height: 50px;
-        margin: 15px 0px 15px 0px;
-        /* max-width: 400px; */
-        min-width: 200px;
-        max-width: 500px;
+        max-height: 550px;
         width: 50vw;
+    }
+    .publishForm {
+        /* max-width: 400px; */
+        /* min-width: 200px;
+        max-width: 500px;
+        width: 32vw; */
+        margin: 0px 5vw 0px 5vw;
+    }
+    .test2 {
+        display: none;
+        visibility: hidden;
     }
 }

@@ -78,10 +78,10 @@ const PublishASong = () => {
 
   return (
     <div className='PublishASong'>
-      <LeftMenu />
-      <div>
-        <MainMenu />
-        <div className='mainContentContainer'>
+      <LeftMenu className='test2' style={{ display: 'none' }} />
+      <div className='menuAndContentSection'>
+        <MainMenu className='menu' />
+        <div className='mainContent'>
           <ToastContainer
             position='top-center'
             containerId='alertToast'
@@ -95,7 +95,7 @@ const PublishASong = () => {
               <h3>ALBUM ARTWORK</h3>
               <img src={image} />
             </div>
-            <form className='inputForm'>
+            <form className='publishForm'>
               <label>SONG TITLE</label>
               <input type='text' className='textBox' name='title' placeholder='song title' value={song.title} onChange={handleChange} />
               <label>FEATURED ARTIST </label>
@@ -104,11 +104,10 @@ const PublishASong = () => {
               <input type='file' name='selectedArtwork' className='upload' onChange={handleChange} />
               <label>ATTACH MUSIC </label>
               <input type='file' name='selectedMusic' className='upload' onChange={handleChange} />
-              <input type='button' name='submitForm' value='PUBLISH SONG' className='button publish' onClick={onFileUpload} />
+              <input type='button' name='submitForm' value='PUBLISH SONG' className='publish' onClick={onFileUpload} />
             </form>
           </div>
         </div>
-
       </div>
       <div className='background' />
     </div>
