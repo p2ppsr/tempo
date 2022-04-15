@@ -29,7 +29,7 @@
     background-color: #1C1C1C;
     grid-area: uploadSection;
     display: grid;
-    grid-template: 1fr / 1fr 1fr;
+    grid-template: 1fr / 2fr 3fr;
     grid-template-areas:
     "albumArtwork inputForm";
 }
@@ -113,14 +113,22 @@
         width: 50vw;
     }
     .publishForm {
-        /* max-width: 400px; */
-        /* min-width: 200px;
-        max-width: 500px;
-        width: 32vw; */
         margin: 0px 5vw 0px 5vw;
     }
-    .test2 {
-        display: none;
-        visibility: hidden;
+    .mainContent {
+        grid-area: mainContent; 
+        display: grid;
+        grid-template: 1fr 6fr / 1fr;
+        grid-template-areas:
+        "header"
+        "uploadSection";
+    }
+    .menuAndContentSection {
+        width: 100vw;
+        display: grid;
+        grid-template: 0.5fr 12fr / 1fr;
+        grid-template-areas:
+        'menu'
+        'mainContent';
     }
 }
