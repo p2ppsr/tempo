@@ -1,13 +1,8 @@
 .PublishASong {
-    /* height: 100vh;
-    width: 100vw; */
     display: flex;
-    /* overflow: hidden; */
-    /* overflow-x:hidden; */
-    /* height: 100vh; */
 }
 .menuAndContentSection {
-    width: 100vw;
+    width: 82vw;
     display: grid;
     grid-template: 1fr 12fr / 1fr;
     grid-template-areas:
@@ -26,7 +21,6 @@
     "uploadSection";
 }
 .uploadSection {
-    background-color: #1C1C1C;
     grid-area: uploadSection;
     display: grid;
     grid-template: 1fr / 2fr 3fr;
@@ -58,6 +52,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: left;
     color: white;
     padding-right: 30px;
     padding-left: 30px;
@@ -66,23 +61,21 @@
 .publishForm input {
     height: 50px;
     margin: 10px 0px 10px 0px;
-    /* max-width: 400px; */
-    /* min-width: 200px;
+    min-width: 300px;
     max-width: 500px;
-    width: 32vw; */
+    width: 25vw;
+}
+.centerDiv {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 .publishForm label {
     font-size: 18px;
     font-weight: 700;
     align-items: left;
 }
-/* .textBox {
-    background-color: rgb(0, 0, 0);
-    border-width: 0px;
-    color: white;
-    padding-left: 10px;
-    font-size: 16px;
-} */
 .publishForm input:focus {
     outline-width: 0;
 }

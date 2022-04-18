@@ -95,17 +95,19 @@ const PublishASong = () => {
               <h3>ALBUM ARTWORK</h3>
               <img src={image} />
             </div>
-            <form className='publishForm'>
-              <label>SONG TITLE</label>
-              <input type='text' className='textBox' name='title' placeholder='song title' value={song.title} onChange={handleChange} />
-              <label>FEATURED ARTIST </label>
-              <input type='text' className='textBox' name='artist' placeholder='name (optional)' value={song.artist} onChange={handleChange} />
-              <label>ATTACH ARTWORK </label>
-              <input type='file' name='selectedArtwork' className='upload' onChange={handleChange} />
-              <label>ATTACH MUSIC </label>
-              <input type='file' name='selectedMusic' className='upload' onChange={handleChange} />
-              <input type='button' name='submitForm' value='PUBLISH SONG' className='publish' onClick={onFileUpload} />
-            </form>
+            <div className='centerDiv'>
+              <form className='publishForm'>
+                <label>SONG TITLE</label>
+                <input type='text' className='textBox' name='title' placeholder='song title' value={song.title} onChange={handleChange} />
+                <label>FEATURED ARTIST </label>
+                <input type='text' className='textBox' name='artist' placeholder='name (optional)' value={song.artist} onChange={handleChange} />
+                <label>ATTACH ARTWORK </label>
+                <input type='file' name='selectedArtwork' className='upload' onChange={handleChange} />
+                <label>ATTACH MUSIC </label>
+                <input type='file' name='selectedMusic' className='upload' onChange={handleChange} />
+                <input type='button' name='submitForm' value='PUBLISH SONG' className='publish' onClick={onFileUpload} />
+              </form>
+            </div>
           </div>
         </div>
       </div>
