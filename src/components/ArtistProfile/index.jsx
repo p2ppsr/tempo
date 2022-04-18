@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import './style.css'
-import ProfilePicture from '../../Images/cain.jpg'
+import ProfilePicture from '../../Images/placeholder-image.png'
 import { Link, useLocation } from 'react-router-dom'
 
 const ArtistProfile = () => {

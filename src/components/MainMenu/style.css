@@ -2,6 +2,7 @@
     background-color: #2B2B2B;
     width: 1fr;
     /* height: 8vh; */
+    min-height: 60px;
     justify-content: left;
     display: flex;
     /* grid-template: 1fr / 1.5fr 1fr; */
