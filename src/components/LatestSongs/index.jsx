@@ -60,6 +60,9 @@ const LatestSongs = () => {
           ))}
         </div>
       </div>
+      <div className='tableHeader'>
+        <h3>New Releases</h3>
+      </div>
       <SongsViewer />
     </div>
   )

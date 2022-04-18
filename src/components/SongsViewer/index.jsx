@@ -16,9 +16,6 @@ const SongsViewer = () => {
   const songs = parapetMock()
   return (
     <div>
-      <div className='tableHeader'>
-        <h3>New Releases</h3>
-      </div>
       <div className='songTable'>
         <List id='songList' sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
           {songs.map((song, i) => (
