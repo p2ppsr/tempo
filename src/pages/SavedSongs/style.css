@@ -6,7 +6,6 @@
     display: flex;
 }
 .mainContentContainer2 {
-    background-color:red;
     width: 100vw;
     height: 100vh;
     display: grid;
@@ -19,7 +18,7 @@
     grid-area: menu
 }
 .centerMe {
-    background-color: rgb(202, 142, 142); 
+    background-color: rgb(23, 23, 23); 
     grid-area: centerMe; 
     display: grid;
     grid-template: 1fr / 1fr 1fr;

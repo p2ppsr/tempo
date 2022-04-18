@@ -12,10 +12,10 @@ const SavedSongs = () => {
         <MainMenu className='menu' />
         <div className='centerMe'>
           <div className='space space1'>
-            <h1>SPACE1</h1>
+            <h1>COMING</h1>
           </div>
           <div className='space space2'>
-            <h1>SPACE2</h1>
+            <h1>SOON</h1>
           </div>
         </div>
       </div>
