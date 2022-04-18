@@ -78,7 +78,7 @@ const PublishASong = () => {
 
   return (
     <div className='PublishASong'>
-      <LeftMenu className='test2' style={{ display: 'none' }} />
+      <LeftMenu />
       <div className='menuAndContentSection'>
         <MainMenu className='menu' />
         <div className='mainContent'>

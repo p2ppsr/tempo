@@ -25,7 +25,6 @@ const songArtwork = [
 ]
 
 const LatestSongs = () => {
-
   // Drag to scroll
   const ref = useRef(null)
   useSwipeScroll({
@@ -60,9 +59,6 @@ const LatestSongs = () => {
             </Link>
           ))}
         </div>
-      </div>
-      <div className='tableHeader'>
-        <h3>New Releases</h3>
       </div>
       <SongsViewer />
     </div>

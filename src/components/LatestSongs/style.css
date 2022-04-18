@@ -1,10 +1,8 @@
 .mainContainer {
     /* height: 50vh; */
-    width: 90%;
+    width: 82vw;
     z-index: 0;
     flex-grow: 1;
-    /* background-color: blue; */
-    /* background: rgba(46,46,46,0.6); */
 }
 .horizontallScroller {
     backdrop-filter: blur(10px);
@@ -12,37 +10,30 @@
     /* justify-content: center;     */
     display: flex;
     align-items: center;
-    height: 38vh;
+    height: auto;
     /* overflow: auto; */
 }
-/* .horizontallScroller img {
-    padding: 20px;
-    max-width: 240px;
-    max-height: 200px;
-    width:40%;
-    height:40vh;
-    object-fit: cover;
-    overflow: hidden;
-}
-.horizontallScroller .primaryAlbum {
-    max-width: 280px;
-    max-height: 250px;
-    width: 50%;
-} */
 
 ::-webkit-scrollbar {
-    width: 0px;
     height: 0px;
+    width: 0px;
 }
+/* Adds back the scrollbar */
+/* ::-webkit-scrollbar {
+    width: 15px;
+    height: 10px;
+    background-color: white;
+}
+::-webkit-scrollbar-thumb {
+    background: rgb(150, 150, 150);
+} */
 
 .container {
     overflow-x: scroll;
     white-space: nowrap;
     display: flex;
-    width: 94vw;
-    padding: 20px 0;
-    margin-top: 60px;
-    margin-bottom: 40px;
+    width: 82w;
+    padding: 60px 0 60px 0px;
     z-index: -3;
 }
 
@@ -55,4 +46,11 @@
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
+}
+.arrow {
+    z-index: 3;
+    position: absolute;
+    right: 45px;
+    top: 150px;
+    color: rgba(255, 255, 255, 0.3)
 }

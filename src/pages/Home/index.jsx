@@ -8,9 +8,9 @@ const Home = () => {
   return (
     <div className='Home'>
       <LeftMenu />
-      <div className='flexBoxContainer'>
-        <MainMenu />
-        <LatestSongs />
+      <div className='menuAndContentSection'>
+        <MainMenu className='menu' />
+        <LatestSongs className='mainContent' />
       </div>
       <div className='background' />
     </div>

@@ -16,28 +16,33 @@ const SongsViewer = () => {
   const songs = parapetMock()
   return (
     <div>
+      <div className='tableHeader'>
+        <h3>New Releases</h3>
+      </div>
       <div className='songTable'>
         <List id='songList' sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
           {songs.map((song, i) => (
-            <ListItem key={song} button alignItems='flex-start' onClick={() => {
-              // Start playing the selected song.
-              for (let j = 0; j < songs.length; j++) {
-                const listItem = document.getElementById('song' + j)
-                listItem.style.color = 'white'
-              }
-              const selectedSong = document.getElementById('song' + i)
-              selectedSong.style.color = '#7F54FF'
+            <ListItem
+              key={song} button alignItems='flex-start' onClick={() => {
+                // Start playing the selected song.
+                for (let j = 0; j < songs.length; j++) {
+                  const listItem = document.getElementById('song' + j)
+                  listItem.style.color = 'white'
+                }
+                const selectedSong = document.getElementById('song' + i)
+                selectedSong.style.color = '#7F54FF'
 
-              // TODO: Send an action which retrieves an unlock token for the specified song?
-              const audioPlayer = document.getElementById('audioPlayer')
-              audioPlayer.src = songURLS[i]
-              audioPlayer.autoplay = true
-            }}>
+                // TODO: Send an action which retrieves an unlock token for the specified song?
+                const audioPlayer = document.getElementById('audioPlayer')
+                audioPlayer.src = songURLS[i]
+                audioPlayer.autoplay = true
+              }}
+            >
               <ListItemText className='songListItem' primary={i + 1} />
               <img src={albumArtwork} />
               <ListItemText inset primary={song.title} id={'song' + i} />
               <Link to='/ArtistProfile' state={{ song: song }}>
-                <ListItemText primary={song.artist.name} />
+                <ListItemText primary={song.artist.name} style={{ padding: '0px 20px 0px 0px' }} />
               </Link>
               <ListItemText primary={song.length} />
             </ListItem>

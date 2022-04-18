@@ -1,15 +1,15 @@
 .Home {
-    width: 100%;
-    height: 100vh;
-    position: relative;
-    overflow: hidden;
     display: flex;
     /* scroll-behavior: smooth;
     overflow-y: scroll; */
 }
-.flexBoxContainer {
-    display: flex;
-    flex-direction:column;
+.menuAndContentSection {
+    width: 82vw;
+    display: grid;
+    grid-template: 1fr 12fr / 1fr;
+    grid-template-areas:
+    'menu'
+    'mainContent';
 }
 .background {
     position: absolute;
@@ -20,4 +20,10 @@
     background: url('../../Images/background.jpg') no-repeat center;
     background-size: cover;
     z-index: -3;
+}
+.menu {
+    grid-area: menu;
+}
+.mainContent {
+    grid-area: mainContent; 
 }

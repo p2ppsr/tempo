@@ -11,17 +11,6 @@
     display: flex;
     flex-direction:column;
 }
-.tableHeader {
-    background-color: black;
-    color: rgb(228, 228, 228);
-    height: 10vh;
-    width: 94vw;
-    max-height: 50px;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-}
 .background {
     position: absolute;
     top: 0;
