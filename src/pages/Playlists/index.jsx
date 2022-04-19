@@ -7,7 +7,6 @@ import './style.css'
 const Playlists = () => {
   return (
     <div className='Playlists'>
-      <LeftMenu />
       <div className='flexBoxContainer'>
         <MainMenu />
         <h1 style={{ color: 'white' }}>Playlists Coming soon...</h1>

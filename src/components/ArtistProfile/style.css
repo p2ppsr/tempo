@@ -16,15 +16,6 @@
     padding: 0px 30px 30px 30px;
     font-size: 18px;
 }
-.button {
-    background-color: #6F44EE;
-    padding: 10px 40px 10px 40px;
-    margin: 30px;
-    color: white;
-    font-weight: 600;
-    text-transform: uppercase;
-    width: 170px;
-}
 .tipBtn {
     background-color: #44EE6F;
     color: black;

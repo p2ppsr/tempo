@@ -5,9 +5,9 @@ import LatestSongs from '../../components/LatestSongs'
 import './style.css'
 
 const Home = () => {
+  console.log('home index')
   return (
     <div className='Home'>
-      <LeftMenu />
       <div className='menuAndContentSection'>
         <MainMenu className='menu' />
         <LatestSongs className='mainContent' />

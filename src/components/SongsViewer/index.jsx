@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import albumArtwork from '../../Images/albumArtwork.jpg'
@@ -12,6 +12,21 @@ const songURLS = [
 ]
 
 const SongsViewer = () => {
+  const [songStatus, setSongStatus] = useState('red')
+  const changeActive = (e) => {
+    const allSongs = document.querySelectorAll('.song')
+    allSongs.forEach((n) => n.parentNode.classList.remove('isActive'))
+    console.log('hmm' + allSongs[0])
+    e.currentTarget.parentNode.classList.add('isActive')
+
+    const audioPlayer = document.getElementById('audioPlayer')
+    audioPlayer.src = songURLS[e.currentTarget.id]
+    audioPlayer.autoplay = true
+  }
+  useEffect(() => {
+
+  }, [])
+
   // Mock querying a bridge using parapet
   const songs = parapetMock()
   return (
@@ -20,26 +35,21 @@ const SongsViewer = () => {
         <List id='songList' sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
           {songs.map((song, i) => (
             <ListItem
-              key={song} button alignItems='flex-start' onClick={() => {
-                // Start playing the selected song.
-                for (let j = 0; j < songs.length; j++) {
-                  const listItem = document.getElementById('song' + j)
-                  listItem.style.color = 'white'
-                }
-                const selectedSong = document.getElementById('song' + i)
-                selectedSong.style.color = '#7F54FF'
-
-                // TODO: Send an action which retrieves an unlock token for the specified song?
-                const audioPlayer = document.getElementById('audioPlayer')
-                audioPlayer.src = songURLS[i]
-                audioPlayer.autoplay = true
-              }}
+              key={song.id} alignItems='flex-start'
+              className='listItem'
             >
-              <ListItemText className='songListItem' primary={i + 1} />
+              <ListItemText className='songListItem song' primary={i + 1} />
               <img src={albumArtwork} />
-              <ListItemText inset primary={song.title} id={'song' + i} />
+              <ListItemText
+                className='song test'
+                button='true'
+                inset
+                primary={song.title}
+                id={i}
+                onClick={changeActive}
+              />
               <Link to='/ArtistProfile' state={{ song: song }}>
-                <ListItemText primary={song.artist.name} style={{ padding: '0px 20px 0px 0px' }} />
+                <ListItemText button='true' primary={song.artist.name} style={{ padding: '0px 20px 0px 0px' }} />
               </Link>
               <ListItemText primary={song.length} />
             </ListItem>

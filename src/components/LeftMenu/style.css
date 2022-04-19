@@ -57,6 +57,7 @@
   width: 18vw;
   min-width: 235px;
   color:rgb(219, 219, 219);
+  z-index: 2;
 }
 .leftMenu .audioPlayer p {
     display: flex;
@@ -65,20 +66,40 @@
     font-size: 14px;
 }
 .playerControls {
-    /* width: 100%; */
-    height: 40px;
+    width: 98vw;
+    height: 30px;
+    padding-right: 10px;
+    /* left: 10;
+    right: 10; */
+    /* align-items: center;
+    justify-content: space-between; */
 }
 
-/* .footer {
+.footer {
     margin-top: 1rem;
     padding: 1rem;
-    background-color: rgb(235, 195, 64);
+    background-color: black;
     position: fixed;
     bottom: 0;
     left: 0;
-    width: 100%;
-} */
+    right: 0;
+    width: 100vw;
+    z-index: 3;
+}
 
 .logoImage {
     width: 100%;
+}
+
+@media only screen and (max-width: 600px) {
+    .leftMenu {
+        width: 5vw;
+        min-width: 64px;
+        min-height: 100vh;
+        background-image: linear-gradient(#2C224A, black);
+        z-index: 0;
+    }
+    .logoImage {
+        width: 0px;
+    }
 }

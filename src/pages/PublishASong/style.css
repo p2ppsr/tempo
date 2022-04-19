@@ -1,17 +1,6 @@
 .PublishASong {
     display: flex;
 }
-.menuAndContentSection {
-    width: 82vw;
-    display: grid;
-    grid-template: 1fr 12fr / 1fr;
-    grid-template-areas:
-    'menu'
-    'mainContent';
-}
-.menu {
-    grid-area: menu;
-}
 .mainContent {
     grid-area: mainContent; 
     display: grid;

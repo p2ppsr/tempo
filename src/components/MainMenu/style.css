@@ -10,7 +10,7 @@
     padding-left: 15px;
     padding-right: 15px;
     color: #FFFFFF;
-    z-index: 2;
+    z-index: 3;
 }
 .mainMenu ul {
     justify-content: left;
@@ -38,8 +38,3 @@
     position: absolute;
     right: 20px
 }
-
-/* .menuItem {
-    padding-left: 10px;
-    padding-right: 10px;
-} */

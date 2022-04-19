@@ -67,7 +67,6 @@ const EditProfile = () => {
 
   return (
     <div className='EditProfile'>
-      <LeftMenu />
       <div className='menuAndContentSection'>
         <MainMenu className='menu' />
         <div className='mainContent'>

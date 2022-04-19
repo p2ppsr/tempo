@@ -23,3 +23,16 @@
     justify-content: center;
     padding: 20px;
 }
+.listItem {
+    color: white;
+}
+.test {
+    height: 6vh;
+}
+.listItem:hover {
+    background-color:rgb(35, 35, 35);
+}
+.isActive {
+    color: #7F54FF;
+    font-weight: 700;
+}

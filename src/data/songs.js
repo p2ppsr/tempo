@@ -18,14 +18,14 @@ const CAIN = new Artist('CAIN', 'Bio coming soon...')
 const ArtistPlaceholder = new Artist('ArtistName', 'Bio coming soon...')
 
 const Songs = [
-  new Song('Song Title', '1234', CAIN, '3:45'),
-  new Song('Song Title', '1234', MorganWallen, '3:45'),
+  new Song('Song Title', '1231', CAIN, '3:45'),
+  new Song('Song Title', '1232', MorganWallen, '3:45'),
+  new Song('Song Title', '1233', ArtistPlaceholder, '3:45'),
   new Song('Song Title', '1234', ArtistPlaceholder, '3:45'),
-  new Song('Song Title', '1234', ArtistPlaceholder, '3:45'),
-  new Song('Song Title', '1234', ArtistPlaceholder, '3:45'),
-  new Song('Song Title', '1234', ArtistPlaceholder, '3:45'),
-  new Song('Song Title', '1234', ArtistPlaceholder, '3:45'),
-  new Song('Song Title', '1234', ArtistPlaceholder, '3:45')
+  new Song('Song Title', '1235', ArtistPlaceholder, '3:45'),
+  new Song('Song Title', '1236', ArtistPlaceholder, '3:45'),
+  new Song('Song Title', '1237', ArtistPlaceholder, '3:45'),
+  new Song('Song Title', '1238', ArtistPlaceholder, '3:45')
 ]
 
 const parapetMock = () => {

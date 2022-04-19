@@ -1,21 +1,18 @@
 .SavedSongs {
-    width: 100vw;
+    /* width: 100vw; */
     height: 100vh;
     /* position: relative; */
     /* overflow: hidden; */
     display: flex;
 }
 .mainContentContainer2 {
-    width: 100vw;
+    width: 82vw;
     height: 100vh;
     display: grid;
     grid-template: 1fr 10fr / 1fr;
     grid-template-areas:
     'menu'
     'centerMe';
-}
-.menu {
-    grid-area: menu
 }
 .centerMe {
     background-color: rgb(23, 23, 23); 

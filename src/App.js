@@ -8,6 +8,8 @@ import ArtistProfile from './pages/ArtistProfile'
 import EditProfile from './pages/EditProfile'
 import PublishASong from './pages/PublishASong'
 import SuccessPage from './pages/PublishASong/PublishSuccess'
+import LeftMenu from './components/LeftMenu'
+import MainMenu from './components/MainMenu'
 
 // const useStyles = makeStyles(theme => ({
 //   content_wrap: {
@@ -23,17 +25,22 @@ import SuccessPage from './pages/PublishASong/PublishSuccess'
 
 const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route exact path='/' element={<Home />} />
-        <Route exact path='/SavedSongs' element={<SavedSongs />} />
-        <Route exact path='/Playlists' element={<Playlists />} />
-        <Route exact path='/ArtistProfile' element={<ArtistProfile />} />
-        <Route exact path='/EditProfile' element={<EditProfile />} />
-        <Route exact path='/PublishASong' element={<PublishASong />} />
-        <Route exact path='/PublishASong/Success' element={<SuccessPage />} />
-      </Routes>
-    </Router>
+    <div className='rightPanel'>
+      <Router>
+        <div>
+          <LeftMenu />
+        </div>
+        <Routes>
+          <Route exact path='/' element={<Home />} />
+          <Route exact path='/SavedSongs' element={<SavedSongs />} />
+          <Route exact path='/Playlists' element={<Playlists />} />
+          <Route exact path='/ArtistProfile' element={<ArtistProfile />} />
+          <Route exact path='/EditProfile' element={<EditProfile />} />
+          <Route exact path='/PublishASong' element={<PublishASong />} />
+          <Route exact path='/PublishASong/Success' element={<SuccessPage />} />
+        </Routes>
+      </Router>
+    </div>
   )
 }
 

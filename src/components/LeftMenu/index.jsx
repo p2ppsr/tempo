@@ -47,6 +47,8 @@ const LeftMenu = () => {
         <div className='audioPlayer'>
           <img className='logoImage' src={albumArtwork} />
           <p>Artist Name</p>
+        </div>
+        <div className='footer'>
           <ReactAudioPlayer
             src={musicDemo}
             autoPlay={false}

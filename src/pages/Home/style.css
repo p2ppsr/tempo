@@ -1,29 +1,3 @@
 .Home {
     display: flex;
-    /* scroll-behavior: smooth;
-    overflow-y: scroll; */
-}
-.menuAndContentSection {
-    width: 82vw;
-    display: grid;
-    grid-template: 1fr 12fr / 1fr;
-    grid-template-areas:
-    'menu'
-    'mainContent';
-}
-.background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('../../Images/background.jpg') no-repeat center;
-    background-size: cover;
-    z-index: -3;
-}
-.menu {
-    grid-area: menu;
-}
-.mainContent {
-    grid-area: mainContent; 
 }

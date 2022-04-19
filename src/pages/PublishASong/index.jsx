@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import LeftMenu from '../../components/LeftMenu'
 import MainMenu from '../../components/MainMenu'
 import './style.css'
 import image from '../../Images/placeholder-image.png'
@@ -78,7 +77,6 @@ const PublishASong = () => {
 
   return (
     <div className='PublishASong'>
-      <LeftMenu />
       <div className='menuAndContentSection'>
         <MainMenu className='menu' />
         <div className='mainContent'>

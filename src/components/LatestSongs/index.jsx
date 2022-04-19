@@ -46,8 +46,8 @@ const LatestSongs = () => {
     <div className='mainContainer'>
       <div className='horizontallScroller'>
         <div className='container' ref={ref} {...bind()}>
-          {songArtwork.map(src => (
-            <Link key={src} to='/'>
+          {songArtwork.map((src, i) => (
+            <Link key={i} to='/'>
               <animated.div
                 key={src}
                 className='card'
