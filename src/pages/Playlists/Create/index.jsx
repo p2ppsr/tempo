@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import LeftMenu from '../../components/LeftMenu'
-import MainMenu from '../../components/MainMenu'
-import LatestSongs from '../../components/LatestSongs'
+import LeftMenu from '../../../components/LeftMenu'
+import MainMenu from '../../../components/MainMenu'
+import LatestSongs from '../../../components/LatestSongs'
 import { List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
-import './style.css'
-import Playlist from '../../data/playlist'
+import '../style.css'
+import Playlist from '../../../data/playlist'
 import { useLocation } from 'react-router-dom'
 
-const Playlists = () => {
-  const location = useLocation()
-  const { playlist } = location.state
+const CreatePlaylist = () => {
+//   const location = useLocation()
+//   const { playlist } = location.state
   // const test = location.test
   const [playlists, setPlaylists] = useState([])
   const [playlistTitle, setPlaylistTitle] = useState('')
@@ -18,7 +18,7 @@ const Playlists = () => {
   const handleChange = (e) => {
     setPlaylistTitle(e.target.value)
   }
-  console.log(location)
+//   console.log(location)
   const handleClick = (e) => {
     // playlists.push(new Playlist(0, 0, 'My Music'))
     // setPlaylists(playlists.push(new Playlist(0, 0, 'My Music')))
@@ -26,9 +26,6 @@ const Playlists = () => {
     setLatestId(latestId + 1)
     setPlaylists(array => [...array, new Playlist(latestId, 0, playlistTitle)])
   }
-  useEffect(() => {
-    console.log(playlist)
-  })
 
   return (
     <div className='Playlists'>
@@ -36,7 +33,7 @@ const Playlists = () => {
         <MainMenu />
         <div className='centerDiv'>
           <form className='publishForm'>
-            <label>PLAYLIST NAME: {playlist}</label>
+            <label>Create New playlist NAME</label>
             <input type='text' className='textBox' name='title' placeholder='playlist title' value={playlistTitle} onChange={handleChange} />
             {/* <input type='button' name='submitForm' value='PUBLISH SONG' className='publish' onClick={onFileUpload} /> */}
           </form>
@@ -78,4 +75,4 @@ const Playlists = () => {
     </div>
   )
 }
-export default Playlists
+export default CreatePlaylist

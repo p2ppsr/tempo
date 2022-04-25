@@ -21,9 +21,13 @@ a {
   text-decoration: none;
 }
 
-.rightPanel {
+.main {
   display: flex;
   flex-direction: row;
+}
+.rightSide {
+  /* display: flex;
+  flex-direction: column; */
 }
 .background {
   position: absolute;

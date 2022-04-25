@@ -4,6 +4,7 @@ class Song {
     this.id = id
     this.artist = artist
     this.length = length
+    this.isFavorite = false
   }
 }
 class Artist {

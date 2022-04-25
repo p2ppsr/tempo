@@ -4,6 +4,8 @@
     min-height: 100vh;
     background-image: linear-gradient(#2C224A, black);
     z-index: 0;
+    /* overflow-y: scroll;
+    overflow: auto; */
 }
 .leftMenu .logoContainer {
     color:aliceblue;
@@ -11,6 +13,10 @@
     align-items: center;
     justify-content: space-between;
     padding: 15px 10px 0px 15px;
+}
+.menuLogo {
+    width: 15vw;
+    min-width: 150px;
 }
 .leftMenu .welcomeMessage {
     color:#ececec;
@@ -31,7 +37,7 @@
     padding-top: 10px;
     font-size: large;
 }
-.leftMenu ul li {
+.link {
     list-style: none;
     padding: 15px 0px 15px 25px;
     background: rgba(255, 255, 255, 0.1);
@@ -42,53 +48,32 @@
     /* color:#DE5F3B; */
     font-weight: 700;
 }
-.leftMenu ul li:hover {
+.childLink:hover,
+.link:hover  {
     background: rgba(195, 195, 195, 0.35);
     font-weight: 700;
 }
-
-.leftMenu .audioPlayer {
-  margin-top: 1rem;
-  padding: 0px 0px 20px 0px;
-  background-color: rgb(0, 0, 0);
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 18vw;
-  min-width: 235px;
-  color:rgb(219, 219, 219);
-  z-index: 2;
+.topLevel {
+    font-weight: 700;
+    list-style: none;
+    padding: 15px 0px 15px 25px;
+    background: rgba(255, 255, 255, 0.1);
+    margin-bottom: 6px;
+    color:rgb(219, 219, 219)
 }
-.leftMenu .audioPlayer p {
-    display: flex;
-    justify-content:center;
-    padding: 10px;
-    font-size: 14px;
-}
-.playerControls {
-    width: 98vw;
-    height: 30px;
-    padding-right: 10px;
-    /* left: 10;
-    right: 10; */
-    /* align-items: center;
-    justify-content: space-between; */
-}
-
-.footer {
-    margin-top: 1rem;
-    padding: 1rem;
-    background-color: black;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100vw;
-    z-index: 3;
+.childLink {
+    /* background: rgba(34, 34, 34, 0.35); */
+    font-weight: 700;
+    list-style: none;
+    padding: 15px 0px 15px 25px;
+    background: rgba(148, 148, 148, 0.1);
+    margin-bottom: 6px;
+    color:rgb(219, 219, 219)
 }
 
 .logoImage {
-    width: 100%;
+    width: 100px;
+    padding-right: 10px;
 }
 
 @media only screen and (max-width: 600px) {

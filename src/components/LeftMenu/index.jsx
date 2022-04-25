@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import './style.css'
-import { FaUserCircle } from 'react-icons/fa'
+import { FaUserCircle, FaPlus } from 'react-icons/fa'
 import logo from '../../Images/tempoLogo.png'
 import albumArtwork from '../../Images/albumArtwork.jpg'
 import musicDemo from '../../Music/song0.mp3'
@@ -20,12 +20,12 @@ const LeftMenu = () => {
 
     // allLi.forEach(n => n.addEventListener('click', (changeMenuActive)))
   }, [])
-
+  const menuItems = ['Playlist1', 'Playlist2', 'Chill Beats', 'Road Trip Tunes']
   return (
     <div>
       <div className='leftMenu'>
         <div className='logoContainer'>
-          <img className='logoImage' src={logo} />
+          <img className='menuLogo' src={logo} />
         </div>
         <div className='welcomeMessage'>
           <p>Welcome, John Smith!</p>
@@ -35,28 +35,45 @@ const LeftMenu = () => {
         </div>
         <ul>
           <NavLink to='/'>
-            <li>Latest Songs</li>
+            <li className='link'>Latest Songs</li>
           </NavLink>
           <NavLink to='/SavedSongs'>
-            <li>Saved Songs</li>
+            <li className='link'>Saved Songs</li>
           </NavLink>
-          <NavLink to='/Playlists'>
-            <li>Playlists</li>
+          <li className='topLevel'>Playlists</li>
+          <NavLink
+            to='/Playlists'
+            state={{ 
+              playlist: 'null',
+              action: 'new'
+            }}>
+            <li
+              className='childLink'
+              style={{
+                marginLeft: '10px',
+                fontSize: '15px'
+              }}
+            >Create Playlist
+              <FaPlus size={15} style={{ marginLeft: '10px' }} />
+            </li>
           </NavLink>
+          {menuItems.map((item, i) =>
+            <NavLink
+              to='/Playlists'
+              state={{ playlist: item }}
+              key={i}
+            >
+              <li
+                style={{
+                  marginLeft: '10px',
+                  fontSize: '15px'
+                }}
+                className='childLink'
+              >{item}
+              </li>
+            </NavLink>
+          )}
         </ul>
-        <div className='audioPlayer'>
-          <img className='logoImage' src={albumArtwork} />
-          <p>Artist Name</p>
-        </div>
-        <div className='footer'>
-          <ReactAudioPlayer
-            src={musicDemo}
-            autoPlay={false}
-            controls
-            className='playerControls'
-            id='audioPlayer'
-          />
-        </div>
       </div>
     </div>
   )
