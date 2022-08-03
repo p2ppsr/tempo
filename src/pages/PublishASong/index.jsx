@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom'
 import songPublisher from '../../utils/songPublisher'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { createAction } from '@babbage/sdk'
+import pushdrop from 'pushdrop'
 
 const PublishASong = () => {
   const [song, setSong] = useState({
@@ -26,7 +28,7 @@ const PublishASong = () => {
   }
   const navigate = useNavigate()
 
-  const onFileUpload = (e) => {
+  const onFileUpload = async (e) => {
     try {
       // Create an object of formData
       const formData = new FormData()
@@ -45,12 +47,55 @@ const PublishASong = () => {
 
       // Details of the uploaded file
       formData.forEach((value) => {
+        // TODO: Upload data and get the uhrp address
         console.log(value)
       })
+
+      // Create a new action
+      const TEST_PRIV_KEY = 'L55qjRezJoSHZEbG631BEf7GZqgw3yweM5bThiw9NEPQxGs5SQzw'
+      const TEMPO_BRIDGE_ADDRESS = '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
+      // TODO: Use Babbage as a signing strategy for pushdrop once supported.
+      const actionScript = pushdrop.create({
+        fields: [
+          Buffer.from('1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36', 'utf8'), // Protocol Namespace Address
+          Buffer.from(song.title, 'utf8'),
+          Buffer.from(song.artist, 'utf8'),
+          Buffer.from('Default description', 'utf8'),
+          Buffer.from('3:30', 'utf8'),
+          Buffer.from('uhrp://', 'utf8'),
+          Buffer.from('publish', 'utf8')
+        ],
+        key: TEST_PRIV_KEY // TODO: replace test key
+      })
+      await createAction({
+        // inputs: {
+        //   0: {
+        //     // ...preaction,
+        //     outputsToRedeem: [{
+        //       index: 0,
+        //       unlockingScript: pushdrop.redeem({
+        //         prevTxId: 0,
+        //         outputIndex: 0,
+        //         outputAmount: 100,
+        //         key: 'L55qjRezJoSHZEbG631BEf7GZqgw3yweM5bThiw9NEPQxGs5SQzw'
+        //         // lockingScript: preactionScript.toHex()
+        //       })
+        //     }]
+        //   }
+        // },
+        outputs: [{
+          satoshis: 1,
+          script: actionScript
+        }],
+        description: 'Publish a song',
+        bridges: [TEMPO_BRIDGE_ADDRESS] // tsp-bridge
+      })
+
       const result = songPublisher()
       song.isPublished = true
       toast.success('Song publishing coming soon!')
     } catch (error) {
+      console.log(error)
       toast.error('Please select a valid file to upload!')
     }
 

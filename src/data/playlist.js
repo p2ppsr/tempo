@@ -9,13 +9,13 @@ class Playlist {
   }
 }
 
+// Mockdata //////////////////////////////////////////////////
 class Genre {
   constructor (id, name) {
     this.id = id
     this.name = name
   }
 }
-
 const musicGenres = [
   new Genre(0, 'Classical'),
   new Genre(1, 'Country'),
@@ -29,5 +29,6 @@ const mockPlaylists = [
   new Playlist(2, musicGenres[0].id, 'Classical Music'),
   new Playlist(3, musicGenres[5].id, 'Road Trip Tunes')
 ]
+///////////////////////////////////////////////////////////////
 
 export default Playlist
