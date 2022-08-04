@@ -8,6 +8,7 @@ import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { createAction } from '@babbage/sdk'
 import pushdrop from 'pushdrop'
+import { invoice, upload } from 'nanostore-publisher'
 
 const PublishASong = () => {
   const [song, setSong] = useState({
@@ -46,9 +47,38 @@ const PublishASong = () => {
       )
 
       // Details of the uploaded file
+      // TODO: Figure out the best way to upload all the necessary files.
+      // Should compression be used at all?
+      let file
       formData.forEach((value) => {
-        // TODO: Upload data and get the uhrp address
-        console.log(value)
+        file = value
+      })
+      const inv = await invoice({
+        fileSize: file.size,
+        retentionPeriod: 60,
+        serverURL: 'http://localhost:3104'
+      })
+
+      const uploadTx = await createAction({
+        outputs: inv.outputs.map(x => ({
+          satoshis: x.amount,
+          script: x.outputScript
+        })),
+        description: 'Upload with NanoStore'
+      })
+
+      const response = await upload({
+        referenceNumber: inv.referenceNumber,
+        transactionHex: uploadTx.rawTx,
+        file,
+        inputs: uploadTx.inputs,
+        mapiResponses: uploadTx.mapiResponses,
+        serverURL: 'http://localhost:3104'
+        // onUploadProgress: prog => {
+        //   setUploadProgress(
+        //     parseInt((prog.loaded / prog.total) * 100)
+        //   )
+        // }
       })
 
       // Create a new action
@@ -60,29 +90,14 @@ const PublishASong = () => {
           Buffer.from('1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36', 'utf8'), // Protocol Namespace Address
           Buffer.from(song.title, 'utf8'),
           Buffer.from(song.artist, 'utf8'),
-          Buffer.from('Default description', 'utf8'),
-          Buffer.from('3:30', 'utf8'),
-          Buffer.from('uhrp://', 'utf8'),
+          Buffer.from('Default description', 'utf8'), // TODO: Add to UI
+          Buffer.from('3:30', 'utf8'), // TODO: look at metadata for duration?
+          Buffer.from(response.publicURL, 'utf8'),
           Buffer.from('publish', 'utf8')
         ],
         key: TEST_PRIV_KEY // TODO: replace test key
       })
-      await createAction({
-        // inputs: {
-        //   0: {
-        //     // ...preaction,
-        //     outputsToRedeem: [{
-        //       index: 0,
-        //       unlockingScript: pushdrop.redeem({
-        //         prevTxId: 0,
-        //         outputIndex: 0,
-        //         outputAmount: 100,
-        //         key: 'L55qjRezJoSHZEbG631BEf7GZqgw3yweM5bThiw9NEPQxGs5SQzw'
-        //         // lockingScript: preactionScript.toHex()
-        //       })
-        //     }]
-        //   }
-        // },
+      const publishTx = await createAction({
         outputs: [{
           satoshis: 1,
           script: actionScript
@@ -99,8 +114,6 @@ const PublishASong = () => {
       toast.error('Please select a valid file to upload!')
     }
 
-    // TODO: Make some API call to upload the selected file.
-    // Nanostream via parapet or boomerang?
     // const history = useHistory()
     // if (song.isPublished) {
     //   console.log('success')
