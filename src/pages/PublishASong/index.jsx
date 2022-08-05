@@ -9,6 +9,11 @@ import 'react-toastify/dist/ReactToastify.css'
 import { createAction } from '@babbage/sdk'
 import pushdrop from 'pushdrop'
 import { invoice, upload } from 'nanostore-publisher'
+import { getURLForFile } from 'uhrp-url'
+import { encrypt, keyFromString } from '@cwi/crypto'
+import crypto from 'crypto'
+
+const TEMPO_BRIDGE_ADDRESS = '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
 
 const PublishASong = () => {
   const [song, setSong] = useState({
@@ -33,8 +38,10 @@ const PublishASong = () => {
     try {
       // Create an object of formData
       const formData = new FormData()
-
+      // const reader = new FileReader()
+      // const data = reader.readAsArrayBuffer(song.selectedMusic.arrayBuffer())
       // Update the formData object
+      debugger
       formData.append(
         'myAlbumArtwork',
         song.selectedArtwork,
@@ -56,34 +63,23 @@ const PublishASong = () => {
       const inv = await invoice({
         fileSize: file.size,
         retentionPeriod: 60,
-        serverURL: 'http://localhost:3104'
+        serverURL: 'http://localhost:3104' // TODO: update
       })
 
-      const uploadTx = await createAction({
-        outputs: inv.outputs.map(x => ({
-          satoshis: x.amount,
-          script: x.outputScript
-        })),
-        description: 'Upload with NanoStore'
+      // Get the file contents as a buffer
+      const fileData = await song.selectedMusic.arrayBuffer()
+      // Generate an encryption key
+      const encryptionKey = await keyFromString({
+        string: song.selectedMusic.name,
+        salt: Buffer.from(crypto.randomBytes(32).toString('base64'))
       })
-
-      const response = await upload({
-        referenceNumber: inv.referenceNumber,
-        transactionHex: uploadTx.rawTx,
-        file,
-        inputs: uploadTx.inputs,
-        mapiResponses: uploadTx.mapiResponses,
-        serverURL: 'http://localhost:3104'
-        // onUploadProgress: prog => {
-        //   setUploadProgress(
-        //     parseInt((prog.loaded / prog.total) * 100)
-        //   )
-        // }
-      })
-
-      // Create a new action
+      // Encrypt the file data
+      const encryptedData = await encrypt(Uint8Array.from(fileData), encryptionKey, 'Uint8Array')
+      // Calc the UHRP address
+      const uhrpAddress = getURLForFile(encryptedData)
+      console.log('UHRP Address: ', uhrpAddress)
+      // TODO: Remove Test key
       const TEST_PRIV_KEY = 'L55qjRezJoSHZEbG631BEf7GZqgw3yweM5bThiw9NEPQxGs5SQzw'
-      const TEMPO_BRIDGE_ADDRESS = '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
       // TODO: Use Babbage as a signing strategy for pushdrop once supported.
       const actionScript = pushdrop.create({
         fields: [
@@ -92,20 +88,43 @@ const PublishASong = () => {
           Buffer.from(song.artist, 'utf8'),
           Buffer.from('Default description', 'utf8'), // TODO: Add to UI
           Buffer.from('3:30', 'utf8'), // TODO: look at metadata for duration?
-          Buffer.from(response.publicURL, 'utf8'),
-          Buffer.from('publish', 'utf8')
+          Buffer.from(uhrpAddress, 'utf8')
         ],
         key: TEST_PRIV_KEY // TODO: replace test key
       })
-      const publishTx = await createAction({
+      // Create an action with both outputs
+      const tx = await createAction({
         outputs: [{
           satoshis: 1,
           script: actionScript
-        }],
+        }, ...inv.outputs.map(x => ({
+          satoshis: x.amount,
+          script: x.outputScript
+        }))
+        ],
         description: 'Publish a song',
         bridges: [TEMPO_BRIDGE_ADDRESS] // tsp-bridge
       })
 
+      // Create a file to upload from the encrypted data
+      const blob = new Blob([Buffer.from(encryptedData)], { type: 'application/octet-stream' })
+      const encryptedFile = new File([blob], 'encryptedSong', { type: 'application/octet-stream' })
+
+      // Upload the encrypted song to nanostore
+      const response = await upload({
+        referenceNumber: inv.referenceNumber,
+        transactionHex: tx.rawTx,
+        file: encryptedFile,
+        inputs: tx.inputs,
+        mapiResponses: tx.mapiResponses,
+        serverURL: 'http://localhost:3104'
+      // onUploadProgress: prog => {
+      //   setUploadProgress(
+      //     parseInt((prog.loaded / prog.total) * 100)
+      //   )
+      // }
+      })
+      console.log(response.publicURL)
       const result = songPublisher()
       song.isPublished = true
       toast.success('Song publishing coming soon!')

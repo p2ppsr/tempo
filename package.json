@@ -5,6 +5,7 @@
   "dependencies": {
     "@babbage/react-prompt": "^0.2.1",
     "@babbage/sdk": "^0.2.6",
+    "@cwi/crypto": "^0.1.0",
     "@material-ui/core": "^4.11.4",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
@@ -22,7 +23,8 @@
     "react-spring": "^9.4.4",
     "react-toastify": "^7.0.4",
     "react-use-gesture": "^9.1.3",
-    "styled-components": "^5.3.5"
+    "styled-components": "^5.3.5",
+    "uhrp-url": "^0.1.3"
   },
   "scripts": {
     "start": "react-scripts start",
