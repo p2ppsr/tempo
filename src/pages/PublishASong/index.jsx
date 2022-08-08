@@ -10,10 +10,12 @@ import { createAction } from '@babbage/sdk'
 import pushdrop from 'pushdrop'
 import { invoice, upload } from 'nanostore-publisher'
 import { getURLForFile } from 'uhrp-url'
-import { encrypt, keyFromString } from '@cwi/crypto'
-import crypto from 'crypto'
+import { encrypt } from '@cwi/crypto'
+// import crypto from 'crypto'
 
 const TEMPO_BRIDGE_ADDRESS = '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
+const NANOSTORE_SERVER_URL = 'http://localhost:3104'
+const RETENTION_PERIOD = 100 // ?
 
 const PublishASong = () => {
   const [song, setSong] = useState({
@@ -36,48 +38,47 @@ const PublishASong = () => {
 
   const onFileUpload = async (e) => {
     try {
-      // Create an object of formData
-      const formData = new FormData()
-      // const reader = new FileReader()
-      // const data = reader.readAsArrayBuffer(song.selectedMusic.arrayBuffer())
-      // Update the formData object
-      debugger
-      formData.append(
-        'myAlbumArtwork',
-        song.selectedArtwork,
-        song.selectedArtwork.name
-      )
-      formData.append(
-        'myMusic',
-        song.selectedMusic,
-        song.selectedMusic.name
-      )
+      // Notes:
+      // 1. An artist wants to publish their song.
+      // * They need to upload the following data:
+      // - The encrypted song bytes
+      // - The song artwork. Later this will be the album artwork.
+      // In the future, we could generate a UHRP hash to see if the data has already been uploaded.
 
-      // Details of the uploaded file
-      // TODO: Figure out the best way to upload all the necessary files.
-      // Should compression be used at all?
-      let file
-      formData.forEach((value) => {
-        file = value
-      })
-      const inv = await invoice({
-        fileSize: file.size,
-        retentionPeriod: 60,
-        serverURL: 'http://localhost:3104' // TODO: update
-      })
+      // Create invoices hosting the song and artwork files on NanoStore
+      const filesToUpload = [song.selectedMusic, song.selectedArtwork]
+      const invoices = []
+      for (const file of filesToUpload) {
+        const inv = await invoice({
+          fileSize: file.size,
+          retentionPeriod: RETENTION_PERIOD,
+          serverURL: NANOSTORE_SERVER_URL // TODO: update
+        })
+        invoices.push(inv)
+      }
 
-      // Get the file contents as a buffer
-      const fileData = await song.selectedMusic.arrayBuffer()
-      // Generate an encryption key
-      const encryptionKey = await keyFromString({
-        string: song.selectedMusic.name,
-        salt: Buffer.from(crypto.randomBytes(32).toString('base64'))
-      })
+      // Get the file contents as arrayBuffers
+      const songData = await song.selectedMusic.arrayBuffer()
+      const artworkData = await song.selectedArtwork.arrayBuffer()
+
+      // Generate an encryption key for the song data
+      const encryptionKey = await window.crypto.subtle.generateKey(
+        {
+          name: 'AES-GCM',
+          length: 256
+        },
+        true, // whether the key is extractable (i.e. can be used in exportKey)
+        ['encrypt', 'decrypt'] // can "encrypt", "decrypt", "wrapKey", or "unwrapKey")
+      )
+      // TODO: Export encryption key to store on the keyServer
+
       // Encrypt the file data
-      const encryptedData = await encrypt(Uint8Array.from(fileData), encryptionKey, 'Uint8Array')
+      const encryptedData = await encrypt(Uint8Array.from(songData), encryptionKey, 'Uint8Array')
       // Calc the UHRP address
-      const uhrpAddress = getURLForFile(encryptedData)
-      console.log('UHRP Address: ', uhrpAddress)
+      const uhrpSongURL = getURLForFile(encryptedData)
+      const uhrpArtworkURL = getURLForFile(artworkData)
+      console.log('Song UHRP URL: ', uhrpSongURL)
+      console.log('Artwork UHRP URL: ', uhrpArtworkURL)
       // TODO: Remove Test key
       const TEST_PRIV_KEY = 'L55qjRezJoSHZEbG631BEf7GZqgw3yweM5bThiw9NEPQxGs5SQzw'
       // TODO: Use Babbage as a signing strategy for pushdrop once supported.
@@ -88,43 +89,56 @@ const PublishASong = () => {
           Buffer.from(song.artist, 'utf8'),
           Buffer.from('Default description', 'utf8'), // TODO: Add to UI
           Buffer.from('3:30', 'utf8'), // TODO: look at metadata for duration?
-          Buffer.from(uhrpAddress, 'utf8')
+          Buffer.from(uhrpSongURL, 'utf8'),
+          Buffer.from(uhrpArtworkURL, 'utf8')
         ],
         key: TEST_PRIV_KEY // TODO: replace test key
       })
-      // Create an action with both outputs
-      const tx = await createAction({
+      // Create an action for all outputs
+      const actionData = {
         outputs: [{
           satoshis: 1,
           script: actionScript
-        }, ...inv.outputs.map(x => ({
-          satoshis: x.amount,
-          script: x.outputScript
-        }))
-        ],
+        }],
         description: 'Publish a song',
         bridges: [TEMPO_BRIDGE_ADDRESS] // tsp-bridge
+      }
+      invoices.forEach(inv => {
+        actionData.outputs = [
+          ...actionData.outputs,
+          ...inv.outputs.map(x => ({
+            satoshis: x.amount,
+            script: x.outputScript
+          }))
+        ]
       })
+      const tx = await createAction(actionData)
+      // TODO: Validate createAction succeded before uploading
 
       // Create a file to upload from the encrypted data
       const blob = new Blob([Buffer.from(encryptedData)], { type: 'application/octet-stream' })
       const encryptedFile = new File([blob], 'encryptedSong', { type: 'application/octet-stream' })
+      // Swap the unencrypted song file for the encrypted one
+      filesToUpload[0] = encryptedFile
 
-      // Upload the encrypted song to nanostore
-      const response = await upload({
-        referenceNumber: inv.referenceNumber,
-        transactionHex: tx.rawTx,
-        file: encryptedFile,
-        inputs: tx.inputs,
-        mapiResponses: tx.mapiResponses,
-        serverURL: 'http://localhost:3104'
-      // onUploadProgress: prog => {
-      //   setUploadProgress(
-      //     parseInt((prog.loaded / prog.total) * 100)
-      //   )
-      // }
-      })
-      console.log(response.publicURL)
+      // Upload the files to nanostore
+      for (let i = 0; i < filesToUpload.length; i++) {
+        const response = await upload({
+          referenceNumber: invoices[i].referenceNumber,
+          transactionHex: tx.rawTx,
+          file: filesToUpload[i],
+          inputs: tx.inputs,
+          mapiResponses: tx.mapiResponses,
+          serverURL: NANOSTORE_SERVER_URL
+        // onUploadProgress: prog => {
+        //   setUploadProgress(
+        //     parseInt((prog.loaded / prog.total) * 100)
+        //   )
+        // }
+        })
+        console.log(response.publicURL)
+      }
+
       const result = songPublisher()
       song.isPublished = true
       toast.success('Song publishing coming soon!')
