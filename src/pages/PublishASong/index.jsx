@@ -71,9 +71,11 @@ const PublishASong = () => {
         ['encrypt', 'decrypt'] // can "encrypt", "decrypt", "wrapKey", or "unwrapKey")
       )
       // TODO: Export encryption key to store on the keyServer
-
+      const decryptionKey = await window.crypto.subtle.exportKey('raw', encryptionKey)
+      console.log('key', Buffer.from(decryptionKey).toString('base64'))
+      debugger
       // Encrypt the file data
-      const encryptedData = await encrypt(Uint8Array.from(songData), encryptionKey, 'Uint8Array')
+      const encryptedData = await encrypt(new Uint8Array(songData), encryptionKey, 'Uint8Array')
       // Calc the UHRP address
       const uhrpSongURL = getURLForFile(encryptedData)
       const uhrpArtworkURL = getURLForFile(artworkData)
