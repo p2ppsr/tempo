@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 import { decrypt } from '@cwi/crypto'
 import parapet from 'parapet-js'
 import { Authrite } from 'authrite-js'
+import paymail from 'paymail'
 
 const NANOSTORE_BASE_URL = 'http://localhost:3104/data/'
 
@@ -35,16 +36,36 @@ const SongsViewer = () => {
     audioPlayer.src = updatedSongs[selectionIndex].decryptedSongURL
     audioPlayer.autoplay = true
   }
-
+  // TODO: move to helper function
   const decryptSong = async (songURL) => {
     const response = await fetch(
       NANOSTORE_BASE_URL + songURL
     )
     const encryptedData = await response.arrayBuffer()
 
-    const purchasedKey = await new Authrite().request('http://localhost:8080/buy', {
+    // Get purchcase invoice from key-server recipient
+    const invoiceResponse = await new Authrite().request('http://localhost:8080/invoice', {
       body: {
         songURL
+      },
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    const invoice = (JSON.parse(Buffer.from(invoiceResponse.body).toString('utf8')))
+    // Make a payment and get the returned reference number
+    const payment = await paymail.send({
+      recipient: invoice.paymail,
+      amount: invoice.amount,
+      description: `Here is payment for the song: ${songURL}`
+    })
+    // Send the recipient proof of payment
+    const purchasedKey = await new Authrite().request('http://localhost:8080/pay', {
+      body: {
+        songURL,
+        referenceNumber: payment.reference
       },
       method: 'POST',
       headers: {
@@ -106,7 +127,7 @@ const SongsViewer = () => {
               className='listItem'
             >
               <ListItemText className='songListItem song' primary={i + 1} />
-              <img src={NANOSTORE_BASE_URL + song.artworkFileURL} />
+              <img src={`${NANOSTORE_BASE_URL}${song.artworkFileURL}`} />
               <ListItemText
                 className='song test'
                 button='true'

@@ -256,3 +256,23 @@ services:
       PORT: 80
       MONGODB_WRITE_CREDS: 'mongodb://bridgeport-mongo:3113/bridge_1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
       MONGODB_DATABASE: 'bridge_1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
+
+  # tempo-key-server
+  # tempo-key-server:
+  #     # image: "mysql:8.0"
+  #     platform: linux/x86_64
+  #     hostname: 'tempo-key-server'
+  #     build: '../tempo-key-server/src'
+  #     # command: 'mysqld --default-authentication-plugin=mysql_native_password --sync_binlog=0 --innodb_doublewrite=OFF  --innodb-flush-log-at-trx-commit=0 --innodb-flush-method=nosync'
+  #     restart: always
+  #     volumes:
+  #     - './data/tempo-key-server-mysql-data:/var/lib/mysql'
+  #     environment:
+  #       NODE_ENV: development
+  #       HTTP_PORT: 8080
+  #       DATABASE_FILENAME: './data/database.sqlite'
+  #       KNEX_DB_CONNECTION: '{"port":"3306","host":"127.0.0.1","database":"tempo-key-server","user":"","password":""}'
+  #       KNEX_DB_CLIENT: mysql
+  #       MIGRATE_KEY: my-grate-key
+  #       SERVER_PRIVATE_KEY: '6dcc124be5f382be631d49ba12f61adbce33a5ac14f6ddee12de25272f943f8b'
+  #       HOSTING_DOMAIN: 'http://localhost:8080'
