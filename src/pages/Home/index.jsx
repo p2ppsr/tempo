@@ -5,35 +5,46 @@ import LatestSongs from '../../components/LatestSongs'
 import './style.css'
 import { decrypt } from '@cwi/crypto'
 import parapet from 'parapet-js'
+import { Authrite } from 'authrite-js'
 
 const Home = () => {
   // const [countryItems, initCountry] = useState([])
   const [image, setImage] = useState('')
   const fetchData = async () => {
-    const availableSongs = await parapet({
-      resolvers: ['http://localhost:3103'],
-      bridge: '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36', // TSP
-      request: {
-        type: 'json-query',
-        query: {
-          v: 3,
-          q: {
-            collection: 'songs',
-            find: {}
-          }
-        }
-      }
-    })
-    console.log(availableSongs)
+    // Used to query the tempo bridge
+    // const availableSongs = await parapet({
+    //   resolvers: ['http://localhost:3103'],
+    //   bridge: '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36', // TSP
+    //   request: {
+    //     type: 'json-query',
+    //     query: {
+    //       v: 3,
+    //       q: {
+    //         collection: 'songs',
+    //         find: {}
+    //       }
+    //     }
+    //   }
+    // })
+    // console.log(availableSongs)
 
-    const hash = 'XUTBG1hsvE4ANoVczeLRBjorb7AVe18V4EnouBxfJ2ErgiM2J9SC'
+    const songURL = 'XUTBG1hsvE4ANoVczeLRBjorb7AVe18V4EnouBxfJ2ErgiM2J9SC'
     // let encryptedData
     const response = await fetch(
-        `http://localhost:3104/data/${hash}` // http://localhost:3104/data/XUU89PnShAudAKB5KZ5XCoHRrgeRUNqSS3krN4CLf2w84gCFFVMZ
+        `http://localhost:3104/data/${songURL}` // http://localhost:3104/data/XUU89PnShAudAKB5KZ5XCoHRrgeRUNqSS3krN4CLf2w84gCFFVMZ
     )
     const encryptedData = await response.arrayBuffer()
-    // const encryptedData = fs.readFileSync('../data/downloadedData')
-    const key = 'xNczJM99pQOX+UXZ1expnqQdzQBArFyCFzneIFXi5To='
+
+    const purchasedKey = await new Authrite().request('http://localhost:8080/buy', {
+      body: {
+        songURL
+      },
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    const key = (JSON.parse(Buffer.from(purchasedKey.body).toString('utf8'))).result
     const keyAsBuffer = Buffer.from(key, 'base64')
     const decryptionKey = await window.crypto.subtle.importKey(
       'raw',
