@@ -3,7 +3,7 @@ import MainMenu from '../../components/MainMenu'
 import './style.css'
 import image from '../../Images/placeholder-image.png'
 import { useNavigate } from 'react-router-dom'
-import songPublisher from '../../utils/songPublisher'
+// import songPublisher from '../../utils/songPublisher'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { createAction } from '@babbage/sdk'
@@ -60,7 +60,7 @@ const PublishASong = () => {
 
       // Get the file contents as arrayBuffers
       const songData = await song.selectedMusic.arrayBuffer()
-      const artworkData = await song.selectedArtwork.arrayBuffer()
+      const artworkData = new Uint8Array(await song.selectedArtwork.arrayBuffer())
 
       // Generate an encryption key for the song data
       const encryptionKey = await window.crypto.subtle.generateKey(
@@ -75,9 +75,8 @@ const PublishASong = () => {
       const encryptedData = await encrypt(new Uint8Array(songData), encryptionKey, 'Uint8Array')
       // Calc the UHRP address
       const songURL = getURLForFile(encryptedData)
-      const uhrpArtworkURL = getURLForFile(artworkData)
-      // console.log('Song UHRP URL: ', uhrpSongURL)
-      // console.log('Artwork UHRP URL: ', uhrpArtworkURL)
+      const artworkFileURL = getURLForFile(artworkData)
+
       // TODO: Remove Test key
       const TEST_PRIV_KEY = 'L55qjRezJoSHZEbG631BEf7GZqgw3yweM5bThiw9NEPQxGs5SQzw'
       // TODO: Use Babbage as a signing strategy for pushdrop once supported.
@@ -89,7 +88,7 @@ const PublishASong = () => {
           Buffer.from('Default description', 'utf8'), // TODO: Add to UI
           Buffer.from('3:30', 'utf8'), // TODO: look at metadata for duration?
           Buffer.from(songURL, 'utf8'),
-          Buffer.from(uhrpArtworkURL, 'utf8')
+          Buffer.from(artworkFileURL, 'utf8')
         ],
         key: TEST_PRIV_KEY // TODO: replace test key
       })
@@ -173,18 +172,6 @@ const PublishASong = () => {
       navigate('/PublishASong/Success')
     }
   }
-
-  // return (
-  //   <div className='container2'>
-  //     <div className='header'>Header</div>
-  //     <div className='middleSection'>
-  //       <div className='left'>left</div>
-  //       <div className='center'>center</div>
-  //       <div className='right'>middle</div>
-  //     </div>
-  //     <div className='footer'>Footer</div>
-  //   </div>
-  // )
 
   return (
     <div className='PublishASong'>

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
 import { Link } from 'react-router-dom'
-import albumArtwork from '../../Images/albumArtwork.jpg'
 import './style.css'
 import { toast } from 'react-toastify'
 import { decrypt } from '@cwi/crypto'
 import parapet from 'parapet-js'
 import { Authrite } from 'authrite-js'
+
+const NANOSTORE_BASE_URL = 'http://localhost:3104/data/'
 
 const SongsViewer = () => {
   const [songStatus, setSongStatus] = useState('red')
@@ -20,6 +21,7 @@ const SongsViewer = () => {
     // Decrypt song
     if (!songs[selectionIndex].decryptedSongURL) {
       let decryptedSongURL
+      // let artworkBlobURL
       try {
         decryptedSongURL = await decryptSong(songs[selectionIndex].songFileURL)
       } catch (error) {
@@ -35,9 +37,8 @@ const SongsViewer = () => {
   }
 
   const decryptSong = async (songURL) => {
-    // let encryptedData
     const response = await fetch(
-        `http://localhost:3104/data/${songURL}`
+      NANOSTORE_BASE_URL + songURL
     )
     const encryptedData = await response.arrayBuffer()
 
@@ -95,9 +96,6 @@ const SongsViewer = () => {
       })
   }, [])
 
-  // Mock querying a bridge using parapet
-  // const songs = parapetMock()
-
   return (
     <div>
       <div className='songTable'>
@@ -108,7 +106,7 @@ const SongsViewer = () => {
               className='listItem'
             >
               <ListItemText className='songListItem song' primary={i + 1} />
-              <img src={albumArtwork} />
+              <img src={NANOSTORE_BASE_URL + song.artworkFileURL} />
               <ListItemText
                 className='song test'
                 button='true'
