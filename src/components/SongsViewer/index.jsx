@@ -1,4 +1,4 @@
-import React, { useState, useEffect, getData } from 'react'
+import React, { useState, useEffect } from 'react'
 import { List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import albumArtwork from '../../Images/albumArtwork.jpg'
@@ -23,7 +23,7 @@ const SongsViewer = () => {
       try {
         decryptedSongURL = await decryptSong(songs[selectionIndex].songFileURL)
       } catch (error) {
-        toast.error('Song purchase failed: decryption key not found!')
+        toast.error(error.message)
         return
       }
       updatedSongs[selectionIndex].decryptedSongURL = decryptedSongURL

@@ -7,7 +7,6 @@ const SuccessPage = () => {
   // TODO: validation?
   return (
     <div className='Success'>
-      <LeftMenu />
       <div className='flexBoxContainer'>
         <MainMenu />
         <div>

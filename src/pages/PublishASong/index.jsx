@@ -11,11 +11,12 @@ import pushdrop from 'pushdrop'
 import { invoice, upload } from 'nanostore-publisher'
 import { getURLForFile } from 'uhrp-url'
 import { encrypt } from '@cwi/crypto'
-// import crypto from 'crypto'
+import { Authrite } from 'authrite-js'
 
 const TEMPO_BRIDGE_ADDRESS = '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
 const NANOSTORE_SERVER_URL = 'http://localhost:3104'
 const RETENTION_PERIOD = 100 // ?
+const KEY_SERVER_HOST = 'http://localhost:8080'
 
 const PublishASong = () => {
   const [song, setSong] = useState({
@@ -70,17 +71,13 @@ const PublishASong = () => {
         true, // whether the key is extractable (i.e. can be used in exportKey)
         ['encrypt', 'decrypt'] // can "encrypt", "decrypt", "wrapKey", or "unwrapKey")
       )
-      // TODO: Export encryption key to store on the keyServer
-      const decryptionKey = await window.crypto.subtle.exportKey('raw', encryptionKey)
-      console.log('key', Buffer.from(decryptionKey).toString('base64'))
-      debugger
       // Encrypt the file data
       const encryptedData = await encrypt(new Uint8Array(songData), encryptionKey, 'Uint8Array')
       // Calc the UHRP address
-      const uhrpSongURL = getURLForFile(encryptedData)
+      const songURL = getURLForFile(encryptedData)
       const uhrpArtworkURL = getURLForFile(artworkData)
-      console.log('Song UHRP URL: ', uhrpSongURL)
-      console.log('Artwork UHRP URL: ', uhrpArtworkURL)
+      // console.log('Song UHRP URL: ', uhrpSongURL)
+      // console.log('Artwork UHRP URL: ', uhrpArtworkURL)
       // TODO: Remove Test key
       const TEST_PRIV_KEY = 'L55qjRezJoSHZEbG631BEf7GZqgw3yweM5bThiw9NEPQxGs5SQzw'
       // TODO: Use Babbage as a signing strategy for pushdrop once supported.
@@ -91,7 +88,7 @@ const PublishASong = () => {
           Buffer.from(song.artist, 'utf8'),
           Buffer.from('Default description', 'utf8'), // TODO: Add to UI
           Buffer.from('3:30', 'utf8'), // TODO: look at metadata for duration?
-          Buffer.from(uhrpSongURL, 'utf8'),
+          Buffer.from(songURL, 'utf8'),
           Buffer.from(uhrpArtworkURL, 'utf8')
         ],
         key: TEST_PRIV_KEY // TODO: replace test key
@@ -115,7 +112,11 @@ const PublishASong = () => {
         ]
       })
       const tx = await createAction(actionData)
-      // TODO: Validate createAction succeded before uploading
+      // Validate transaction success
+      if (tx.status === 'error') {
+        toast.error(tx.message)
+        return
+      }
 
       // Create a file to upload from the encrypted data
       const blob = new Blob([Buffer.from(encryptedData)], { type: 'application/octet-stream' })
@@ -141,19 +142,36 @@ const PublishASong = () => {
         console.log(response.publicURL)
       }
 
-      const result = songPublisher()
+      // Export encryption key to store on the keyServer
+      const decryptionKey = await window.crypto.subtle.exportKey('raw', encryptionKey)
+      const response = await new Authrite().request(`${KEY_SERVER_HOST}/publish`, {
+        body: {
+          songURL,
+          key: Buffer.from(decryptionKey).toString('base64')
+        },
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      if (response.status !== 200) {
+        toast.error('Failed to publish song! Please upload a valid media type of mp3 or wav')
+        return
+      }
+
+      // const result = songPublisher()
       song.isPublished = true
-      toast.success('Song publishing coming soon!')
+      toast.success('Song successfully published')
     } catch (error) {
       console.log(error)
       toast.error('Please select a valid file to upload!')
     }
 
     // const history = useHistory()
-    // if (song.isPublished) {
-    //   console.log('success')
-    //   navigate('/PublishASong/Success')
-    // }
+    if (song.isPublished) {
+      console.log('success')
+      navigate('/PublishASong/Success')
+    }
   }
 
   // return (
