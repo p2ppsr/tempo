@@ -152,12 +152,14 @@ services:
   # UMP — User Management Protocol
   ump-reader:
     hostname: "reader-1h48c3wg1ycgpt7tx61phzh8lx6v5tvukl"
-    image: us.gcr.io/computing-with-integrity/ump-reader
+    image: us.gcr.io/computing-with-integrity/bitquery-mongo-reader
     environment:
       BRIDGE: 'eyJpZCI6IjFINDhDM3dnMVljZ3BUN1R4NjFQSHpIOEx4NnY1dFZVS0wifQ=='
       PORT: 80
       MONGODB_READ_CREDS: 'bW9uZ29kYjovL2JyaWRnZXBvcnQtbW9uZ286MzExMy9icmlkZ2VfMUg0OEMzd2cxWWNncFQ3VHg2MVBIekg4THg2djV0VlVLTA=='
       MONGODB_DATABASE: 'bridge_1H48C3wg1YcgpT7Tx61PHzH8Lx6v5tVUKL'
+      DEFAULT_QUERY: '{"v": 3,"q": {"collection": "users", "find": {}}}'
+      DEFAULT_SOCKET: '{"v": 3,"q": {"find": {}}}'
   ump-transformer:
     hostname: "transformer-1h48c3wg1ycgpt7tx61phzh8lx6v5tvukl"
     image: us.gcr.io/computing-with-integrity/ump-transformer
@@ -169,7 +171,7 @@ services:
   # DPACP — DNS Protocol Access Control Protocol
   dpacp-reader:
     hostname: "reader-1hceb1o8bahkfe1degfn9kfuvdmjw2creg"
-    image: us.gcr.io/computing-with-integrity/dpacp-reader
+    image: us.gcr.io/computing-with-integrity/bitquery-mongo-reader
     environment:
       BRIDGE: 'eyJpZCI6IjFIY2VCMW84YmFoa2ZlMWRFZ0ZOOWtGdVZEbUp3MkNSRWcifQ=='
       PORT: 80
@@ -186,7 +188,7 @@ services:
   # DSAP — DNS Spending Authorization Protocol
   dsap-reader:
     hostname: "reader-1lr6iemvft5ftep1n451c2oa3ze3jft29i"
-    image: us.gcr.io/computing-with-integrity/dsap-reader
+    image: us.gcr.io/computing-with-integrity/bitquery-mongo-reader
     environment:
       BRIDGE: 'eyJpZCI6IjFMcjZpZU12ZlQ1ZlRFcDFONDUxQzJvQTN6RTNKRnQyOWkifQ=='
       PORT: 80
@@ -203,7 +205,7 @@ services:
   ###
   ## Debugging Tools — Uncomment when needed
   ###
-
+  
   # Mongo Express — web-based MongoDB database viewer
   mongo-express:
     image: mongo-express
