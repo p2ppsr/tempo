@@ -1,29 +1,69 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, getData } from 'react'
 import { List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import albumArtwork from '../../Images/albumArtwork.jpg'
 import './style.css'
-import parapetMock from '../../data/songs'
-import musicDemo from '../../Music/song0.mp3'
+import { toast } from 'react-toastify'
+import { decrypt } from '@cwi/crypto'
 import parapet from 'parapet-js'
-
-const songURLS = [
-  'https://www.zapsplat.com/wp-content/uploads/2015/music-one/jes_smith_music_fast_country_pickin.mp3',
-  'https://www.zapsplat.com/wp-content/uploads/2015/music-one/music_zapsplat_droplets_of_dew.mp3'
-]
+import { Authrite } from 'authrite-js'
 
 const SongsViewer = () => {
   const [songStatus, setSongStatus] = useState('red')
   const [songs, setSongs] = useState([])
-  const changeActive = (e) => {
+  const updatedSongs = songs
+  const changeActive = async (e) => {
+    const selectionIndex = e.currentTarget.id
     const allSongs = document.querySelectorAll('.song')
     allSongs.forEach((n) => n.parentNode.classList.remove('isActive'))
-    console.log('hmm' + allSongs[0])
     e.currentTarget.parentNode.classList.add('isActive')
-
+    // Decrypt song
+    if (!songs[selectionIndex].decryptedSongURL) {
+      let decryptedSongURL
+      try {
+        decryptedSongURL = await decryptSong(songs[selectionIndex].songFileURL)
+      } catch (error) {
+        toast.error('Song purchase failed: decryption key not found!')
+        return
+      }
+      updatedSongs[selectionIndex].decryptedSongURL = decryptedSongURL
+      setSongs(updatedSongs)
+    }
     const audioPlayer = document.getElementById('audioPlayer')
-    audioPlayer.src = songURLS[e.currentTarget.id]
+    audioPlayer.src = updatedSongs[selectionIndex].decryptedSongURL
     audioPlayer.autoplay = true
+  }
+
+  const decryptSong = async (songURL) => {
+    // let encryptedData
+    const response = await fetch(
+        `http://localhost:3104/data/${songURL}`
+    )
+    const encryptedData = await response.arrayBuffer()
+
+    const purchasedKey = await new Authrite().request('http://localhost:8080/buy', {
+      body: {
+        songURL
+      },
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    const key = (JSON.parse(Buffer.from(purchasedKey.body).toString('utf8'))).result
+    const keyAsBuffer = Buffer.from(key, 'base64')
+    const decryptionKey = await window.crypto.subtle.importKey(
+      'raw',
+      Uint8Array.from(keyAsBuffer),
+      {
+        name: 'AES-GCM'
+      },
+      true,
+      ['decrypt']
+    )
+    const decryptedData = await decrypt(new Uint8Array(encryptedData), decryptionKey, 'Uint8Array')
+    const dataBlob = new Blob([decryptedData])
+    return URL.createObjectURL(dataBlob)
   }
 
   const fetchSongs = async () => {
@@ -53,7 +93,7 @@ const SongsViewer = () => {
       .catch((e) => {
         console.log(e.message)
       })
-  }, [songs])
+  }, [])
 
   // Mock querying a bridge using parapet
   // const songs = parapetMock()

@@ -3,31 +3,15 @@ import LeftMenu from '../../components/LeftMenu'
 import MainMenu from '../../components/MainMenu'
 import LatestSongs from '../../components/LatestSongs'
 import './style.css'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { decrypt } from '@cwi/crypto'
 import parapet from 'parapet-js'
 import { Authrite } from 'authrite-js'
 
 const Home = () => {
-  // const [countryItems, initCountry] = useState([])
   const [image, setImage] = useState('')
   const fetchData = async () => {
-    // Used to query the tempo bridge
-    // const availableSongs = await parapet({
-    //   resolvers: ['http://localhost:3103'],
-    //   bridge: '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36', // TSP
-    //   request: {
-    //     type: 'json-query',
-    //     query: {
-    //       v: 3,
-    //       q: {
-    //         collection: 'songs',
-    //         find: {}
-    //       }
-    //     }
-    //   }
-    // })
-    // console.log(availableSongs)
-
     const songURL = 'XUTBG1hsvE4ANoVczeLRBjorb7AVe18V4EnouBxfJ2ErgiM2J9SC'
     // let encryptedData
     const response = await fetch(
@@ -74,6 +58,10 @@ const Home = () => {
     <div className='Home'>
       <div className='menuAndContentSection'>
         <MainMenu className='menu' />
+        <ToastContainer
+          position='top-center'
+          containerId='alertToast'
+        />
         <LatestSongs className='mainContent' />
       </div>
       <div className='background' />
