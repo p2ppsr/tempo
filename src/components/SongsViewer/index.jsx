@@ -5,6 +5,7 @@ import albumArtwork from '../../Images/albumArtwork.jpg'
 import './style.css'
 import parapetMock from '../../data/songs'
 import musicDemo from '../../Music/song0.mp3'
+import parapet from 'parapet-js'
 
 const songURLS = [
   'https://www.zapsplat.com/wp-content/uploads/2015/music-one/jes_smith_music_fast_country_pickin.mp3',
@@ -13,6 +14,7 @@ const songURLS = [
 
 const SongsViewer = () => {
   const [songStatus, setSongStatus] = useState('red')
+  const [songs, setSongs] = useState([])
   const changeActive = (e) => {
     const allSongs = document.querySelectorAll('.song')
     allSongs.forEach((n) => n.parentNode.classList.remove('isActive'))
@@ -23,12 +25,39 @@ const SongsViewer = () => {
     audioPlayer.src = songURLS[e.currentTarget.id]
     audioPlayer.autoplay = true
   }
-  useEffect(() => {
 
-  }, [])
+  const fetchSongs = async () => {
+    // Query tempo bridge
+    const availableSongs = await parapet({
+      resolvers: ['http://localhost:3103'],
+      bridge: '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36', // TSP
+      request: {
+        type: 'json-query',
+        query: {
+          v: 3,
+          q: {
+            collection: 'songs',
+            find: {}
+          }
+        }
+      }
+    })
+    return availableSongs
+  }
+
+  useEffect(() => {
+    fetchSongs()
+      .then((res) => {
+        setSongs(res)
+      })
+      .catch((e) => {
+        console.log(e.message)
+      })
+  }, [songs])
 
   // Mock querying a bridge using parapet
-  const songs = parapetMock()
+  // const songs = parapetMock()
+
   return (
     <div>
       <div className='songTable'>
@@ -49,7 +78,7 @@ const SongsViewer = () => {
                 onClick={changeActive}
               />
               <Link to='/ArtistProfile' state={{ song: song }}>
-                <ListItemText button='true' primary={song.artist.name} style={{ padding: '0px 20px 0px 0px' }} />
+                <ListItemText button='true' primary={song.artist} style={{ padding: '0px 20px 0px 0px' }} />
               </Link>
               <ListItemText primary={song.length} />
             </ListItem>

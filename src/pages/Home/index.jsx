@@ -60,14 +60,14 @@ const Home = () => {
     return URL.createObjectURL(dataBlob)
   }
   useEffect(() => {
-    fetchData()
-      .then((res) => {
-        setImage(res)
-        document.getElementById('audioPlayer').src = res
-      })
-      .catch((e) => {
-        console.log(e.message)
-      })
+    // fetchData()
+    //   .then((res) => {
+    //     setImage(res)
+    //     document.getElementById('audioPlayer').src = res
+    //   })
+    //   .catch((e) => {
+    //     console.log(e.message)
+    //   })
   }, [])
 
   return (
