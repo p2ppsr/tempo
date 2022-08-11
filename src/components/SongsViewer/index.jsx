@@ -25,7 +25,7 @@ const SongsViewer = () => {
       try {
         decryptedSongURL = await decryptSong(NANOSTORE_BASE_URL, songs[selectionIndex].songFileURL, toast)
       } catch (error) {
-        toast.error(error.message)
+        toast.error('Failed to load song!')
         return
       }
       updatedSongs[selectionIndex].decryptedSongURL = decryptedSongURL
