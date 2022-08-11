@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react'
-import { List, ListItem, ListItemAvatar, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
+import { List, ListItem, ListItemText } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import './style.css'
 import { toast } from 'react-toastify'
-import { decrypt } from '@cwi/crypto'
-import parapet from 'parapet-js'
-import { Authrite } from 'authrite-js'
-import paymail from 'paymail'
+
+// Helper functions
+import decryptSong from '../../utils/decryptSong'
+import fetchSongs from '../../utils/fetchSongs'
 
 const NANOSTORE_BASE_URL = 'http://localhost:3104/data/'
 
 const SongsViewer = () => {
-  const [songStatus, setSongStatus] = useState('red')
   const [songs, setSongs] = useState([])
   const updatedSongs = songs
+  // Decrypt the selected song and update the UI
   const changeActive = async (e) => {
     const selectionIndex = e.currentTarget.id
     const allSongs = document.querySelectorAll('.song')
@@ -22,9 +22,8 @@ const SongsViewer = () => {
     // Decrypt song
     if (!songs[selectionIndex].decryptedSongURL) {
       let decryptedSongURL
-      // let artworkBlobURL
       try {
-        decryptedSongURL = await decryptSong(songs[selectionIndex].songFileURL)
+        decryptedSongURL = await decryptSong(NANOSTORE_BASE_URL, songs[selectionIndex].songFileURL, toast)
       } catch (error) {
         toast.error(error.message)
         return
@@ -35,76 +34,6 @@ const SongsViewer = () => {
     const audioPlayer = document.getElementById('audioPlayer')
     audioPlayer.src = updatedSongs[selectionIndex].decryptedSongURL
     audioPlayer.autoplay = true
-  }
-  // TODO: move to helper function
-  const decryptSong = async (songURL) => {
-    const response = await fetch(
-      NANOSTORE_BASE_URL + songURL
-    )
-    const encryptedData = await response.arrayBuffer()
-
-    // Get purchcase invoice from key-server recipient
-    const invoiceResponse = await new Authrite().request('http://localhost:8080/invoice', {
-      body: {
-        songURL
-      },
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-
-    const invoice = (JSON.parse(Buffer.from(invoiceResponse.body).toString('utf8')))
-    // Make a payment and get the returned reference number
-    const payment = await paymail.send({
-      recipient: invoice.paymail,
-      amount: invoice.amount,
-      description: `Here is payment for the song: ${songURL}`
-    })
-    // Send the recipient proof of payment
-    const purchasedKey = await new Authrite().request('http://localhost:8080/pay', {
-      body: {
-        songURL,
-        referenceNumber: payment.reference
-      },
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    const key = (JSON.parse(Buffer.from(purchasedKey.body).toString('utf8'))).result
-    const keyAsBuffer = Buffer.from(key, 'base64')
-    const decryptionKey = await window.crypto.subtle.importKey(
-      'raw',
-      Uint8Array.from(keyAsBuffer),
-      {
-        name: 'AES-GCM'
-      },
-      true,
-      ['decrypt']
-    )
-    const decryptedData = await decrypt(new Uint8Array(encryptedData), decryptionKey, 'Uint8Array')
-    const dataBlob = new Blob([decryptedData])
-    return URL.createObjectURL(dataBlob)
-  }
-
-  const fetchSongs = async () => {
-    // Query tempo bridge
-    const availableSongs = await parapet({
-      resolvers: ['http://localhost:3103'],
-      bridge: '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36', // TSP
-      request: {
-        type: 'json-query',
-        query: {
-          v: 3,
-          q: {
-            collection: 'songs',
-            find: {}
-          }
-        }
-      }
-    })
-    return availableSongs
   }
 
   useEffect(() => {

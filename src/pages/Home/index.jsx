@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import LeftMenu from '../../components/LeftMenu'
 import MainMenu from '../../components/MainMenu'
 import LatestSongs from '../../components/LatestSongs'
 import './style.css'
@@ -17,6 +16,7 @@ const Home = () => {
         <ToastContainer
           position='top-center'
           containerId='alertToast'
+          autoClose={7000}
         />
         <LatestSongs className='mainContent' />
       </div>

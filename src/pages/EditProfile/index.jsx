@@ -4,7 +4,6 @@ import MainMenu from '../../components/MainMenu'
 import './style.css'
 import image from '../../Images/placeholder-image.png'
 import { useNavigate } from 'react-router-dom'
-import songPublisher from '../../utils/songPublisher'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -49,7 +48,6 @@ const EditProfile = () => {
       formData.forEach((value) => {
         console.log(value)
       })
-      const result = songPublisher()
       song.isPublished = true
       toast.success('Song publishing coming soon!')
     } catch (error) {
