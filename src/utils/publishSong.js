@@ -1,6 +1,7 @@
 import { createAction } from '@babbage/sdk'
 import pushdrop from 'pushdrop'
 import { invoice, upload } from 'nanostore-publisher'
+// import { download } from 'nanoseek'
 import { getURLForFile } from 'uhrp-url'
 import { encrypt } from '@cwi/crypto'
 import { Authrite } from 'authrite-js'
@@ -36,7 +37,7 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
       length: 256
     },
     true, // whether the key is extractable (i.e. can be used in exportKey)
-    ['encrypt', 'decrypt'] // can "encrypt", "decrypt", "wrapKey", or "unwrapKey")
+    ['encrypt', 'decrypt']
   )
   // Encrypt the file data
   const encryptedData = await encrypt(new Uint8Array(songData), encryptionKey, 'Uint8Array')
@@ -44,10 +45,7 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
   const songURL = getURLForFile(encryptedData)
   const artworkFileURL = getURLForFile(artworkData)
 
-  // TODO: Remove Test key
-  const TEST_PRIV_KEY = 'L55qjRezJoSHZEbG631BEf7GZqgw3yweM5bThiw9NEPQxGs5SQzw'
-  // TODO: Use Babbage as a signing strategy for pushdrop once supported.
-  const actionScript = pushdrop.create({
+  const actionScript = await pushdrop.create({
     fields: [
       Buffer.from('1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36', 'utf8'), // Protocol Namespace Address
       Buffer.from(song.title, 'utf8'),
@@ -56,8 +54,9 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
       Buffer.from('3:30', 'utf8'), // TODO: look at metadata for duration?
       Buffer.from(songURL, 'utf8'),
       Buffer.from(artworkFileURL, 'utf8')
-    ],
-    key: TEST_PRIV_KEY // TODO: replace test key
+    ]
+    // protocolID: 'tempo protocol', ??
+    // keyID: '1'
   })
   // Create an action for all outputs
   const actionData = {
@@ -78,6 +77,36 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
     ]
   })
   const tx = await createAction(actionData)
+
+  // Code for testing pushdrop.redeem
+  // const r = await createAction({
+  //   inputs: {
+  //     [tx.txid]: {
+  //       inputs: tx.inputs,
+  //       mapiResponses: tx.mapiResponses,
+  //       proof: tx.proof,
+  //       rawTx: tx.rawTx,
+  //       outputsToRedeem: [{
+  //         index: 0, // or, whichever output in your outputs array was the PushDrop ooutput
+  //         unlockingScript: pushdrop.redeem({
+  //           prevTxId: tx.txid,
+  //           outputIndex: 0, // or, whichever output in your outputs array was the PushDrop ooutput
+  //           outputAmount: 1,
+  //           lockingScript: actionScript
+  //           // the actionScript of previous pushdrop.create call,
+  //           // and then give keyID, protocolID, etc.
+  //         })
+  //       }]
+  //     }
+  //   },
+  //   outputs: [{
+  //     satoshis: 1,
+  //     script: '016a' // Here's where a second pushdrop.create call would end up if you were updating your song's details. For now let's just leave it blank and "spend" / delete the old token.
+  //   }],
+  //   description: 'Redeem a TSP token'
+  // })
+  // debugger
+
   // Validate transaction success
   if (tx.status === 'error') {
     toast.error(tx.message) // Can't show toast notifications from here. TODO: return message to display
