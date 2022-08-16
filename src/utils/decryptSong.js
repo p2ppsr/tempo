@@ -33,7 +33,8 @@ export default async (baseURL, songURL) => {
   const purchasedKey = await new Authrite().request(`${KEY_SERVER_BASE_URL}/pay`, {
     body: {
       songURL,
-      referenceNumber: payment.reference
+      referenceNumber: payment.reference,
+      paymail: invoice.paymail
     },
     method: 'POST',
     headers: {
