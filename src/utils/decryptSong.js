@@ -2,6 +2,7 @@ import { Authrite } from 'authrite-js'
 import paymail from 'paymail'
 import { decrypt } from '@cwi/crypto'
 import { toast } from 'react-toastify'
+import { getPaymail } from '@babbage/sdk'
 
 const KEY_SERVER_BASE_URL = 'http://localhost:8080'
 
@@ -23,18 +24,21 @@ export default async (baseURL, songURL) => {
   })
   toast.success('Loading song...')
   const invoice = (JSON.parse(Buffer.from(invoiceResponse.body).toString('utf8')))
+  const paymentDescription = `Here is payment for the song: ${songURL}`
   // Make a payment and get the returned reference number
   const payment = await paymail.send({
     recipient: invoice.paymail,
     amount: invoice.amount,
-    description: `Here is payment for the song: ${songURL}`
+    description: paymentDescription
   })
   // Send the recipient proof of payment
   const purchasedKey = await new Authrite().request(`${KEY_SERVER_BASE_URL}/pay`, {
     body: {
       songURL,
       referenceNumber: payment.reference,
-      paymail: invoice.paymail
+      paymail: await getPaymail(),
+      description: paymentDescription,
+      orderID: invoice.orderID
     },
     method: 'POST',
     headers: {
