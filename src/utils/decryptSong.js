@@ -1,10 +1,12 @@
 import { Authrite } from 'authrite-js'
-import paymail from 'paymail'
 import { decrypt } from '@cwi/crypto'
 import { toast } from 'react-toastify'
-import { getPaymail } from '@babbage/sdk'
+import { createAction, getPublicKey } from '@babbage/sdk'
+import bsv from 'bsv'
 
-const KEY_SERVER_BASE_URL = 'http://localhost:8080'
+const KEY_SERVER_BASE_URL =
+  process.env.REACT_APP_TEMPO_KEY_SERVER_URL
+  || 'http://localhost:8080'
 
 export default async (baseURL, songURL) => {
   const response = await fetch(
@@ -13,7 +15,8 @@ export default async (baseURL, songURL) => {
   const encryptedData = await response.arrayBuffer()
 
   // Get purchcase invoice from key-server recipient
-  const invoiceResponse = await new Authrite().request('http://localhost:8080/invoice', {
+  const invoiceResponse = await new Authrite().request(
+    `${KEY_SERVER_BASE_URL}/invoice`, {
     body: {
       songURL
     },
@@ -25,18 +28,45 @@ export default async (baseURL, songURL) => {
   toast.success('Loading song...')
   const invoice = (JSON.parse(Buffer.from(invoiceResponse.body).toString('utf8')))
   const paymentDescription = `Here is payment for the song: ${songURL}`
-  // Make a payment and get the returned reference number
-  const payment = await paymail.send({
-    recipient: invoice.paymail,
-    amount: invoice.amount,
-    description: paymentDescription
+  // Pay the recipient
+  const derivationPrefix = require('crypto')
+    .randomBytes(10)
+    .toString('base64')
+  const derivationSuffix = require('crypto')
+    .randomBytes(10)
+    .toString('base64')
+  // Derive the public key used for creating the output script
+  const derivedPublicKey = await getPublicKey({
+    protocolID: [2, '3241645161d8'],
+    keyID: `${derivationPrefix} ${derivationSuffix}`,
+    counterparty: invoice.identityKey
+  })
+  // Create an output script that can only be unlocked with the corresponding derived private key
+  const script = new bsv.Script(
+    bsv.Script.fromAddress(bsv.Address.fromPublicKey(
+      bsv.PublicKey.fromString(derivedPublicKey)
+    ))
+  ).toHex()
+  const payment = await createAction({
+    description: paymentDescription,
+    outputs: [{
+      script,
+      satoshis: parseInt(invoice.amount)
+    }]
   })
   // Send the recipient proof of payment
   const purchasedKey = await new Authrite().request(`${KEY_SERVER_BASE_URL}/pay`, {
     body: {
       songURL,
-      referenceNumber: payment.reference,
-      paymail: await getPaymail(),
+      transaction: {
+        ...payment,
+        outputs: [{
+          vout: 0,
+          satoshis: invoice.amount,
+          derivationPrefix,
+          derivationSuffix
+        }]
+      },
       description: paymentDescription,
       orderID: invoice.orderID
     },

@@ -9,9 +9,15 @@ import 'react-toastify/dist/ReactToastify.css'
 import publishSong from '../../utils/publishSong'
 
 const TEMPO_BRIDGE_ADDRESS = '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
-const NANOSTORE_SERVER_URL = 'http://localhost:3104'
-const RETENTION_PERIOD = 100 // ?
-const KEY_SERVER_HOST = 'http://localhost:8080'
+const NANOSTORE_SERVER_URL = process.env.REACT_APP_IS_STAGING
+  ? 'https://staging-nanostore.babbage.systems'
+  : window.location.host.startsWith('localhost')
+    ? 'http://localhost:3104'
+    : 'https://nanostore.babbage.systems'
+const RETENTION_PERIOD = 86400 // ?
+const KEY_SERVER_HOST =
+  process.env.REACT_APP_TEMPO_KEY_SERVER_URL
+  || 'http://localhost:8080'
 
 const PublishASong = () => {
   const [song, setSong] = useState({
