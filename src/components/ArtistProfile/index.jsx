@@ -11,7 +11,7 @@ const ArtistProfile = () => {
   const [followStatus, setFollowStatus] = useState('Follow')
   return (
     <div className='ArtistProfile'>
-      <img src={ProfilePicture} />
+      <img alt='artist' src={ProfilePicture} />
       <div>
         <h1>{song.artist.name}</h1>
         <p className='about'>{song.artist.bio}</p>

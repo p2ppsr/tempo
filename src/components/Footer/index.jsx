@@ -12,7 +12,7 @@ const Footer = () => {
   }, [])
   return (
     <div className='footer'>
-      <img className='logoImage' src={albumArtwork} />
+      <img alt='' className='logoImage' src={albumArtwork} />
       <p>Artist Name</p>
       <ReactAudioPlayer
         src={musicDemo}

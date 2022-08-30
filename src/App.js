@@ -10,7 +10,6 @@ import EditProfile from './pages/EditProfile'
 import PublishASong from './pages/PublishASong'
 import SuccessPage from './pages/PublishASong/PublishSuccess'
 import LeftMenu from './components/LeftMenu'
-import MainMenu from './components/MainMenu'
 import Footer from './components/Footer'
 
 // const useStyles = makeStyles(theme => ({
