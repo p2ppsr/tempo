@@ -57,17 +57,16 @@ export default async (baseURL, songURL) => {
   // Send the recipient proof of payment
   const purchasedKey = await new Authrite().request(`${KEY_SERVER_BASE_URL}/pay`, {
     body: {
+      derivationPrefix,
       songURL,
       transaction: {
         ...payment,
         outputs: [{
           vout: 0,
           satoshis: invoice.amount,
-          derivationPrefix,
           derivationSuffix
         }]
       },
-      description: paymentDescription,
       orderID: invoice.orderID
     },
     method: 'POST',
