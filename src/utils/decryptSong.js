@@ -1,12 +1,12 @@
 import { Authrite } from 'authrite-js'
-import { decrypt } from '@cwi/crypto'
+import { decrypt } from 'cwi-crypto'
 import { toast } from 'react-toastify'
 import { createAction, getPublicKey } from '@babbage/sdk'
 import bsv from 'bsv'
 
 const KEY_SERVER_BASE_URL =
-  process.env.REACT_APP_TEMPO_KEY_SERVER_URL
-  || 'http://localhost:8080'
+  process.env.REACT_APP_TEMPO_KEY_SERVER_URL ||
+  'http://localhost:8080'
 
 export default async (baseURL, songURL) => {
   const response = await fetch(
@@ -17,14 +17,14 @@ export default async (baseURL, songURL) => {
   // Get purchcase invoice from key-server recipient
   const invoiceResponse = await new Authrite().request(
     `${KEY_SERVER_BASE_URL}/invoice`, {
-    body: {
-      songURL
-    },
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
+      body: {
+        songURL
+      },
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
   toast.success('Loading song...')
   const invoice = (JSON.parse(Buffer.from(invoiceResponse.body).toString('utf8')))
   const paymentDescription = `Here is payment for the song: ${songURL}`

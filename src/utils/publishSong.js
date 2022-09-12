@@ -54,9 +54,9 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
       Buffer.from('3:30', 'utf8'), // TODO: look at metadata for duration?
       Buffer.from(songURL, 'utf8'),
       Buffer.from(artworkFileURL, 'utf8')
-    ]
-    // protocolID: 'tempo protocol', ??
-    // keyID: '1'
+    ],
+    protocolID: 'tempo',
+    keyID: '1'
   })
   // Create an action for all outputs
   const actionData = {
@@ -78,38 +78,9 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
   })
   const tx = await createAction(actionData)
 
-  // Code for testing pushdrop.redeem
-  // const r = await createAction({
-  //   inputs: {
-  //     [tx.txid]: {
-  //       inputs: tx.inputs,
-  //       mapiResponses: tx.mapiResponses,
-  //       proof: tx.proof,
-  //       rawTx: tx.rawTx,
-  //       outputsToRedeem: [{
-  //         index: 0, // or, whichever output in your outputs array was the PushDrop ooutput
-  //         unlockingScript: pushdrop.redeem({
-  //           prevTxId: tx.txid,
-  //           outputIndex: 0, // or, whichever output in your outputs array was the PushDrop ooutput
-  //           outputAmount: 1,
-  //           lockingScript: actionScript
-  //           // the actionScript of previous pushdrop.create call,
-  //           // and then give keyID, protocolID, etc.
-  //         })
-  //       }]
-  //     }
-  //   },
-  //   outputs: [{
-  //     satoshis: 1,
-  //     script: '016a' // Here's where a second pushdrop.create call would end up if you were updating your song's details. For now let's just leave it blank and "spend" / delete the old token.
-  //   }],
-  //   description: 'Redeem a TSP token'
-  // })
-  // debugger
-
   // Validate transaction success
   if (tx.status === 'error') {
-    toast.error(tx.message) // Can't show toast notifications from here. TODO: return message to display
+    toast.error(tx.message)
     return
   }
   // Create a file to upload from the encrypted data
