@@ -36,7 +36,7 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
       name: 'AES-GCM',
       length: 256
     },
-    true, // whether the key is extractable (i.e. can be used in exportKey)
+    true,
     ['encrypt', 'decrypt']
   )
   // Encrypt the file data
