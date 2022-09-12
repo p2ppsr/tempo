@@ -3,7 +3,7 @@ import pushdrop from 'pushdrop'
 import { invoice, upload } from 'nanostore-publisher'
 // import { download } from 'nanoseek'
 import { getURLForFile } from 'uhrp-url'
-import { encrypt } from '@cwi/crypto'
+import { encrypt } from 'cwi-crypto'
 import { Authrite } from 'authrite-js'
 
 export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeAddress, toast) => {
