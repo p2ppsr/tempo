@@ -1,7 +1,7 @@
 const parapet = require('parapet-js')
 const fs = require('fs')
 const fetch = require('isomorphic-fetch')
-const { decrypt } = require('@cwi/crypto')
+const { decrypt } = require('cwi-crypto')
 
 const getSongs = async () => {
   return await parapet({
