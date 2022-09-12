@@ -21,7 +21,9 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
     const inv = await invoice({
       fileSize: file.size,
       retentionPeriod: retentionPeriod,
-      serverURL: nanostoreURL
+      config: {
+        nanostoreURL
+      }
     })
     invoices.push(inv)
   }
