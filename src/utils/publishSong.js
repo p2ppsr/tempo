@@ -1,7 +1,6 @@
 import { createAction } from '@babbage/sdk'
 import pushdrop from 'pushdrop'
-import { invoice, upload } from 'nanostore-publisher'
-// import { download } from 'nanoseek'
+import { invoice, upload, derivePaymentInfo, submitPayment } from 'nanostore-publisher'
 import { getURLForFile } from 'uhrp-url'
 import { encrypt } from 'cwi-crypto'
 import { Authrite } from 'authrite-js'
@@ -17,6 +16,7 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
   // Create invoices hosting the song and artwork files on NanoStore
   const filesToUpload = [song.selectedMusic, song.selectedArtwork]
   const invoices = []
+  const outputs = []
   for (const file of filesToUpload) {
     const inv = await invoice({
       fileSize: file.size,
@@ -25,7 +25,17 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
         nanostoreURL
       }
     })
+    // Derive the payment info for the given invoice
+    const paymentInfo = await derivePaymentInfo({
+      recipientPublicKey: inv.identityKey,
+      amount: inv.amount
+    })
+    // Save the payment derivation info
+    inv.derivationPrefix = paymentInfo.derivationPrefix
+    inv.derivationSuffix = paymentInfo.derivationSuffix
+    inv.derivedPublicKey = paymentInfo.derivedPublicKey
     invoices.push(inv)
+    outputs.push(paymentInfo.output)
   }
 
   // Get the file contents as arrayBuffers
@@ -47,6 +57,7 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
   const songURL = getURLForFile(encryptedData)
   const artworkFileURL = getURLForFile(artworkData)
 
+  // Create an action script based on the tsp-protocol
   const actionScript = await pushdrop.create({
     fields: [
       Buffer.from('1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36', 'utf8'), // Protocol Namespace Address
@@ -65,19 +76,10 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
     outputs: [{
       satoshis: 1,
       script: actionScript
-    }],
+    }, ...outputs],
     description: 'Publish a song',
     bridges: [bridgeAddress] // tsp-bridge
   }
-  invoices.forEach(inv => {
-    actionData.outputs = [
-      ...actionData.outputs,
-      ...inv.outputs.map(x => ({
-        satoshis: x.amount,
-        script: x.outputScript
-      }))
-    ]
-  })
   const tx = await createAction(actionData)
 
   // Validate transaction success
@@ -85,21 +87,35 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
     toast.error(tx.message)
     return
   }
+
   // Create a file to upload from the encrypted data
   const blob = new Blob([Buffer.from(encryptedData)], { type: 'application/octet-stream' })
   const encryptedFile = new File([blob], 'encryptedSong', { type: 'application/octet-stream' })
   // Swap the unencrypted song file for the encrypted one
   filesToUpload[0] = encryptedFile
 
-  // Upload the files to nanostore
+  // Pay and upload the files to nanostore
   for (let i = 0; i < filesToUpload.length; i++) {
+    // Submit the payment to nanostore
+    const paymentResult = await submitPayment({
+      config: {
+        nanostoreURL
+      },
+      orderID: invoices[i].ORDER_ID,
+      amount: invoices[i].amount,
+      payment: tx,
+      derivationPrefix: invoices[i].derivationPrefix,
+      derivationSuffix: invoices[i].derivationSuffix
+    })
+    // Upload the file to nanostore
     const response = await upload({
-      referenceNumber: invoices[i].referenceNumber,
-      transactionHex: tx.rawTx,
+      config: {
+        nanostoreURL
+      },
+      uploadURL: paymentResult.uploadURL, // wrong
+      publicURL: invoices[i].publicURL,
       file: filesToUpload[i],
-      inputs: tx.inputs,
-      mapiResponses: tx.mapiResponses,
-      serverURL: nanostoreURL
+      serverURL: nanostoreURL // ?
       // onUploadProgress: prog => {
       //   setUploadProgress(
       //     parseInt((prog.loaded / prog.total) * 100)
