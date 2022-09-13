@@ -105,9 +105,11 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
       amount: invoices[i].amount,
       payment: tx,
       derivationPrefix: invoices[i].derivationPrefix,
-      derivationSuffix: invoices[i].derivationSuffix
+      derivationSuffix: invoices[i].derivationSuffix,
+      vout: i + 1
     })
     // Upload the file to nanostore
+    debugger
     const response = await upload({
       config: {
         nanostoreURL

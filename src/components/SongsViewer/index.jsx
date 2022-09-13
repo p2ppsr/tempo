@@ -8,7 +8,11 @@ import { toast } from 'react-toastify'
 import decryptSong from '../../utils/decryptSong'
 import fetchSongs from '../../utils/fetchSongs'
 
-const NANOSTORE_BASE_URL = 'http://localhost:3104/data/'
+const NANOSTORE_BASE_URL = window.location.host.startsWith('staging')
+  ? 'https://staging-nanostore.babbage.systems/data'
+  : window.location.host.startsWith('localhost')
+    ? 'http://localhost:3104/data'
+    : 'https://nanostore.babbage.systems/data'
 
 const SongsViewer = () => {
   const [songs, setSongs] = useState([])
