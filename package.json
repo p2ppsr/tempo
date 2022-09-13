@@ -12,7 +12,7 @@
     "authrite-js": "^0.1.14",
     "bsv": "^1.5.6",
     "cwi-crypto": "^0.1.1",
-    "nanostore-publisher": "^0.1.9",
+    "nanostore-publisher": "^0.1.10",
     "parapet-js": "^0.1.4",
     "pushdrop": "^0.1.7",
     "react": "^17.0.2",
