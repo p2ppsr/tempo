@@ -7,7 +7,8 @@ import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import publishSong from '../../utils/publishSong'
 
-const RETENTION_PERIOD = 86400 // ?
+// Uploaded songs will be hosted for seven years
+const RETENTION_PERIOD = 365 * 60 * 60 * 24 * 7
 
 const PublishASong = () => {
   const [song, setSong] = useState({
