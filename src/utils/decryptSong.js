@@ -7,11 +7,10 @@ import { download } from 'nanoseek'
 import constants from './constants'
 
 export default async ({ songURL }) => {
-  const { data: response } = await download({
+  const { data: encryptedData } = await download({
     URL: songURL,
     bridgeportResolvers: constants.bridgeportResolvers
   })
-  const encryptedData = await response.arrayBuffer()
 
   // Get purchcase invoice from key-server recipient
   const invoiceResponse = await new Authrite().request(
