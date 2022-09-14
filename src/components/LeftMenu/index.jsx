@@ -43,10 +43,11 @@ const LeftMenu = () => {
           <li className='topLevel'>Playlists</li>
           <NavLink
             to='/Playlists'
-            state={{ 
+            state={{
               playlist: 'null',
               action: 'new'
-            }}>
+            }}
+          >
             <li
               className='childLink'
               style={{

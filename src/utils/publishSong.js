@@ -4,12 +4,14 @@ import { invoice, upload, derivePaymentInfo, submitPayment } from 'nanostore-pub
 import { getURLForFile } from 'uhrp-url'
 import { encrypt } from 'cwi-crypto'
 import { Authrite } from 'authrite-js'
+import constants from './constants'
+import { toast } from 'react-toastify'
 
 // Thanks to https://stackoverflow.com/a/22114687 for this
-function copy(src)  {
-    var dst = new ArrayBuffer(src.byteLength);
-    new Uint8Array(dst).set(new Uint8Array(src));
-    return dst;
+function copy (src) {
+  const dst = new ArrayBuffer(src.byteLength)
+  new Uint8Array(dst).set(new Uint8Array(src))
+  return dst
 }
 
 // Notes:
@@ -20,7 +22,7 @@ function copy(src)  {
 // In the future, we could generate a UHRP hash to see if the data has already been uploaded.
 
 export default async (
-  song, retentionPeriod, nanostoreURL, keyServerURL, bridgeAddress, toast
+  song, retentionPeriod
 ) => {
   // Get the file contents as arrayBuffers
   const songData = await song.selectedMusic.arrayBuffer()
@@ -70,9 +72,9 @@ export default async (
   for (const file of filesToUpload) {
     const inv = await invoice({
       fileSize: file.size,
-      retentionPeriod: retentionPeriod,
+      retentionPeriod,
       config: {
-        nanostoreURL
+        nanostoreURL: constants.nanostoreURL
       }
     })
 
@@ -94,7 +96,7 @@ export default async (
   // Create an action script based on the tsp-protocol
   const actionScript = await pushdrop.create({
     fields: [
-      Buffer.from('1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36', 'utf8'), // Protocol Namespace Address
+      Buffer.from(constants.tempoBridge, 'utf8'), // Protocol Namespace Address
       Buffer.from(song.title, 'utf8'),
       Buffer.from(song.artist, 'utf8'),
       Buffer.from('Default description', 'utf8'), // TODO: Add to UI
@@ -112,7 +114,7 @@ export default async (
       script: actionScript
     }, ...outputs],
     description: 'Publish a song',
-    bridges: [bridgeAddress] // tsp-bridge
+    bridges: [constants.tempoBridge]
   }
   const tx = await createAction(actionData)
 
@@ -121,7 +123,7 @@ export default async (
     // Submit the payment to nanostore
     const paymentResult = await submitPayment({
       config: {
-        nanostoreURL
+        nanostoreURL: constants.nanostoreURL
       },
       orderID: invoices[i].ORDER_ID,
       amount: invoices[i].amount,
@@ -133,26 +135,25 @@ export default async (
     // Upload the file to nanostore
     const uploadObject = {
       config: {
-        nanostoreURL
+        nanostoreURL: constants.nanostoreURL
       },
       uploadURL: paymentResult.uploadURL, // wrong
       publicURL: invoices[i].publicURL,
       file: filesToUpload[i],
-      serverURL: nanostoreURL // ?
+      serverURL: constants.nanostoreURL // ?
       // onUploadProgress: prog => {
       //   setUploadProgress(
       //     parseInt((prog.loaded / prog.total) * 100)
       //   )
       // }
     }
-    debugger
     const response = await upload(uploadObject)
     console.log(response.publicURL)
   }
 
   // Export encryption key to store on the keyServer
   const decryptionKey = await window.crypto.subtle.exportKey('raw', encryptionKey)
-  const response = await new Authrite().request(`${keyServerURL}/publish`, {
+  const response = await new Authrite().request(`${constants.keyServerURL}/publish`, {
     body: {
       songURL,
       key: Buffer.from(decryptionKey).toString('base64')

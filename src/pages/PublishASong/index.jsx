@@ -5,19 +5,9 @@ import image from '../../Images/placeholder-image.png'
 import { useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-
 import publishSong from '../../utils/publishSong'
 
-const TEMPO_BRIDGE_ADDRESS = '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
-const NANOSTORE_SERVER_URL = window.location.host.startsWith('staging')
-  ? 'https://staging-nanostore.babbage.systems'
-  : window.location.host.startsWith('localhost')
-    ? 'http://localhost:3104'
-    : 'https://nanostore.babbage.systems'
 const RETENTION_PERIOD = 86400 // ?
-const KEY_SERVER_HOST =
-  process.env.REACT_APP_TEMPO_KEY_SERVER_URL ||
-  'http://localhost:8080'
 
 const PublishASong = () => {
   const [song, setSong] = useState({
@@ -42,7 +32,7 @@ const PublishASong = () => {
     toast.success('Publishing song...')
     try {
       // Publish Song
-      const publishStatus = await publishSong(song, RETENTION_PERIOD, NANOSTORE_SERVER_URL, KEY_SERVER_HOST, TEMPO_BRIDGE_ADDRESS, toast)
+      const publishStatus = await publishSong(song, RETENTION_PERIOD)
       song.isPublished = publishStatus
     } catch (error) {
       console.log(error)

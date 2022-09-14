@@ -3,16 +3,12 @@ import { List, ListItem, ListItemText } from '@material-ui/core'
 import { Link } from 'react-router-dom'
 import './style.css'
 import { toast } from 'react-toastify'
+import constants from '../../utils/constants'
+import { Img } from 'uhrp-react'
 
 // Helper functions
 import decryptSong from '../../utils/decryptSong'
 import fetchSongs from '../../utils/fetchSongs'
-
-const NANOSTORE_BASE_URL = window.location.host.startsWith('staging')
-  ? 'https://staging-nanostore.babbage.systems/data'
-  : window.location.host.startsWith('localhost')
-    ? 'http://localhost:3104/data'
-    : 'https://nanostore.babbage.systems/data'
 
 const SongsViewer = () => {
   const [songs, setSongs] = useState([])
@@ -27,7 +23,9 @@ const SongsViewer = () => {
     if (!songs[selectionIndex].decryptedSongURL) {
       let decryptedSongURL
       try {
-        decryptedSongURL = await decryptSong(NANOSTORE_BASE_URL, songs[selectionIndex].songFileURL, toast)
+        decryptedSongURL = await decryptSong({
+          songURL: songs[selectionIndex].songFileURL
+        })
       } catch (error) {
         toast.error('Failed to load song!')
         return
@@ -60,7 +58,10 @@ const SongsViewer = () => {
               className='listItem'
             >
               <ListItemText className='songListItem song' primary={i + 1} />
-              <img src={`${NANOSTORE_BASE_URL}${song.artworkFileURL}`} />
+              <Img
+                src={song.artworkFileURL}
+                bridgeportResolvers={constants.bridgeportResolvers}
+              />
               <ListItemText
                 className='song test'
                 button='true'
@@ -69,7 +70,7 @@ const SongsViewer = () => {
                 id={i}
                 onClick={changeActive}
               />
-              <Link to='/ArtistProfile' state={{ song: song }}>
+              <Link to='/ArtistProfile' state={{ song }}>
                 <ListItemText button='true' primary={song.artist} style={{ padding: '0px 20px 0px 0px' }} />
               </Link>
               <ListItemText primary={song.length} />

@@ -4,24 +4,18 @@ import { toast } from 'react-toastify'
 import { createAction, getPublicKey } from '@babbage/sdk'
 import bsv from 'babbage-bsv'
 import { download } from 'nanoseek'
+import constants from './constants'
 
-const KEY_SERVER_BASE_URL =
-  process.env.REACT_APP_TEMPO_KEY_SERVER_URL ||
-  'http://localhost:8080'
-
-export default async (baseURL, songURL) => {
-  // const { data: response } = await download({
-  //   URL: songURL,
-  //   bridgeportResolvers: BRIDGEPORT_RESOLVERS
-  // })
-  const response = await fetch( // TODO: Use nanoseek
-    baseURL + songURL
-  )
+export default async ({ songURL }) => {
+  const { data: response } = await download({
+    URL: songURL,
+    bridgeportResolvers: constants.bridgeportResolvers
+  })
   const encryptedData = await response.arrayBuffer()
 
   // Get purchcase invoice from key-server recipient
   const invoiceResponse = await new Authrite().request(
-    `${KEY_SERVER_BASE_URL}/invoice`, {
+    `${constants.keyServerURL}/invoice`, {
       body: {
         songURL
       },
@@ -60,7 +54,7 @@ export default async (baseURL, songURL) => {
     }]
   })
   // Send the recipient proof of payment
-  const purchasedKey = await new Authrite().request(`${KEY_SERVER_BASE_URL}/pay`, {
+  const purchasedKey = await new Authrite().request(`${constants.keyServerURL}/pay`, {
     body: {
       derivationPrefix,
       songURL,
@@ -91,7 +85,11 @@ export default async (baseURL, songURL) => {
     true,
     ['decrypt']
   )
-  const decryptedData = await decrypt(new Uint8Array(encryptedData), decryptionKey, 'Uint8Array')
+  const decryptedData = await decrypt(
+    new Uint8Array(encryptedData),
+    decryptionKey,
+    'Uint8Array'
+  )
   const dataBlob = new Blob([decryptedData])
   return URL.createObjectURL(dataBlob)
 }

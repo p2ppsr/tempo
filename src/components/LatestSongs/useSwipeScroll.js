@@ -1,7 +1,7 @@
 // Credit: https://github.com/mildrenben/useDragScroll
 import { useState, useEffect, useCallback } from 'react'
 
-function useSwipeScroll({
+function useSwipeScroll ({
   sliderRef,
   reliants = [],
   momentumVelocity = 0.5
@@ -38,8 +38,8 @@ function useSwipeScroll({
       if (!isDown) return
       e.preventDefault()
       const x = e.pageX - slider.offsetLeft
-      const walk = (x - startX) * 3 //scroll-fast
-      let prevScrollLeft = slider.scrollLeft
+      const walk = (x - startX) * 3 // scroll-fast
+      const prevScrollLeft = slider.scrollLeft
       slider.scrollLeft = scrollLeft - walk
       velX = slider.scrollLeft - prevScrollLeft
       if (slider.scrollLeft - prevScrollLeft && !hasSwiped) {
@@ -55,14 +55,14 @@ function useSwipeScroll({
       cancelMomentumTracking()
     })
 
-    function beginMomentumTracking() {
+    function beginMomentumTracking () {
       cancelMomentumTracking()
       momentumID = requestAnimationFrame(momentumLoop)
     }
-    function cancelMomentumTracking() {
+    function cancelMomentumTracking () {
       cancelAnimationFrame(momentumID)
     }
-    function momentumLoop() {
+    function momentumLoop () {
       slider.scrollLeft += velX
       velX *= momentumVelocity
       if (Math.abs(velX) > 0.5) {

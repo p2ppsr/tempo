@@ -18,7 +18,7 @@ const CreatePlaylist = () => {
   const handleChange = (e) => {
     setPlaylistTitle(e.target.value)
   }
-//   console.log(location)
+  //   console.log(location)
   const handleClick = (e) => {
     // playlists.push(new Playlist(0, 0, 'My Music'))
     // setPlaylists(playlists.push(new Playlist(0, 0, 'My Music')))
