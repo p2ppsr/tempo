@@ -5,42 +5,31 @@ import { getURLForFile } from 'uhrp-url'
 import { encrypt } from 'cwi-crypto'
 import { Authrite } from 'authrite-js'
 
-export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeAddress, toast) => {
-  // Notes:
-  // 1. An artist wants to publish their song.
-  // * They need to upload the following data:
-  // - The encrypted song bytes
-  // - The song artwork. Later this will be the album artwork.
-  // In the future, we could generate a UHRP hash to see if the data has already been uploaded.
+// Thanks to https://stackoverflow.com/a/22114687 for this
+function copy(src)  {
+    var dst = new ArrayBuffer(src.byteLength);
+    new Uint8Array(dst).set(new Uint8Array(src));
+    return dst;
+}
 
-  // Create invoices hosting the song and artwork files on NanoStore
-  const filesToUpload = [song.selectedMusic, song.selectedArtwork]
-  const invoices = []
-  const outputs = []
-  for (const file of filesToUpload) {
-    const inv = await invoice({
-      fileSize: file.size,
-      retentionPeriod: retentionPeriod,
-      config: {
-        nanostoreURL
-      }
-    })
-    // Derive the payment info for the given invoice
-    const paymentInfo = await derivePaymentInfo({
-      recipientPublicKey: inv.identityKey,
-      amount: inv.amount
-    })
-    // Save the payment derivation info
-    inv.derivationPrefix = paymentInfo.derivationPrefix
-    inv.derivationSuffix = paymentInfo.derivationSuffix
-    inv.derivedPublicKey = paymentInfo.derivedPublicKey
-    invoices.push(inv)
-    outputs.push(paymentInfo.output)
-  }
+// Notes:
+// 1. An artist wants to publish their song.
+// * They need to upload the following data:
+// - The encrypted song bytes
+// - The song artwork. Later this will be the album artwork.
+// In the future, we could generate a UHRP hash to see if the data has already been uploaded.
 
+export default async (
+  song, retentionPeriod, nanostoreURL, keyServerURL, bridgeAddress, toast
+) => {
   // Get the file contents as arrayBuffers
   const songData = await song.selectedMusic.arrayBuffer()
   const artworkData = new Uint8Array(await song.selectedArtwork.arrayBuffer())
+
+  // Calculate audio duration
+  let { duration } = await new window.AudioContext()
+    .decodeAudioData(copy(songData))
+  duration = Math.ceil(duration)
 
   // Generate an encryption key for the song data
   const encryptionKey = await window.crypto.subtle.generateKey(
@@ -51,11 +40,56 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
     true,
     ['encrypt', 'decrypt']
   )
-  // Encrypt the file data
-  const encryptedData = await encrypt(new Uint8Array(songData), encryptionKey, 'Uint8Array')
-  // Calc the UHRP address
+
+  // Encrypt the song data
+  const encryptedData = await encrypt(
+    new Uint8Array(songData),
+    encryptionKey,
+    'Uint8Array'
+  )
+
+  // Convert the encrypted file for upload with NanoStore
+  const blob = new Blob(
+    [Buffer.from(encryptedData)],
+    { type: 'application/octet-stream' }
+  )
+  const encryptedFile = new File(
+    [blob],
+    'encryptedSong',
+    { type: 'application/octet-stream' }
+  )
+
+  // Calculate the UHRP addresses, for later use in the TSP script
   const songURL = getURLForFile(encryptedData)
   const artworkFileURL = getURLForFile(artworkData)
+
+  // Create invoices hosting the song and artwork files on NanoStore
+  const filesToUpload = [encryptedFile, song.selectedArtwork]
+  const invoices = []
+  const outputs = []
+  for (const file of filesToUpload) {
+    const inv = await invoice({
+      fileSize: file.size,
+      retentionPeriod: retentionPeriod,
+      config: {
+        nanostoreURL
+      }
+    })
+
+    // Derive the payment info for the given invoice
+    const paymentInfo = await derivePaymentInfo({
+      recipientPublicKey: inv.identityKey,
+      amount: inv.amount
+    })
+    // Save the payment info with the invoice for the later submitPayment call
+    inv.derivationPrefix = paymentInfo.derivationPrefix
+    inv.derivationSuffix = paymentInfo.derivationSuffix
+    inv.derivedPublicKey = paymentInfo.derivedPublicKey
+
+    // Add the new invoice and the new transaction output
+    invoices.push(inv)
+    outputs.push(paymentInfo.output)
+  }
 
   // Create an action script based on the tsp-protocol
   const actionScript = await pushdrop.create({
@@ -64,7 +98,7 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
       Buffer.from(song.title, 'utf8'),
       Buffer.from(song.artist, 'utf8'),
       Buffer.from('Default description', 'utf8'), // TODO: Add to UI
-      Buffer.from('3:30', 'utf8'), // TODO: look at metadata for duration?
+      Buffer.from('' + duration, 'utf8'), // Duration
       Buffer.from(songURL, 'utf8'),
       Buffer.from(artworkFileURL, 'utf8')
     ],
@@ -81,18 +115,6 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
     bridges: [bridgeAddress] // tsp-bridge
   }
   const tx = await createAction(actionData)
-
-  // Validate transaction success
-  if (tx.status === 'error') {
-    toast.error(tx.message)
-    return
-  }
-
-  // Create a file to upload from the encrypted data
-  const blob = new Blob([Buffer.from(encryptedData)], { type: 'application/octet-stream' })
-  const encryptedFile = new File([blob], 'encryptedSong', { type: 'application/octet-stream' })
-  // Swap the unencrypted song file for the encrypted one
-  filesToUpload[0] = encryptedFile
 
   // Pay and upload the files to nanostore
   for (let i = 0; i < filesToUpload.length; i++) {
