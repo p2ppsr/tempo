@@ -2,14 +2,19 @@ import { Authrite } from 'authrite-js'
 import { decrypt } from 'cwi-crypto'
 import { toast } from 'react-toastify'
 import { createAction, getPublicKey } from '@babbage/sdk'
-import bsv from 'bsv'
+import bsv from 'babbage-bsv'
+import { download } from 'nanoseek'
 
 const KEY_SERVER_BASE_URL =
   process.env.REACT_APP_TEMPO_KEY_SERVER_URL ||
   'http://localhost:8080'
 
 export default async (baseURL, songURL) => {
-  const response = await fetch(
+  // const { data: response } = await download({
+  //   URL: songURL,
+  //   bridgeportResolvers: BRIDGEPORT_RESOLVERS
+  // })
+  const response = await fetch( // TODO: Use nanoseek
     baseURL + songURL
   )
   const encryptedData = await response.arrayBuffer()

@@ -10,8 +10,9 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "authrite-js": "^0.1.14",
-    "bsv": "^1.5.6",
+    "babbage-bsv": "^0.1.0",
     "cwi-crypto": "^0.1.1",
+    "nanoseek": "^0.1.2",
     "nanostore-publisher": "^0.1.10",
     "parapet-js": "^0.1.4",
     "pushdrop": "^0.1.7",
@@ -53,6 +54,6 @@
     ]
   },
   "devDependencies": {
-    "standard": "^16.0.3"
+    "standard": "^17.0.0"
   }
 }

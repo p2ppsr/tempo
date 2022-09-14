@@ -109,8 +109,7 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
       vout: i + 1
     })
     // Upload the file to nanostore
-    debugger
-    const response = await upload({
+    const uploadObject = {
       config: {
         nanostoreURL
       },
@@ -123,7 +122,9 @@ export default async (song, retentionPeriod, nanostoreURL, keyServerURL, bridgeA
       //     parseInt((prog.loaded / prog.total) * 100)
       //   )
       // }
-    })
+    }
+    debugger
+    const response = await upload(uploadObject)
     console.log(response.publicURL)
   }
 
