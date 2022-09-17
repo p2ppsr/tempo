@@ -41,7 +41,7 @@ const SongsViewer = () => {
   useEffect(() => {
     fetchSongs()
       .then((res) => {
-        setSongs(res)
+        setSongs(res.reverse()) // Newest songs on top
       })
       .catch((e) => {
         console.log(e.message)
