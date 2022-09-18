@@ -19,7 +19,6 @@ const EditProfile = () => {
 
   const handleChange = (e) => {
     const valueToUpdate = e.target.name === 'selectedArtwork' || e.target.name === 'selectedMusic' ? e.target.files[0] : e.target.value
-    console.log(valueToUpdate)
     setSong({
       ...song,
       [e.target.name]: valueToUpdate
@@ -77,21 +76,7 @@ const EditProfile = () => {
             <p className='subTitle'>All the important bits...and bytes!</p>
           </div>
           <div className='uploadSection'>
-            <div className='albumArtwork'>
-              <h3>PROFILE PICTURE</h3>
-              <img src={image} />
-            </div>
-            <div className='centerDiv'>
-              <form className='publishForm'>
-                <label>NAME</label>
-                <input type='text' className='textBox' name='title' placeholder='name' value={song.title} onChange={handleChange} />
-                <label>ABOUT</label>
-                <textarea type='text' className='textArea' name='artist' placeholder="what's your story?" value={song.artist} onChange={handleChange} />
-                <label>ATTACH PROFILE PICTURE </label>
-                <input type='file' name='selectedArtwork' className='upload' onChange={handleChange} />
-                <input type='button' name='submitForm' value='SAVE CHANGES' className='publish' onClick={onFileUpload} />
-              </form>
-            </div>
+            <h1 style={{color: 'white'}}>Coming soon!</h1>
           </div>
         </div>
       </div>

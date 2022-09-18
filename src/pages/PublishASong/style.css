@@ -4,17 +4,16 @@
 .mainContent {
     grid-area: mainContent; 
     display: grid;
-    grid-template: 2fr 7fr / 1fr;
+    grid-template: 3fr 8fr / 1fr;
     grid-template-areas:
     "header"
     "uploadSection";
 }
 .uploadSection {
-    grid-area: uploadSection;
-    display: grid;
-    grid-template: 1fr / 2fr 3fr;
-    grid-template-areas:
-    "albumArtwork inputForm";
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 .header {
     color: white;
@@ -23,18 +22,6 @@
 .header h1 {
     font-size: 40px;
     font-weight: 750;
-}
-.albumArtwork {
-    grid-area: albumArtwork;
-    color: white;
-    justify-content: center;
-}
-.albumArtwork img {
-    max-width: 480px;
-    max-height: 500px;
-    min-width: 350px;
-    width: 38vw;
-    padding: 20px;
 }
 .publishForm {
     grid-area: inputForm;
@@ -52,7 +39,7 @@
     margin: 10px 0px 10px 0px;
     min-width: 300px;
     max-width: 500px;
-    width: 25vw;
+    width: 35vw;
 }
 .centerDiv {
     display: flex;
@@ -80,7 +67,7 @@
     font-weight: 700;
 } 
 @media only screen and (max-width: 900px) {
-    .uploadSection {
+    /* .uploadSection {
         grid-template: 3fr 3fr / 1fr;
         grid-template-areas:
         "albumArtwork"
@@ -89,28 +76,28 @@
     .inputForm {
         display: grid;
     }
-    .albumArtwork img {
-        max-width: 480px;
-        max-height: 550px;
-        width: 50vw;
-    }
     .publishForm {
         margin: 0px 5vw 0px 5vw;
+    } */
+    .publishForm input {
+        height: 45px;
+        margin: 10px 0px 10px 0px;
+        min-width: 220px;
+        max-width: 300px;
     }
     .mainContent {
         grid-area: mainContent; 
         display: grid;
-        grid-template: 1fr 6fr / 1fr;
+        grid-template: 3fr 6fr / 1fr;
         grid-template-areas:
         "header"
         "uploadSection";
     }
-    .menuAndContentSection {
-        width: 100vw;
+    /* .menuAndContentSection {
+        width: 78vw;
         display: grid;
-        grid-template: 0.5fr 12fr / 1fr;
-        grid-template-areas:
-        'menu'
-        'mainContent';
-    }
+        grid-template: 
+          'menu' 1fr
+          'mainContent' 11fr;
+    } */
 }

@@ -8,9 +8,6 @@ import Playlist from '../../../data/playlist'
 import { useLocation } from 'react-router-dom'
 
 const CreatePlaylist = () => {
-//   const location = useLocation()
-//   const { playlist } = location.state
-  // const test = location.test
   const [playlists, setPlaylists] = useState([])
   const [playlistTitle, setPlaylistTitle] = useState('')
   const [latestId, setLatestId] = useState(0)
@@ -18,11 +15,7 @@ const CreatePlaylist = () => {
   const handleChange = (e) => {
     setPlaylistTitle(e.target.value)
   }
-  //   console.log(location)
   const handleClick = (e) => {
-    // playlists.push(new Playlist(0, 0, 'My Music'))
-    // setPlaylists(playlists.push(new Playlist(0, 0, 'My Music')))
-    // console.log(playlists)
     setLatestId(latestId + 1)
     setPlaylists(array => [...array, new Playlist(latestId, 0, playlistTitle)])
   }

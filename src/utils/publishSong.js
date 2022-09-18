@@ -140,8 +140,8 @@ export default async (
       uploadURL: paymentResult.uploadURL, // wrong
       publicURL: invoices[i].publicURL,
       file: filesToUpload[i],
-      serverURL: constants.nanostoreURL // ?
-      // onUploadProgress: prog => {
+      serverURL: constants.nanostoreURL
+      // onUploadProgress: prog => { // TODO: Improve progress notification
       //   setUploadProgress(
       //     parseInt((prog.loaded / prog.total) * 100)
       //   )

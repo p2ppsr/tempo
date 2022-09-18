@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { List, ListItem, ListItemText } from '@material-ui/core'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import './style.css'
 import { toast } from 'react-toastify'
 import constants from '../../utils/constants'
@@ -10,7 +10,13 @@ import { Img } from 'uhrp-react'
 import decryptSong from '../../utils/decryptSong'
 import fetchSongs from '../../utils/fetchSongs'
 
-const SongsViewer = () => {
+const SongsViewer = ({ artist }) => {
+  const location = useLocation()
+  let song
+  if (location && location.state && location.state.song) {
+    song = location.state.song
+  }
+
   const [songs, setSongs] = useState([])
   const updatedSongs = songs
   // Decrypt the selected song and update the UI
@@ -33,15 +39,20 @@ const SongsViewer = () => {
       updatedSongs[selectionIndex].decryptedSongURL = decryptedSongURL
       setSongs(updatedSongs)
     }
+    // Update the audioPlayer to play the selected song
     const audioPlayer = document.getElementById('audioPlayer')
     audioPlayer.src = updatedSongs[selectionIndex].decryptedSongURL
     audioPlayer.autoplay = true
   }
 
   useEffect(() => {
-    fetchSongs()
+    let searchFilter = undefined
+    if (song && song.artist) {
+      searchFilter = song.artist
+    }
+    fetchSongs(searchFilter)
       .then((res) => {
-        setSongs(res)
+        setSongs(res.reverse()) // Newest songs on top
       })
       .catch((e) => {
         console.log(e.message)
