@@ -28,7 +28,7 @@ const LeftMenu = () => {
           <img className='menuLogo' src={logo} />
         </div>
         <div className='welcomeMessage'>
-          <p>Welcome, John Smith!</p>
+          <p>Welcome!</p>
           <NavLink to='/EditProfile'>
             <FaUserCircle size={30} />
           </NavLink>
@@ -40,8 +40,8 @@ const LeftMenu = () => {
           <NavLink to='/SavedSongs'>
             <li className='link'>Saved Songs</li>
           </NavLink>
-          <li className='topLevel'>Playlists</li>
-          <NavLink
+          {/* <li className='topLevel'>Playlists</li> */}
+          {/* <NavLink
             to='/Playlists'
             state={{
               playlist: 'null',
@@ -57,8 +57,8 @@ const LeftMenu = () => {
             >Create Playlist
               <FaPlus size={15} style={{ marginLeft: '10px' }} />
             </li>
-          </NavLink>
-          {menuItems.map((item, i) =>
+          </NavLink> */}
+          {/* {menuItems.map((item, i) =>
             <NavLink
               to='/Playlists'
               state={{ playlist: item }}
@@ -73,7 +73,7 @@ const LeftMenu = () => {
               >{item}
               </li>
             </NavLink>
-          )}
+          )} */}
         </ul>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import MainMenu from '../../components/MainMenu'
+import Footer from '../../components/Footer'
 import './style.css'
 import image from '../../Images/placeholder-image.png'
 import { useNavigate } from 'react-router-dom'
@@ -61,23 +62,17 @@ const PublishASong = () => {
             <p className='subTitle'>Become your own publisher and upload your music for the world to hear!</p>
           </div>
           <div className='uploadSection'>
-            <div className='albumArtwork'>
-              <h3>ALBUM ARTWORK</h3>
-              <img src={image} />
-            </div>
-            <div className='centerDiv'>
-              <form className='publishForm'>
-                <label>SONG TITLE</label>
-                <input type='text' className='textBox' name='title' placeholder='song title' value={song.title} onChange={handleChange} />
-                <label>FEATURED ARTIST </label>
-                <input type='text' className='textBox' name='artist' placeholder='name (optional)' value={song.artist} onChange={handleChange} />
-                <label>ATTACH ARTWORK </label>
-                <input type='file' name='selectedArtwork' className='upload' onChange={handleChange} />
-                <label>ATTACH MUSIC </label>
-                <input type='file' name='selectedMusic' className='upload' onChange={handleChange} />
-                <input type='button' name='submitForm' value='PUBLISH SONG' className='publish' onClick={onFileUpload} />
-              </form>
-            </div>
+            <form className='publishForm'>
+              <label>SONG TITLE</label>
+              <input type='text' className='textBox' name='title' placeholder='song title' value={song.title} onChange={handleChange} />
+              <label>FEATURED ARTIST </label>
+              <input type='text' className='textBox' name='artist' placeholder='name (optional)' value={song.artist} onChange={handleChange} />
+              <label>ATTACH ARTWORK </label>
+              <input type='file' name='selectedArtwork' className='upload' onChange={handleChange} />
+              <label>ATTACH MUSIC </label>
+              <input type='file' name='selectedMusic' className='upload' onChange={handleChange} />
+              <input type='button' name='submitForm' value='PUBLISH SONG' className='publish' onClick={onFileUpload} />
+            </form>
           </div>
         </div>
       </div>

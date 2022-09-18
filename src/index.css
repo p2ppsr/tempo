@@ -25,10 +25,10 @@ a {
   display: flex;
   flex-direction: row;
 }
-.rightSide {
-  /* display: flex;
-  flex-direction: column; */
-}
+/* .rightSide {
+  display: flex;
+  flex-direction: column;
+} */
 .background {
   position: absolute;
   top: 0;
@@ -40,12 +40,11 @@ a {
   z-index: -1;
 }
 .menuAndContentSection {
-  width: 82vw;
+  width: 78vw;
   display: grid;
-  grid-template: 1fr 12fr / 1fr;
-  grid-template-areas:
-  'menu'
-  'mainContent';
+  grid-template: 
+    'menu' 1fr
+    'mainContent' 12fr;
 }
 .menu {
     grid-area: menu;
@@ -61,4 +60,20 @@ a {
   font-weight: 600;
   text-transform: uppercase;
   width: 170px;
+}
+
+/** 
+  Add all mobile specific css changes here to override child styles?
+**/
+@media only screen and (max-width: 600px) {
+  .menuAndContentSection {
+    width: 75vw;
+    display: grid;
+    grid-template: 
+      'menu' 1fr
+      'mainContent' 11fr;
+  }
+  .slogan {
+    color: rgba(0,0,0,0);
+  }
 }
