@@ -20,9 +20,6 @@ const Playlists = () => {
   }
   console.log(location)
   const handleClick = (e) => {
-    // playlists.push(new Playlist(0, 0, 'My Music'))
-    // setPlaylists(playlists.push(new Playlist(0, 0, 'My Music')))
-    // console.log(playlists)
     setLatestId(latestId + 1)
     setPlaylists(array => [...array, new Playlist(latestId, 0, playlistTitle)])
   }

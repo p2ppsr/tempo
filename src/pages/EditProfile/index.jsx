@@ -19,7 +19,6 @@ const EditProfile = () => {
 
   const handleChange = (e) => {
     const valueToUpdate = e.target.name === 'selectedArtwork' || e.target.name === 'selectedMusic' ? e.target.files[0] : e.target.value
-    console.log(valueToUpdate)
     setSong({
       ...song,
       [e.target.name]: valueToUpdate

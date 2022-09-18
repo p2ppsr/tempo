@@ -17,8 +17,6 @@ const SongsViewer = ({ artist }) => {
     song = location.state.song
   }
 
-  console.log('song from song viewer', location.state)
-
   const [songs, setSongs] = useState([])
   const updatedSongs = songs
   // Decrypt the selected song and update the UI
@@ -48,7 +46,6 @@ const SongsViewer = ({ artist }) => {
   }
 
   useEffect(() => {
-    // debugger
     let searchFilter = undefined
     if (song && song.artist) {
       searchFilter = song.artist
