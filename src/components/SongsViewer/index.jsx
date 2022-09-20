@@ -30,7 +30,9 @@ const SongsViewer = ({ artist }) => {
       let decryptedSongURL
       try {
         decryptedSongURL = await decryptSong({
-          songURL: songs[selectionIndex].songFileURL
+          songURL: songs[selectionIndex].songFileURL,
+          title: songs[selectionIndex].title,
+          artist: songs[selectionIndex].artist
         })
       } catch (error) {
         toast.error('Failed to load song!')

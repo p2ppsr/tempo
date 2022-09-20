@@ -6,7 +6,7 @@ import bsv from 'babbage-bsv'
 import { download } from 'nanoseek'
 import constants from './constants'
 
-export default async ({ songURL }) => {
+export default async ({ songURL, title, artist }) => {
   const { data: encryptedData } = await download({
     URL: songURL,
     bridgeportResolvers: constants.bridgeportResolvers
@@ -25,7 +25,7 @@ export default async ({ songURL }) => {
     })
   toast.success('Loading song...')
   const invoice = (JSON.parse(Buffer.from(invoiceResponse.body).toString('utf8')))
-  const paymentDescription = `Here is payment for the song: ${songURL}`
+  const paymentDescription = `You listened to ${title}, by ${artist}`
   // Pay the recipient
   const derivationPrefix = require('crypto')
     .randomBytes(10)
