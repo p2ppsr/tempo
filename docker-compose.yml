@@ -16,7 +16,7 @@ services:
 
   # MiniScribe — lightweight local NanoStore
   miniscribe:
-    image: us.gcr.io/computing-with-integrity/miniscribe
+    image: us.gcr.io/computing-with-integrity/miniscribe:latest
     ports:
       - "3104:3104"
     volumes:
@@ -26,12 +26,20 @@ services:
 
   # The Bridgeport Connecticut Proxy
   connecticut:
-    image: us.gcr.io/computing-with-integrity/connecticut
+    image: us.gcr.io/computing-with-integrity/connecticut:latest
+    # build: '../connecticut'
     ports:
       - "3103:3103"
+      - 3205:9229
+    command: node --inspect=0.0.0.0 ./src/index.js
     environment:
       HTTP_PORT: 3103
       PORT: 3103
+      PASSTHROUGH_BRIDGES: '["1AJsUZ7MsJGwmkCZSoDpro28R52ptvGma7"]'
+      PASSTHROUGH_URL: "https://staging-bridgeport.babbage.systems"
+      PASSTHROUGH_SYSTEM_BRIDGES: true
+      PASSTHROUGH_LOGGING: true
+      DISABLE_UHRP_MOCKING: true
 
   ###
   ## Bridgeport Derived Action Datasets
@@ -39,7 +47,7 @@ services:
 
   # MongoDB
   bridgeport-mongo:
-    image: mongo
+    image: mongo:5
     command: |
       bash -c "mongod --bind_ip_all --replSet rs0 --fork --syslog --port 3113 && mongo --port 3113 --eval \"if (!rs.status().ok) rs.initiate({_id : 'rs0', members : [{_id : 0, host : 'bridgeport-mongo:3113'}]})\" && mongo --port 3113 --eval \"while(true) {if (!rs.status().ok) break;sleep(1000)};\""
     hostname: "bridgeport-mongo"
@@ -48,78 +56,17 @@ services:
     volumes:
      - ./data/bridgeport-mongo-data:/data/db
 
-  ###
-  ## System Bridges (Used by the kernel, do not modify)
-  ###
-
-  # UMP — User Management Protocol
-  ump-reader:
-    hostname: "reader-1h48c3wg1ycgpt7tx61phzh8lx6v5tvukl"
-    image: us.gcr.io/computing-with-integrity/bitquery-mongo-reader
-    environment:
-      BRIDGE: 'eyJpZCI6IjFINDhDM3dnMVljZ3BUN1R4NjFQSHpIOEx4NnY1dFZVS0wifQ=='
-      PORT: 80
-      MONGODB_READ_CREDS: 'bW9uZ29kYjovL2JyaWRnZXBvcnQtbW9uZ286MzExMy9icmlkZ2VfMUg0OEMzd2cxWWNncFQ3VHg2MVBIekg4THg2djV0VlVLTA=='
-      MONGODB_DATABASE: 'bridge_1H48C3wg1YcgpT7Tx61PHzH8Lx6v5tVUKL'
-      DEFAULT_QUERY: '{"v": 3,"q": {"collection": "users", "find": {}}}'
-      DEFAULT_SOCKET: '{"v": 3,"q": {"find": {}}}'
-  ump-transformer:
-    hostname: "transformer-1h48c3wg1ycgpt7tx61phzh8lx6v5tvukl"
-    image: us.gcr.io/computing-with-integrity/ump-transformer
-    environment:
-      PORT: 80
-      MONGODB_WRITE_CREDS: 'mongodb://bridgeport-mongo:3113/bridge_1H48C3wg1YcgpT7Tx61PHzH8Lx6v5tVUKL'
-      MONGODB_DATABASE: 'bridge_1H48C3wg1YcgpT7Tx61PHzH8Lx6v5tVUKL'
-
-  # DPACP — DNS Protocol Access Control Protocol
-  dpacp-reader:
-    hostname: "reader-1hceb1o8bahkfe1degfn9kfuvdmjw2creg"
-    image: us.gcr.io/computing-with-integrity/bitquery-mongo-reader
-    environment:
-      BRIDGE: 'eyJpZCI6IjFIY2VCMW84YmFoa2ZlMWRFZ0ZOOWtGdVZEbUp3MkNSRWcifQ=='
-      PORT: 80
-      MONGODB_READ_CREDS: 'bW9uZ29kYjovL2JyaWRnZXBvcnQtbW9uZ286MzExMy9icmlkZ2VfMUhjZUIxbzhiYWhrZmUxZEVnRk45a0Z1VkRtSncyQ1JFZw=='
-      MONGODB_DATABASE: 'bridge_1HceB1o8bahkfe1dEgFN9kFuVDmJw2CREg'
-  dpacp-transformer:
-    hostname: "transformer-1hceb1o8bahkfe1degfn9kfuvdmjw2creg"
-    image: us.gcr.io/computing-with-integrity/dpacp-transformer
-    environment:
-      PORT: 80
-      MONGODB_WRITE_CREDS: 'mongodb://bridgeport-mongo:3113/bridge_1HceB1o8bahkfe1dEgFN9kFuVDmJw2CREg'
-      MONGODB_DATABASE: 'bridge_1HceB1o8bahkfe1dEgFN9kFuVDmJw2CREg'
-
-  # DSAP — DNS Spending Authorization Protocol
-  dsap-reader:
-    hostname: "reader-1lr6iemvft5ftep1n451c2oa3ze3jft29i"
-    image: us.gcr.io/computing-with-integrity/bitquery-mongo-reader
-    environment:
-      BRIDGE: 'eyJpZCI6IjFMcjZpZU12ZlQ1ZlRFcDFONDUxQzJvQTN6RTNKRnQyOWkifQ=='
-      PORT: 80
-      MONGODB_READ_CREDS: 'bW9uZ29kYjovL2JyaWRnZXBvcnQtbW9uZ286MzExMy9icmlkZ2VfMUxyNmllTXZmVDVmVEVwMU40NTFDMm9BM3pFM0pGdDI5aQ=='
-      MONGODB_DATABASE: 'bridge_1Lr6ieMvfT5fTEp1N451C2oA3zE3JFt29i'
-  dsap-transformer:
-    hostname: "transformer-1lr6iemvft5ftep1n451c2oa3ze3jft29i"
-    image: us.gcr.io/computing-with-integrity/dsap-transformer
-    environment:
-      PORT: 80
-      MONGODB_WRITE_CREDS: 'mongodb://bridgeport-mongo:3113/bridge_1Lr6ieMvfT5fTEp1N451C2oA3zE3JFt29i'
-      MONGODB_DATABASE: 'bridge_1Lr6ieMvfT5fTEp1N451C2oA3zE3JFt29i'
-
-  ###
-  ## Debugging Tools — Uncomment when needed
-  ###
-  
   # Mongo Express — web-based MongoDB database viewer
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_SERVER: bridgeport-mongo
-      ME_CONFIG_MONGODB_PORT: 3113
-    depends_on:
-      - bridgeport-mongo
+  # mongo-express:
+  #   image: mongo-express
+  #   restart: always
+  #   ports:
+  #     - 8081:8081
+  #   environment:
+  #     ME_CONFIG_MONGODB_SERVER: bridgeport-mongo
+  #     ME_CONFIG_MONGODB_PORT: 3113
+  #   depends_on:
+  #     - bridgeport-mongo
 
   ## PHPMyAdmin — Web-based SQL database viewer
   # phpmyadmin:
@@ -171,11 +118,28 @@ services:
       ports:
       - 8080:8080
       environment:
-        NODE_ENV: development
+        NODE_ENV: staging
         HTTP_PORT: 8080
-        DATABASE_FILENAME: './data/database.sqlite'
-        KNEX_DB_CONNECTION: '{"port":"3306","host":"127.0.0.1","database":"tempo-key-server","user":"","password":""}'
+        KNEX_DB_CONNECTION: '{"port":"3002","host":"tempo-key-server-mysql","database":"tempo-key-server","user":"root","password":"test"}'
         KNEX_DB_CLIENT: mysql
         MIGRATE_KEY: my-grate-key
         SERVER_PRIVATE_KEY: '6dcc124be5f382be631d49ba12f61adbce33a5ac14f6ddee12de25272f943f8b'
         HOSTING_DOMAIN: 'http://localhost:8080'
+        DOJO_URL: 'https://staging-dojo.babbage.systems'
+
+  tempo-key-server-mysql:
+    image: "mysql:8.0"
+    platform: linux/x86_64
+    hostname: 'tempo-key-server-mysql'
+    container_name: 'tempo-key-server-mysql'
+    command: '--default-authentication-plugin=mysql_native_password --sync_binlog=0 --innodb_doublewrite=OFF  --innodb-flush-log-at-trx-commit=0 --innodb-flush-method=nosync'
+    restart: always
+    volumes:
+      - './data/tempo-key-server-mysql-data:/var/lib/mysql'
+    environment:
+      MYSQL_HOST: "127.0.0.1"
+      MYSQL_TCP_PORT: 3002
+      MYSQL_ROOT_PASSWORD: "test"
+      MYSQL_DATABASE: "tempo-key-server"
+    ports:
+      - "3002:3002"
