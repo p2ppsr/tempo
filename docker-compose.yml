@@ -26,8 +26,8 @@ services:
 
   # The Bridgeport Connecticut Proxy
   connecticut:
-    image: us.gcr.io/computing-with-integrity/connecticut:latest
-    # build: '../connecticut'
+    # image: us.gcr.io/computing-with-integrity/connecticut:latest
+    build: '../connecticut'
     ports:
       - "3103:3103"
       - 3205:9229
@@ -35,7 +35,7 @@ services:
     environment:
       HTTP_PORT: 3103
       PORT: 3103
-      PASSTHROUGH_BRIDGES: '["1AJsUZ7MsJGwmkCZSoDpro28R52ptvGma7"]'
+      PASSTHROUGH_BRIDGES: '["1AJsUZ7MsJGwmkCZSoDpro28R52ptvGma7"]' # nanostore  
       PASSTHROUGH_URL: "https://staging-bridgeport.babbage.systems"
       PASSTHROUGH_SYSTEM_BRIDGES: true
       PASSTHROUGH_LOGGING: true
@@ -57,16 +57,16 @@ services:
      - ./data/bridgeport-mongo-data:/data/db
 
   # Mongo Express — web-based MongoDB database viewer
-  # mongo-express:
-  #   image: mongo-express
-  #   restart: always
-  #   ports:
-  #     - 8081:8081
-  #   environment:
-  #     ME_CONFIG_MONGODB_SERVER: bridgeport-mongo
-  #     ME_CONFIG_MONGODB_PORT: 3113
-  #   depends_on:
-  #     - bridgeport-mongo
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: bridgeport-mongo
+      ME_CONFIG_MONGODB_PORT: 3113
+    depends_on:
+      - bridgeport-mongo
 
   ## PHPMyAdmin — Web-based SQL database viewer
   # phpmyadmin:

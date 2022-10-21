@@ -94,7 +94,7 @@ export default async (
   }
 
   // Create an action script based on the tsp-protocol
-  const actionScript = await pushdrop.create({
+  const bitcoinOutputScript = await pushdrop.create({
     fields: [
       Buffer.from(constants.tempoBridge, 'utf8'), // Protocol Namespace Address
       Buffer.from(song.title, 'utf8'),
@@ -111,12 +111,46 @@ export default async (
   const actionData = {
     outputs: [{
       satoshis: 1,
-      script: actionScript
+      script: bitcoinOutputScript
     }, ...outputs],
     description: 'Publish a song',
     bridges: [constants.tempoBridge]
   }
+  // debugger
   const tx = await createAction(actionData)
+
+  // let unlockingScript = await pushdrop.redeem({
+  //   prevTxId: tx.txid,
+  //   outputIndex: 0, // or, whichever output in your outputs array was the PushDrop ooutput
+  //   outputAmount: 1,
+  //   lockingScript: actionScript,
+  //   protocolID: 'tempo',
+  //   keyID: '1'
+  //   // the actionScript of previous pushdrop.create call,
+  //   // and then give keyID, protocolID, etc.
+  // })
+
+  // // Code for testing pushdrop.redeem
+  //  const r = await createAction({
+  //    inputs: {
+  //      [tx.txid]: {
+  //        inputs: tx.inputs,
+  //        mapiResponses: tx.mapiResponses,
+  //        proof: tx.proof,
+  //        rawTx: tx.rawTx,
+  //        outputsToRedeem: [{
+  //          index: 0, // or, whichever output in your outputs array was the PushDrop output
+  //          unlockingScript
+  //        }]
+  //      }
+  //    },
+  //    outputs: [{
+  //      satoshis: 1,
+  //      script: '016a', // Here's where a second pushdrop.create call would end up if you were updating your song's details. For now let's just leave it blank and "spend" / delete the old token.
+  //    }],
+  //    description: 'Redeem a TSP token'
+  //  })
+  //  debugger
 
   // Pay and upload the files to nanostore
   for (let i = 0; i < filesToUpload.length; i++) {

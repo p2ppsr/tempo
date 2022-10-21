@@ -62,6 +62,17 @@ a {
   width: 170px;
 }
 
+.toastButton {
+  background-color: #6F44EE;
+  border: 0;
+  padding: 10px 30px 10px 40px;
+  margin: 10px 0px 0px 0px;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  width: 240px;
+}
+
 /** 
   Add all mobile specific css changes here to override child styles?
 **/

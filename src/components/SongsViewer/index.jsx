@@ -5,16 +5,50 @@ import './style.css'
 import { toast } from 'react-toastify'
 import constants from '../../utils/constants'
 import { Img } from 'uhrp-react'
+import { getPublicKey } from '@babbage/sdk'
 
 // Helper functions
 import decryptSong from '../../utils/decryptSong'
 import fetchSongs from '../../utils/fetchSongs'
+import deleteSong from '../../utils/deleteSong'
 
-const SongsViewer = ({ artist }) => {
-  const location = useLocation()
-  let song
-  if (location && location.state && location.state.song) {
-    song = location.state.song
+const Msg = ({ action, toastProps }) => (
+  <div>
+    Are you sure you want to delete your masterpiece?
+    <button
+      className='toastButton' style={{ backgroundColor: 'black' }} onClick={() => {
+        toast.dismiss(toastProps.id)
+      }}
+    >No
+    </button>
+    <button className='toastButton' style={{ backgroundColor: 'red' }} onClick={action}>Yes</button>
+  </div>
+)
+
+const SongsViewer = ({ props } = {}) => {
+  const [currentSongId, setCurrentSongId] = useState(0)
+  const [currentIdentityKey, setCurrentIdentityKey] = useState()
+  // const location = useLocation()
+  // let song
+  // if (location && location.state && location.state.song) {
+  //   song = location.state.song
+  // }
+
+  const confirmed = async () => {
+    toast.promise(
+      async () => {
+        const selectedSong = songs[currentSongId]
+        await deleteSong({ song: selectedSong })
+        setSongs((current) =>
+          current.filter((song) => song !== selectedSong)
+        )
+      },
+      {
+        pending: 'Deleting song...',
+        success: 'Song deleted! 🗑',
+        error: 'Failed to delete song! 🤯'
+      }
+    )
   }
 
   const [songs, setSongs] = useState([])
@@ -30,9 +64,7 @@ const SongsViewer = ({ artist }) => {
       let decryptedSongURL
       try {
         decryptedSongURL = await decryptSong({
-          songURL: songs[selectionIndex].songFileURL,
-          title: songs[selectionIndex].title,
-          artist: songs[selectionIndex].artist
+          song: songs[selectionIndex]
         })
       } catch (error) {
         toast.error('Failed to load song!')
@@ -47,11 +79,19 @@ const SongsViewer = ({ artist }) => {
     audioPlayer.autoplay = true
   }
 
-  useEffect(() => {
-    let searchFilter = undefined
-    if (song && song.artist) {
-      searchFilter = song.artist
+  const deleteSelectedSong = async (e) => {
+    setCurrentSongId(e.currentTarget.id)
+    toast.warn(<Msg action={confirmed} />, { autoClose: false })
+  }
+
+  useEffect(async () => {
+    const searchFilter = props ? props.filter : {}
+    if (props && props.mySongsOnly) {
+      searchFilter.artistIdentityKey = await getPublicKey({ protocolID: 'Tempo', keyID: '1' })
+      setCurrentIdentityKey(searchFilter.artistIdentityKey)
+      // searchFilter.artistIdentityKey = currentIdentityKey
     }
+    debugger
     fetchSongs(searchFilter)
       .then((res) => {
         setSongs(res.reverse()) // Newest songs on top
@@ -87,6 +127,24 @@ const SongsViewer = ({ artist }) => {
                 <ListItemText button='true' primary={song.artist} style={{ padding: '0px 20px 0px 0px' }} />
               </Link>
               <ListItemText primary={song.length} />
+              {(song.artistIdentityKey && currentIdentityKey) && currentIdentityKey === song.artistIdentityKey &&
+                <ListItemText
+                  className='song test'
+                  button='true'
+                  inset
+                  primary='Update'
+                  id={i}
+                  onClick='#'
+                />}
+              {(song.artistIdentityKey && currentIdentityKey) && currentIdentityKey === song.artistIdentityKey &&
+                <ListItemText
+                  className='song test'
+                  button='true'
+                  inset
+                  primary='Delete'
+                  id={i}
+                  onClick={deleteSelectedSong}
+                />}
             </ListItem>
           ))}
         </List>

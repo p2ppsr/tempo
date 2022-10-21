@@ -5,10 +5,11 @@ import { createAction, getPublicKey } from '@babbage/sdk'
 import bsv from 'babbage-bsv'
 import { download } from 'nanoseek'
 import constants from './constants'
+import pushdrop from 'pushdrop'
 
-export default async ({ songURL, title, artist }) => {
+export default async ({ song }) => {
   const { data: encryptedData } = await download({
-    URL: songURL,
+    URL: song.songFileURL,
     bridgeportResolvers: constants.bridgeportResolvers
   })
 
@@ -16,16 +17,24 @@ export default async ({ songURL, title, artist }) => {
   const invoiceResponse = await new Authrite().request(
     `${constants.keyServerURL}/invoice`, {
       body: {
-        songURL
+        songURL: song.songFileURL
       },
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       }
     })
-  toast.success('Loading song...')
+  // const test = new Promise((resolve, reject) => {
+  //   resolve(true)
+  // })
+  // toast.promise(test,
+  //   {
+  //     pending: 'Loading song... 🎶',
+  //     success: 'Success! 🪩',
+  //     error: 'Failed to load song! 🤯'
+  //   })
   const invoice = (JSON.parse(Buffer.from(invoiceResponse.body).toString('utf8')))
-  const paymentDescription = `You listened to ${title}, by ${artist}`
+  const paymentDescription = `You listened to ${song.title}, by ${song.artist}`
   // Pay the recipient
   const derivationPrefix = require('crypto')
     .randomBytes(10)
@@ -45,18 +54,65 @@ export default async ({ songURL, title, artist }) => {
       bsv.PublicKey.fromString(derivedPublicKey)
     ))
   ).toHex()
+
+  const unlockingScript = await pushdrop.redeem({
+    // To unlock the token, we need to use the same tempo protocol
+    // and key ID as when we created the tsp token before. Otherwise, the
+    // key won't fit the lock and the Bitcoins won't come out.
+    protocolID: 'tempo',
+    keyID: '1',
+    // We're telling PushDrop which previous transaction and output we want to unlock, so that the correct unlocking puzzle can be prepared.
+    prevTxId: song.token.txid,
+    outputIndex: song.token.outputIndex,
+    // We also give PushDrop a copy of the locking puzzle ("script") that
+    // we want to open, which is helpful in preparing to unlock it.
+    lockingScript: song.token.lockingScript,
+    // Finally, the amount of Bitcoins we are expecting to unlock when the
+    // puzzle gets solved.
+    outputAmount: song.sats
+  })
+
+  const updatedBitcoinOutputScript = await pushdrop.create({
+    fields: [
+      Buffer.from(constants.tempoBridge, 'utf8'), // Protocol Namespace Address
+      Buffer.from(song.title, 'utf8'),
+      Buffer.from(song.artist, 'utf8'),
+      // Buffer.from(song.artistIdentityKey, 'utf8'),
+      Buffer.from(song.description, 'utf8'), // TODO: Add to UI
+      Buffer.from('' + song.duration, 'utf8'), // Duration
+      Buffer.from(song.songFileURL, 'utf8'),
+      Buffer.from(song.artworkFileURL, 'utf8')
+    ],
+    protocolID: 'tempo',
+    keyID: '1'
+  })
+
   const payment = await createAction({
     description: paymentDescription,
+    inputs: {
+      [song.token.txid]: {
+        ...song.token,
+        outputsToRedeem: [{
+          index: song.token.outputIndex,
+          unlockingScript
+        }]
+      }
+    },
     outputs: [{
       script,
       satoshis: parseInt(invoice.amount)
-    }]
+    },
+    {
+      script: updatedBitcoinOutputScript,
+      satoshis: song.sats
+    }],
+    bridges: [constants.tempoBridge]
   })
   // Send the recipient proof of payment
   const purchasedKey = await new Authrite().request(`${constants.keyServerURL}/pay`, {
     body: {
       derivationPrefix,
-      songURL,
+      songURL: song.songFileURL,
       transaction: {
         ...payment,
         outputs: [{
@@ -89,6 +145,7 @@ export default async ({ songURL, title, artist }) => {
     decryptionKey,
     'Uint8Array'
   )
+  test.resolve()
   const dataBlob = new Blob([decryptedData])
   return URL.createObjectURL(dataBlob)
 }

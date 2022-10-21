@@ -30,8 +30,8 @@ if (window.location.host.startsWith('localhost')) { // local
 //   bridgeportResolvers: ['https://staging-bridgeport.babbage.systems'],
 //   nanostoreURL: 'https://staging-nanostore.babbage.systems',
 //   tempoBridge: '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36',
-//   keyServerURL: process.env.REACT_APP_TEMPO_KEY_SERVER_URL ||
-//     'https://staging-tempo-keyserver.babbage.systems'
+//   keyServerURL: 'http://localhost:8080'
 // }
+constants.nanostoreURL = 'https://staging-nanostore.babbage.systems'
 
 export default constants

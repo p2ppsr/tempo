@@ -20,7 +20,7 @@ const LeftMenu = () => {
 
     // allLi.forEach(n => n.addEventListener('click', (changeMenuActive)))
   }, [])
-  const menuItems = ['Playlist1', 'Playlist2', 'Chill Beats', 'Road Trip Tunes']
+
   return (
     <div>
       <div className='leftMenu'>
@@ -36,6 +36,9 @@ const LeftMenu = () => {
         <ul>
           <NavLink to='/'>
             <li className='link'>Latest Songs</li>
+          </NavLink>
+          <NavLink to='/MySongs'>
+            <li className='link'>My Songs</li>
           </NavLink>
           <NavLink to='/SavedSongs'>
             <li className='link'>Saved Songs</li>

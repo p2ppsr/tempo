@@ -31,20 +31,29 @@ const PublishASong = () => {
   const navigate = useNavigate()
 
   const onFileUpload = async (e) => {
-    toast.success('Publishing song...')
     try {
       // Publish Song
-      const publishStatus = await publishSong(song, RETENTION_PERIOD)
+      let publishStatus = false
+      const pubSong = async () => {
+        publishStatus = await publishSong(song, RETENTION_PERIOD)
+        if (publishStatus) {
+          console.log('success')
+          navigate('/PublishASong/Success')
+        }
+      }
+      toast.promise(
+        pubSong(),
+        {
+          pending: 'Publishing song...',
+          success: 'Song published! 👌',
+          error: 'Failed to publish song! 🤯'
+        }
+      )
+      debugger
       song.isPublished = publishStatus
     } catch (error) {
       console.log(error)
-      toast.error('Please select a valid file to upload!')
-    }
-
-    // const history = useHistory()
-    if (song.isPublished) {
-      console.log('success')
-      navigate('/PublishASong/Success')
+      // toast.error('Please select a valid file to upload!')
     }
   }
 

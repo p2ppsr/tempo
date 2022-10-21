@@ -1,7 +1,7 @@
 import parapet from 'parapet-js'
 import constants from './constants'
 
-export default (artist) => parapet({
+export default (searchFilter) => parapet({
   resolvers: constants.bridgeportResolvers,
   bridge: constants.tempoBridge,
   request: {
@@ -10,9 +10,7 @@ export default (artist) => parapet({
       v: 3,
       q: {
         collection: 'songs',
-        find: {
-          artist
-        }
+        find: searchFilter
       }
     }
   }
