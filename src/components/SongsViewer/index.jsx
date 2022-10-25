@@ -91,7 +91,7 @@ const SongsViewer = ({ props } = {}) => {
       setCurrentIdentityKey(searchFilter.artistIdentityKey)
       // searchFilter.artistIdentityKey = currentIdentityKey
     }
-    debugger
+    // debugger
     fetchSongs(searchFilter)
       .then((res) => {
         setSongs(res.reverse()) // Newest songs on top
@@ -128,14 +128,15 @@ const SongsViewer = ({ props } = {}) => {
               </Link>
               <ListItemText primary={song.length} />
               {(song.artistIdentityKey && currentIdentityKey) && currentIdentityKey === song.artistIdentityKey &&
-                <ListItemText
-                  className='song test'
-                  button='true'
-                  inset
-                  primary='Update'
-                  id={i}
-                  onClick='#'
-                />}
+                <Link to='/EditSong' state={{ song }}>
+                  <ListItemText
+                    className='song test'
+                    button='true'
+                    inset
+                    primary='Edit'
+                    id={i}
+                  />
+                </Link>}
               {(song.artistIdentityKey && currentIdentityKey) && currentIdentityKey === song.artistIdentityKey &&
                 <ListItemText
                   className='song test'

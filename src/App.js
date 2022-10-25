@@ -8,6 +8,7 @@ import CreatePlaylist from './pages/Playlists/Create'
 import ArtistProfile from './pages/ArtistProfile'
 import EditProfile from './pages/EditProfile'
 import MySongs from './pages/MySongs'
+import EditSong from './pages/EditSong'
 import PublishASong from './pages/PublishASong'
 import SuccessPage from './pages/PublishASong/PublishSuccess'
 import LeftMenu from './components/LeftMenu'
@@ -41,6 +42,7 @@ const App = () => {
               <Route exact path='/ArtistProfile' element={<ArtistProfile />} />
               <Route exact path='/EditProfile' element={<EditProfile />} />
               <Route exact path='/MySongs' element={<MySongs />} />
+              <Route exact path='/EditSong' element={<EditSong />} />
               <Route exact path='/PublishASong' element={<PublishASong />} />
               <Route exact path='/PublishASong/Success' element={<SuccessPage />} />
             </Routes>

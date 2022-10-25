@@ -116,41 +116,8 @@ export default async (
     description: 'Publish a song',
     bridges: [constants.tempoBridge]
   }
-  // debugger
+
   const tx = await createAction(actionData)
-
-  // let unlockingScript = await pushdrop.redeem({
-  //   prevTxId: tx.txid,
-  //   outputIndex: 0, // or, whichever output in your outputs array was the PushDrop ooutput
-  //   outputAmount: 1,
-  //   lockingScript: actionScript,
-  //   protocolID: 'tempo',
-  //   keyID: '1'
-  //   // the actionScript of previous pushdrop.create call,
-  //   // and then give keyID, protocolID, etc.
-  // })
-
-  // // Code for testing pushdrop.redeem
-  //  const r = await createAction({
-  //    inputs: {
-  //      [tx.txid]: {
-  //        inputs: tx.inputs,
-  //        mapiResponses: tx.mapiResponses,
-  //        proof: tx.proof,
-  //        rawTx: tx.rawTx,
-  //        outputsToRedeem: [{
-  //          index: 0, // or, whichever output in your outputs array was the PushDrop output
-  //          unlockingScript
-  //        }]
-  //      }
-  //    },
-  //    outputs: [{
-  //      satoshis: 1,
-  //      script: '016a', // Here's where a second pushdrop.create call would end up if you were updating your song's details. For now let's just leave it blank and "spend" / delete the old token.
-  //    }],
-  //    description: 'Redeem a TSP token'
-  //  })
-  //  debugger
 
   // Pay and upload the files to nanostore
   for (let i = 0; i < filesToUpload.length; i++) {
@@ -175,7 +142,7 @@ export default async (
       publicURL: invoices[i].publicURL,
       file: filesToUpload[i],
       serverURL: constants.nanostoreURL
-      // onUploadProgress: prog => { // TODO: Improve progress notification
+      // onUploadProgress: prog => { // TODO: Improve progress notification using toast.promise
       //   setUploadProgress(
       //     parseInt((prog.loaded / prog.total) * 100)
       //   )

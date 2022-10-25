@@ -145,7 +145,7 @@ export default async ({ song }) => {
     decryptionKey,
     'Uint8Array'
   )
-  test.resolve()
+  // test.resolve()
   const dataBlob = new Blob([decryptedData])
   return URL.createObjectURL(dataBlob)
 }
