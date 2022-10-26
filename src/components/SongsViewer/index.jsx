@@ -26,8 +26,8 @@ const Msg = ({ action, toastProps }) => (
 )
 
 const SongsViewer = ({ props } = {}) => {
-  const [currentSongId, setCurrentSongId] = useState(0)
   const [currentIdentityKey, setCurrentIdentityKey] = useState()
+  let currentSongId = 0
 
   // const location = useLocation()
   // let song
@@ -86,7 +86,7 @@ const SongsViewer = ({ props } = {}) => {
 
   // TODO: Fix bug with getting correct song index.
   const deleteSelectedSong = async (e) => {
-    setCurrentSongId(e.currentTarget.id)
+    currentSongId = e.currentTarget.id
     toast.warn(<Msg action={confirmed} />, { autoClose: false })
   }
 
