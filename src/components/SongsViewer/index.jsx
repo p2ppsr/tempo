@@ -91,7 +91,6 @@ const SongsViewer = ({ props } = {}) => {
   }
 
   useEffect(async () => {
-    // TODO: Add support for viewing a particular artist's songs
     const searchFilter = props ? props.filter : {}
     if (props && props.mySongsOnly) {
       searchFilter.artistIdentityKey = await getPublicKey({ protocolID: 'Tempo', keyID: '1' })
