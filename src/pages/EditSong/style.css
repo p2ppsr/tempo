@@ -1,117 +1,37 @@
 .EditSong {
     display: flex;
 }
-.mainContent2 {
-    padding: 20px;
+.mainContentEditSong {
     grid-area: mainContent; 
     display: grid;
-    grid-template: 2fr 7fr / 1fr;
+    grid-template: 3fr 8fr / 1fr;
     grid-template-areas:
     "header"
     "uploadSection";
 }
-.uploadSection2 {
+.uploadSectionEditSong {
+    background-color: #1C1C1C;
     grid-area: uploadSection;
     display: grid;
-    grid-template: 1fr / 2fr 3fr;
+    grid-template: 1fr / 1fr 1fr;
     grid-template-areas:
     "albumArtwork inputForm";
-}
-.header2 {
-    color: white;
-    grid-area: header;
-}
-.header2 h1 {
-    font-size: 40px;
-    font-weight: 750;
-}
-.albumArtwork2 {
-    grid-area: albumArtwork;
-    color: white;
-    justify-content: center;
-}
-.albumArtwork2 img {
-    max-width: 480px;
-    max-height: 500px;
-    min-width: 350px;
-    width: 38vw;
-    padding: 20px;
-}
-.publishForm2 {
-    grid-area: inputForm;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: left;
-    color: white;
-    padding-right: 30px;
-    padding-left: 30px;
-    padding-bottom: 10px;
-}
-.publishForm2 input {
-    height: 50px;
-    margin: 10px 0px 10px 0px;
-    min-width: 300px;
-    max-width: 500px;
-    width: 25vw;
-}
-.centerDiv2 {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
 }
-.publishForm2 label {
-    font-size: 18px;
-    font-weight: 700;
-    align-items: left;
-}
-.publishForm2 input:focus {
-    outline-width: 0;
-}
-.upload2 {
-    display: flex;
-    align-items: center;
-    padding: 15px 0px 0px 10px;
-    margin: 10px 0px 0px 0px;
-} 
-.publish2 {
-    font-size: 14px;
-    color: white;
-    font-weight: 700;
-} 
+
 @media only screen and (max-width: 900px) {
-    .uploadSection2 {
+    .uploadSectionEditSong {
         grid-template: 3fr 3fr / 1fr;
         grid-template-areas:
         "albumArtwork"
         "inputForm"
-    }
-    .inputForm2 {
-        display: grid;
-    }
-    .albumArtwork2 img {
-        max-width: 480px;
-        max-height: 550px;
-        width: 50vw;
-    }
-    .publishForm2 {
-        margin: 0px 5vw 0px 5vw;
-    }
-    .mainContent2 {
+    } 
+    .mainContentEditSong {
         grid-area: mainContent; 
         display: grid;
         grid-template: 1fr 6fr / 1fr;
         grid-template-areas:
         "header"
         "uploadSection";
-    }
-    .menuAndContentSection2 {
-        width: 100vw;
-        display: grid;
-        grid-template: 0.5fr 12fr / 1fr;
-        grid-template-areas:
-        'menu'
-        'mainContent';
     }
 }

@@ -49,35 +49,40 @@ const EditSong = () => {
   }
   // Demo the current song audio file
   const playSong = async (e) => {
-    try {
-      const decryptedSongURL = await decryptSong({
-        song
-      })
+    toast.promise(
+      async () => {
+        const decryptedSongURL = await decryptSong({
+          song
+        })
 
-      // Update the audioPlayer to play the selected song
-      const audioPlayer = document.getElementById('audioPlayer')
-      audioPlayer.src = decryptedSongURL
-      audioPlayer.autoplay = true
-    } catch (error) {
-      toast.error('Failed to load song!')
-    }
+        // Update the audioPlayer to play the selected song
+        const audioPlayer = document.getElementById('audioPlayer')
+        audioPlayer.src = decryptedSongURL
+        audioPlayer.autoplay = true
+      },
+      {
+        pending: 'Loading current song...',
+        success: 'Feel the beat! 🎉',
+        error: 'Failed to load song! 🤯'
+      }
+    )
   }
 
   return (
     <div className='EditSong'>
-      <div className='menuAndContentSection2'>
+      <div className='menuAndContentSection'>
         <MainMenu className='menu' />
-        <div className='mainContent2'>
+        <div className='mainContentEditSong'>
           <ToastContainer
             position='top-center'
             containerId='alertToast'
           />
-          <div className='header2'>
+          <div className='header'>
             <h1>Edit Song</h1>
             <p className='subTitle'>Become your own publisher and upload your music for the world to hear!</p>
           </div>
-          <div className='uploadSection2'>
-            <div className='albumArtwork2'>
+          <div className='uploadSectionEditSong'>
+            <div className='albumArtwork'>
               <h3>ALBUM ARTWORK</h3>
               <Img
                 src={song.artworkFileURL}
@@ -87,8 +92,8 @@ const EditSong = () => {
               {/* <Link className='button tipBtn' onClick={playSong}>Listen</Link> */}
               <button className='button tipBtn' onClick={playSong}>Listen</button>
             </div>
-            <div className='centerDiv2'>
-              <form className='publishForm2'>
+            <div className='centerDiv'>
+              <form className='publishForm'>
                 <label>SONG TITLE</label>
                 <input type='text' className='textBox' name='title' placeholder='Title' value={updatedSong.title} onChange={handleChange} />
                 <label>FEATURED ARTIST</label>
