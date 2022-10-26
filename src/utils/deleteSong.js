@@ -17,7 +17,7 @@ export default async ({ song }) => {
     lockingScript: song.token.lockingScript,
     // Finally, the amount of Bitcoins we are expecting to unlock when the
     // puzzle gets solved.
-    outputAmount: song.sats // sats?
+    outputAmount: song.sats
   })
 
   await createAction({

@@ -26,8 +26,8 @@ services:
 
   # The Bridgeport Connecticut Proxy
   connecticut:
-    # image: us.gcr.io/computing-with-integrity/connecticut:latest
-    build: '../connecticut'
+    image: us.gcr.io/computing-with-integrity/connecticut:master-60a7cb0e489b6e21aa97111aee16a67f7488800e
+    # build: '../connecticut'
     ports:
       - "3103:3103"
       - 3205:9229

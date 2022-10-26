@@ -1,11 +1,7 @@
-import { createAction } from '@babbage/sdk'
-import pushdrop from 'pushdrop'
-import { invoice, upload, derivePaymentInfo, submitPayment } from 'nanostore-publisher'
+import { invoice, derivePaymentInfo } from 'nanostore-publisher'
 import { getURLForFile } from 'uhrp-url'
 import { encrypt } from 'cwi-crypto'
-import { Authrite } from 'authrite-js'
 import constants from './constants'
-import { toast } from 'react-toastify'
 
 // Thanks to https://stackoverflow.com/a/22114687 for this
 function copy (src) {
@@ -15,13 +11,8 @@ function copy (src) {
 }
 
 const RETENTION_PERIOD = 60 * 24 * 365 * 7
-// Notes:
-// 1. An artist wants to publish their song.
-// * They need to upload the following data:
-// - The encrypted song bytes
-// - The song artwork. Later this will be the album artwork.
-// In the future, we could generate a UHRP hash to see if the data has already been uploaded.
 
+// TODO: Add support for checking the UHRP hash to see if the data has already been uploaded.
 export default async ({
   selectedArtwork, selectedMusic, retentionPeriod = RETENTION_PERIOD
 } = {}) => {

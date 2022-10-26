@@ -4,11 +4,11 @@ import constants from './constants'
 export default async () => {
   const response = await new Authrite().request(
     `${constants.keyServerURL}/checkForRoyalties`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
   const result = (JSON.parse(Buffer.from(response.body).toString('utf8')))
   if (result.status === 'error') {
     const e = new Error(result.description)
@@ -25,7 +25,7 @@ export default async () => {
   // Process the transaction
   const processedTx = await submitDirectTransaction({
     protocol: '3241645161d8',
-    transaction: { 
+    transaction: {
       ...result.transaction,
       outputs: [{
         vout: 0,

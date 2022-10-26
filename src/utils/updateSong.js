@@ -2,16 +2,10 @@ import constants from './constants'
 import pushdrop from 'pushdrop'
 import { createAction } from '@babbage/sdk'
 import getFileUploadInfo from '../utils/getFileUploadInfo'
-import { upload, submitPayment } from 'nanostore-publisher'
-import { toast } from 'react-toastify'
-import { Authrite } from 'authrite-js'
+import submitPaymentProof from './submitPaymentProof'
+import publishKey from './publishKey'
 
 export default async ({ song, filesToUpdate }) => {
-  // Problems to consider:
-  // What functionality is common between publish, update, delete?
-  // Can we move some out into a shared function?
-  // How do we determine if the multimedia needs t be updated?
-
   const unlockingScript = await pushdrop.redeem({
     // To unlock the token, we need to use the same tempo protocol
     // and key ID as when we created the tsp token before. Otherwise, the
@@ -39,7 +33,7 @@ export default async ({ song, filesToUpdate }) => {
     song.artworkFileURL = fileUploadInfo.artworkFileURL
   }
 
-  debugger
+  // Create an updated locking script with the updated data
   const updatedBitcoinOutputScript = await pushdrop.create({
     fields: [
       Buffer.from(constants.tempoBridge, 'utf8'), // Protocol Namespace Address
@@ -54,8 +48,8 @@ export default async ({ song, filesToUpdate }) => {
     protocolID: 'tempo',
     keyID: '1'
   })
-  // debugger
-  const tx = await createAction({
+
+  const payment = await createAction({
     description: `Song ${song.title} updated!`,
     inputs: {
       [song.token.txid]: {
@@ -69,56 +63,16 @@ export default async ({ song, filesToUpdate }) => {
     outputs: [
       {
         script: updatedBitcoinOutputScript,
-        satoshis: song.sats
-      }, ...fileUploadInfo.outputs],
+        satoshis: Number(song.sats)
+      }],
     bridges: [constants.tempoBridge]
   })
 
-  // TODO: move upload and pay to function
-  for (let i = 0; i < fileUploadInfo.filesToUpload.length; i++) {
-    // Submit the payment to nanostore
-    const paymentResult = await submitPayment({
-      config: {
-        nanostoreURL: constants.nanostoreURL
-      },
-      orderID: fileUploadInfo.invoices[i].ORDER_ID,
-      amount: fileUploadInfo.invoices[i].amount,
-      payment: tx,
-      derivationPrefix: fileUploadInfo.invoices[i].derivationPrefix,
-      derivationSuffix: fileUploadInfo.invoices[i].derivationSuffix,
-      vout: i + 1
-    })
-    // Upload the file to nanostore
-    const uploadObject = {
-      config: {
-        nanostoreURL: constants.nanostoreURL
-      },
-      uploadURL: paymentResult.uploadURL, // wrong
-      publicURL: fileUploadInfo.invoices[i].publicURL,
-      file: fileUploadInfo.filesToUpload[i],
-      serverURL: constants.nanostoreURL
-    }
-    const response = await upload(uploadObject)
-    console.log(response.publicURL)
-  }
+  // Pay and upload the files to nanostore
+  await submitPaymentProof({ fileUploadInfo, payment })
 
   if (fileUploadInfo.encryptionKey) {
-  // Export encryption key to store on the keyServer // TODO: Move
-    const decryptionKey = await window.crypto.subtle.exportKey('raw', fileUploadInfo.encryptionKey)
-    const response = await new Authrite().request(`${constants.keyServerURL}/publish`, {
-      body: {
-        songURL: fileUploadInfo.songURL,
-        key: Buffer.from(decryptionKey).toString('base64')
-      },
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    if (response.status !== 200) {
-      // toast.error('Failed to publish song! Please upload a valid media type of mp3, m4a, or wav')
-      return false
-    }
+    // Export encryption key to store on the keyServer
+    await publishKey({ key: fileUploadInfo.encryptionKey, songURL: fileUploadInfo.songURL })
   }
-  // toast.success('Song successfully updated!')
 }

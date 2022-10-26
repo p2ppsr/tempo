@@ -1,6 +1,5 @@
 import { Authrite } from 'authrite-js'
 import { decrypt } from 'cwi-crypto'
-import { toast } from 'react-toastify'
 import { createAction, getPublicKey } from '@babbage/sdk'
 import bsv from 'babbage-bsv'
 import { download } from 'nanoseek'
@@ -24,15 +23,6 @@ export default async ({ song }) => {
         'Content-Type': 'application/json'
       }
     })
-  // const test = new Promise((resolve, reject) => {
-  //   resolve(true)
-  // })
-  // toast.promise(test,
-  //   {
-  //     pending: 'Loading song... 🎶',
-  //     success: 'Success! 🪩',
-  //     error: 'Failed to load song! 🤯'
-  //   })
   const invoice = (JSON.parse(Buffer.from(invoiceResponse.body).toString('utf8')))
   const paymentDescription = `You listened to ${song.title}, by ${song.artist}`
   // Pay the recipient

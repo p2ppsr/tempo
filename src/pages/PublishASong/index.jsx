@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import MainMenu from '../../components/MainMenu'
-import Footer from '../../components/Footer'
 import './style.css'
-import image from '../../Images/placeholder-image.png'
 import { useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -49,11 +47,9 @@ const PublishASong = () => {
           error: 'Failed to publish song! 🤯'
         }
       )
-      debugger
       song.isPublished = publishStatus
     } catch (error) {
       console.log(error)
-      // toast.error('Please select a valid file to upload!')
     }
   }
 

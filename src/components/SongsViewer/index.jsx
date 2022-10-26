@@ -28,6 +28,7 @@ const Msg = ({ action, toastProps }) => (
 const SongsViewer = ({ props } = {}) => {
   const [currentSongId, setCurrentSongId] = useState(0)
   const [currentIdentityKey, setCurrentIdentityKey] = useState()
+
   // const location = useLocation()
   // let song
   // if (location && location.state && location.state.song) {
@@ -62,39 +63,43 @@ const SongsViewer = ({ props } = {}) => {
     // Decrypt song
     if (!songs[selectionIndex].decryptedSongURL) {
       let decryptedSongURL
-      try {
-        decryptedSongURL = await decryptSong({
-          song: songs[selectionIndex]
-        })
-      } catch (error) {
-        toast.error('Failed to load song!')
-        return
-      }
-      updatedSongs[selectionIndex].decryptedSongURL = decryptedSongURL
-      setSongs(updatedSongs)
+      toast.promise(
+        async () => {
+          decryptedSongURL = await decryptSong({
+            song: songs[selectionIndex]
+          })
+          updatedSongs[selectionIndex].decryptedSongURL = decryptedSongURL
+          setSongs(updatedSongs)
+          // Update the audioPlayer to play the selected song
+          const audioPlayer = document.getElementById('audioPlayer')
+          audioPlayer.src = updatedSongs[selectionIndex].decryptedSongURL
+          audioPlayer.autoplay = true
+        },
+        {
+          pending: 'Loading song...',
+          success: 'Feel the beat! 🎉',
+          error: 'Failed to load song! 🤯'
+        }
+      )
     }
-    // Update the audioPlayer to play the selected song
-    const audioPlayer = document.getElementById('audioPlayer')
-    audioPlayer.src = updatedSongs[selectionIndex].decryptedSongURL
-    audioPlayer.autoplay = true
   }
 
+  // TODO: Fix bug with getting correct song index.
   const deleteSelectedSong = async (e) => {
     setCurrentSongId(e.currentTarget.id)
     toast.warn(<Msg action={confirmed} />, { autoClose: false })
   }
 
   useEffect(async () => {
+    // TODO: Add support for viewing a particular artist's songs
     const searchFilter = props ? props.filter : {}
     if (props && props.mySongsOnly) {
       searchFilter.artistIdentityKey = await getPublicKey({ protocolID: 'Tempo', keyID: '1' })
       setCurrentIdentityKey(searchFilter.artistIdentityKey)
-      // searchFilter.artistIdentityKey = currentIdentityKey
     }
-    // debugger
     fetchSongs(searchFilter)
       .then((res) => {
-        setSongs(res.reverse()) // Newest songs on top
+        setSongs(res.reverse()) // Newest songs on top (note performance with large results)
       })
       .catch((e) => {
         console.log(e.message)

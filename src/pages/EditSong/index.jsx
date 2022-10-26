@@ -8,25 +8,10 @@ import { Img } from 'uhrp-react'
 import constants from '../../utils/constants'
 import decryptSong from '../../utils/decryptSong'
 import updateSong from '../../utils/updateSong'
-// import 'react-toastify/dist/ReactToastify.css'
-
-// import publishSong from '../../utils/publishSong'
-
-// const TEMPO_BRIDGE_ADDRESS = '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
-// const NANOSTORE_SERVER_URL = process.env.REACT_APP_IS_STAGING
-//   ? 'https://staging-nanostore.babbage.systems'
-//   : window.location.host.startsWith('localhost')
-//     ? 'http://localhost:3104'
-//     : 'https://nanostore.babbage.systems'
-// const RETENTION_PERIOD = 86400 // ?
-// const KEY_SERVER_HOST =
-//   process.env.REACT_APP_TEMPO_KEY_SERVER_URL
-//   || 'http://localhost:8080'
 
 const EditSong = () => {
   const location = useLocation()
   const { song } = location.state
-  // const test = song.title
 
   const [updatedSong, setUpdatedSong] = useState({
     title: song.title,
@@ -38,7 +23,7 @@ const EditSong = () => {
 
   const handleChange = (e) => {
     const valueToUpdate = e.target.name === 'selectedArtwork' || e.target.name === 'selectedMusic' ? e.target.files[0] : e.target.value
-    console.log(valueToUpdate)
+
     setUpdatedSong({
       ...updatedSong,
       [e.target.name]: valueToUpdate
@@ -47,18 +32,10 @@ const EditSong = () => {
   const navigate = useNavigate()
 
   const onFileUpload = async (e) => {
-    // toast.success('Publishing song...')
-    // debugger
     song.title = updatedSong.title
     song.artist = updatedSong.artist
 
-    if (updatedSong.selectedArtwork) {
-      console.log('hey new artwork here!')
-    }
-    if (updatedSong.selectedMusic) {
-      console.log('hey new music here!')
-    }
-    // debugger
+    // Updated the song
     toast.promise(
       async () => {
         await updateSong({ song, filesToUpdate: { selectedArtwork: updatedSong.selectedArtwork, selectedMusic: updatedSong.selectedMusic } })
@@ -69,32 +46,10 @@ const EditSong = () => {
         success: 'Song updated! 🎉',
         error: 'Failed to update song! 🤯'
       })
-    // try {
-    //   // Publish Song
-    //   const publishStatus = await publishSong(song, RETENTION_PERIOD, NANOSTORE_SERVER_URL, KEY_SERVER_HOST, TEMPO_BRIDGE_ADDRESS, toast)
-    //   song.isPublished = publishStatus
-    // } catch (error) {
-    //   console.log(error)
-    //   toast.error('Please select a valid file to upload!')
-    // }
-
-    // // const history = useHistory()
-    // if (song.isPublished) {
-    // console.log('success')
-    // }
   }
-
+  // Demo the current song audio file
   const playSong = async (e) => {
-    // const selectionIndex = e.currentTarget.id
-    // const allSongs = document.querySelectorAll('.song')
-    // allSongs.forEach((n) => n.parentNode.classList.remove('isActive'))
-    // e.currentTarget.parentNode.classList.add('isActive')
-    // Decrypt song
-    // if (!song.decryptedSongURL) {
-    //   let decryptedSongURL
-    // debugger
     try {
-      // console.log(song.title + 'test')
       const decryptedSongURL = await decryptSong({
         song
       })
@@ -106,7 +61,6 @@ const EditSong = () => {
     } catch (error) {
       toast.error('Failed to load song!')
     }
-    // }
   }
 
   return (
