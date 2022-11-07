@@ -43,7 +43,8 @@ export default async ({ song, filesToUpdate }) => {
       Buffer.from(song.description, 'utf8'), // TODO: Add to UI
       Buffer.from('' + song.duration, 'utf8'), // Duration
       Buffer.from(song.songFileURL, 'utf8'),
-      Buffer.from(song.artworkFileURL, 'utf8')
+      Buffer.from(song.artworkFileURL, 'utf8'),
+      Buffer.from(song.songID)
     ],
     protocolID: 'tempo',
     keyID: '1'
@@ -64,7 +65,7 @@ export default async ({ song, filesToUpdate }) => {
       {
         script: updatedBitcoinOutputScript,
         satoshis: Number(song.sats)
-      }],
+      }, ...fileUploadInfo.outputs],
     bridges: [constants.tempoBridge]
   })
 
