@@ -125,7 +125,6 @@ const EditSong = () => {
                 bridgeportResolvers={constants.bridgeportResolvers}
                 style={{ width: '300px' }}
               />
-              {/* <Link className='button tipBtn' onClick={playSong}>Listen</Link> */}
               <button className='button tipBtn' onClick={playSong}>Listen</button>
             </div>
             <div className='centerDiv'>
