@@ -20,7 +20,8 @@ export default async (
       Buffer.from('Default description', 'utf8'), // TODO: Add to UI
       Buffer.from('' + fileUploadInfo.songDuration, 'utf8'), // Duration
       Buffer.from(fileUploadInfo.songURL, 'utf8'),
-      Buffer.from(fileUploadInfo.artworkFileURL, 'utf8')
+      Buffer.from(fileUploadInfo.artworkFileURL, 'utf8'),
+      Buffer.from(Buffer.from(require('crypto').randomBytes(32)).toString('hex')) // Generate a unique songID
     ],
     protocolID: 'tempo',
     keyID: '1'

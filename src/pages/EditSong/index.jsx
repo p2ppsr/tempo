@@ -8,6 +8,8 @@ import { Img } from 'uhrp-react'
 import constants from '../../utils/constants'
 import decryptSong from '../../utils/decryptSong'
 import updateSong from '../../utils/updateSong'
+import bridgecast from 'bridgecast'
+import fetchSongs from '../../utils/fetchSongs'
 
 const EditSong = () => {
   const location = useLocation()
@@ -18,7 +20,8 @@ const EditSong = () => {
     artist: song.artist,
     selectedArtwork: null,
     selectedMusic: null,
-    isPublished: false
+    isPublished: false,
+    songID: null
   })
 
   const handleChange = (e) => {
@@ -36,11 +39,44 @@ const EditSong = () => {
     song.artist = updatedSong.artist
 
     // Updated the song
-    toast.promise(
-      async () => {
+    let attemptCounter = 0
+    let alertId = 'tempValue'
+    const attemptToUpdate = async () => {
+      try {
         await updateSong({ song, filesToUpdate: { selectedArtwork: updatedSong.selectedArtwork, selectedMusic: updatedSong.selectedMusic } })
-        navigate('/MySongs')
-      },
+      } catch (error) {
+        if (error.code === 'ERR_DOUBLE_SPEND') {
+          // Handle double spend attempt
+          toast.dismiss(alertId)
+          alertId = toast.error('Double spend attempt detected! Attempting to resolve state...')
+
+          // Use bridgecast to send the missing transactions to the TSP Bridge
+          await Promise.all(Object.values(error.spendingTransactions).map(async env => {
+            await bridgecast({
+              bridges: [constants.tempoBridge],
+              tx: env,
+              bridgeportResolvers: constants.bridgeportResolvers
+            })
+          }))
+          if (attemptCounter < 3) {
+            // Get the new state of the song to update
+            const songs = await fetchSongs({ songID: song.songID })
+            // Update the song to update's token to contain the new state
+            song.token = songs[0].token
+            attemptCounter++
+            return await attemptToUpdate()
+          } else {
+            throw error
+          }
+        } else {
+          throw error
+        }
+      }
+      navigate('/MySongs')
+    }
+
+    toast.promise(
+      attemptToUpdate,
       {
         pending: 'Updating song... 🛠',
         success: 'Song updated! 🎉',
