@@ -23,7 +23,7 @@ export default async ({ song, filesToUpdate }) => {
     outputAmount: song.sats
   })
 
-  // If we need to...
+  // Get the upload and payment information for any attached files
   const fileUploadInfo = await getFileUploadInfo({ selectedArtwork: filesToUpdate.selectedArtwork, selectedMusic: filesToUpdate.selectedMusic })
 
   if (fileUploadInfo.songURL) {
@@ -32,6 +32,9 @@ export default async ({ song, filesToUpdate }) => {
   if (fileUploadInfo.artworkFileURL) {
     song.artworkFileURL = fileUploadInfo.artworkFileURL
   }
+  if (fileUploadInfo.songDuration) {
+    song.duration = fileUploadInfo.songDuration
+  }
 
   // Create an updated locking script with the updated data
   const updatedBitcoinOutputScript = await pushdrop.create({
@@ -39,11 +42,11 @@ export default async ({ song, filesToUpdate }) => {
       Buffer.from(constants.tempoBridge, 'utf8'), // Protocol Namespace Address
       Buffer.from(song.title, 'utf8'),
       Buffer.from(song.artist, 'utf8'),
-      // Buffer.from(song.artistIdentityKey, 'utf8'),
       Buffer.from(song.description, 'utf8'), // TODO: Add to UI
-      Buffer.from('' + song.duration, 'utf8'), // Duration
+      Buffer.from('' + song.duration, 'utf8'),
       Buffer.from(song.songFileURL, 'utf8'),
-      Buffer.from(song.artworkFileURL, 'utf8')
+      Buffer.from(song.artworkFileURL, 'utf8'),
+      Buffer.from(song.songID)
     ],
     protocolID: 'tempo',
     keyID: '1'
@@ -64,11 +67,11 @@ export default async ({ song, filesToUpdate }) => {
       {
         script: updatedBitcoinOutputScript,
         satoshis: Number(song.sats)
-      }],
+      }, ...fileUploadInfo.outputs],
     bridges: [constants.tempoBridge]
   })
 
-  // Pay and upload the files to nanostore
+  // Pay and upload the files to nanostore, if there are new files
   await submitPaymentProof({ fileUploadInfo, payment })
 
   if (fileUploadInfo.encryptionKey) {

@@ -80,7 +80,7 @@ const EditProfile = () => {
           <img alt='artist' src={ProfilePicture} />
           <div>
             <h1>StageName</h1>
-            <p className='about'>hmm</p>
+            <p className='about'>Coming soon!</p>
             {/* <Link className='button tipBtn' to='#'>TIP ARTIST</Link> */}
             <button className='button' onClick='#'>Edit Profile</button>
           </div>
