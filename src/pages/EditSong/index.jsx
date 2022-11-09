@@ -55,8 +55,14 @@ const EditSong = () => {
             // Get the new state of the song to update
             const songs = await fetchSongs({ songID: song.songID })
             const changedSong = songs[0]
+            // Figure what state changes were made by the previous transaction
             Object.keys(changedSong).forEach(prop => {
-              // Figure what state changes were made by the previous transaction
+              // Rules Tempo State Updates Follow:
+              // 1. If a property was updated by a spending transaction, updated the current state to match.
+              // 2. If the current update attempt also updated that property, the current updated value has priority.
+              // 3. If a property was updated by a spending transaction and not the current update, the new state is applied.
+              // 4. If no changes were made, the current state is kept.
+
               if (changedSong[prop] !== song[prop] && updatedSong[prop] !== song[prop]) {
                 song[prop] = updatedSong[prop]
               } else {
