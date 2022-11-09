@@ -26,12 +26,12 @@ services:
 
   # The Bridgeport Connecticut Proxy
   connecticut:
-    image: us.gcr.io/computing-with-integrity/connecticut:master-60a7cb0e489b6e21aa97111aee16a67f7488800e
+    image: us.gcr.io/computing-with-integrity/connecticut:latest
     # build: '../connecticut'
     ports:
       - "3103:3103"
-      - 3205:9229
-    command: node --inspect=0.0.0.0 ./src/index.js
+      # - 3205:9229
+    # command: node --inspect=0.0.0.0 ./src/index.js
     environment:
       HTTP_PORT: 3103
       PORT: 3103
@@ -99,9 +99,9 @@ services:
   tsp-transformer:
     hostname: "transformer-1lqtkkk7c1tn3ucrfsp8sqgjwtzgskze36"
     build: '../tsp-bridge/transformer'
-    command: node --inspect=0.0.0.0 ./server.js
-    ports:
-      - 9229:9229
+    # command: node --inspect=0.0.0.0 ./server.js
+    # ports:
+    #   - 9229:9229
     environment:
       PORT: 80
       MONGODB_WRITE_CREDS: 'mongodb://bridgeport-mongo:3113/bridge_1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
@@ -115,8 +115,10 @@ services:
       restart: always
       volumes:
       - './data/tempo-key-server-mysql-data:/var/lib/mysql'
+      command: node --inspect=0.0.0.0 ./src/index.js
       ports:
-      - 8080:8080
+        - 8080:8080
+        - 3205:9229
       environment:
         NODE_ENV: staging
         HTTP_PORT: 8080

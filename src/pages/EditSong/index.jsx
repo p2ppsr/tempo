@@ -15,14 +15,7 @@ const EditSong = () => {
   const location = useLocation()
   const { song } = location.state
 
-  const [updatedSong, setUpdatedSong] = useState({
-    title: song.title,
-    artist: song.artist,
-    selectedArtwork: null,
-    selectedMusic: null,
-    isPublished: false,
-    songID: null
-  })
+  const [updatedSong, setUpdatedSong] = useState(song)
 
   const handleChange = (e) => {
     const valueToUpdate = e.target.name === 'selectedArtwork' || e.target.name === 'selectedMusic' ? e.target.files[0] : e.target.value
@@ -35,15 +28,15 @@ const EditSong = () => {
   const navigate = useNavigate()
 
   const onFileUpload = async (e) => {
-    song.title = updatedSong.title
-    song.artist = updatedSong.artist
+    // song.title = updatedSong.title
+    // song.artist = updatedSong.artist
 
     // Updated the song
     let attemptCounter = 0
     let alertId = 'tempValue'
     const attemptToUpdate = async () => {
       try {
-        await updateSong({ song, filesToUpdate: { selectedArtwork: updatedSong.selectedArtwork, selectedMusic: updatedSong.selectedMusic } })
+        await updateSong({ song: updatedSong, filesToUpdate: { selectedArtwork: updatedSong.selectedArtwork, selectedMusic: updatedSong.selectedMusic } })
       } catch (error) {
         if (error.code === 'ERR_DOUBLE_SPEND') {
           // Handle double spend attempt
@@ -61,8 +54,16 @@ const EditSong = () => {
           if (attemptCounter < 3) {
             // Get the new state of the song to update
             const songs = await fetchSongs({ songID: song.songID })
-            // Update the song to update's token to contain the new state
-            song.token = songs[0].token
+            const changedSong = songs[0]
+            Object.keys(changedSong).forEach(prop => {
+              // Figure what state changes were made by the previous transaction
+              if (changedSong[prop] !== song[prop] && updatedSong[prop] !== song[prop]) {
+                song[prop] = updatedSong[prop]
+              } else {
+                song[prop] = changedSong[prop]
+              }
+            })
+            setUpdatedSong(song)
             attemptCounter++
             return await attemptToUpdate()
           } else {
