@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import MainMenu from '../../components/MainMenu'
 import './style.css'
-// import image from '../../Images/placeholder-image.png'
-import { useNavigate, Link, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import { Img } from 'uhrp-react'
 import constants from '../../utils/constants'
@@ -12,34 +11,34 @@ import bridgecast from 'bridgecast'
 import fetchSongs from '../../utils/fetchSongs'
 
 const EditSong = () => {
+  const navigate = useNavigate()
   const location = useLocation()
+  // Current state of the selected song
   const { song } = location.state
 
+  // Contains the current state of the selected song with updates by the user
   const [updatedSong, setUpdatedSong] = useState(song)
 
+  // Handle UI updates to song properties
   const handleChange = (e) => {
     const valueToUpdate = e.target.name === 'selectedArtwork' || e.target.name === 'selectedMusic' ? e.target.files[0] : e.target.value
-
     setUpdatedSong({
       ...updatedSong,
       [e.target.name]: valueToUpdate
     })
   }
-  const navigate = useNavigate()
 
   const onFileUpload = async (e) => {
-    // song.title = updatedSong.title
-    // song.artist = updatedSong.artist
-
-    // Updated the song
     let attemptCounter = 0
     let alertId = 'tempValue'
+    // Try to update the selected song
     const attemptToUpdate = async () => {
       try {
         await updateSong({ song: updatedSong, filesToUpdate: { selectedArtwork: updatedSong.selectedArtwork, selectedMusic: updatedSong.selectedMusic } })
       } catch (error) {
+        // Handle double spend attempts
         if (error.code === 'ERR_DOUBLE_SPEND') {
-          // Handle double spend attempt
+          // Let the user know what is happening
           toast.dismiss(alertId)
           alertId = toast.error('Double spend attempt detected! Attempting to resolve state...')
 
@@ -51,6 +50,7 @@ const EditSong = () => {
               bridgeportResolvers: constants.bridgeportResolvers
             })
           }))
+          // If we haven't surpassed the limit, try to update the song again
           if (attemptCounter < 3) {
             // Get the new state of the song to update
             const songs = await fetchSongs({ songID: song.songID })
@@ -63,8 +63,10 @@ const EditSong = () => {
                 song[prop] = changedSong[prop]
               }
             })
+            // Set updatedSong so that it contains the new state discovered, as well as current updates
             setUpdatedSong(song)
             attemptCounter++
+            // Attempt update again
             return await attemptToUpdate()
           } else {
             throw error
