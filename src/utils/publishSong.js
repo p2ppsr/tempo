@@ -23,7 +23,7 @@ export default async (
       Buffer.from(fileUploadInfo.artworkFileURL, 'utf8'),
       Buffer.from(Buffer.from(require('crypto').randomBytes(32)).toString('hex')) // Generate a unique songID
     ],
-    protocolID: 'tempo',
+    protocolID: [2, 'tempo'],
     keyID: '1'
   })
   // Create an action for all outputs
