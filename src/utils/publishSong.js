@@ -33,7 +33,7 @@ export default async (
       script: bitcoinOutputScript
     }, ...fileUploadInfo.outputs],
     description: 'Publish a song',
-    bridges: [constants.tempoBridge]
+    topics: [constants.tempoTopic]
   }
 
   const payment = await createAction(actionData)

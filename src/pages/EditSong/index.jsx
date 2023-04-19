@@ -7,7 +7,7 @@ import { Img } from 'uhrp-react'
 import constants from '../../utils/constants'
 import decryptSong from '../../utils/decryptSong'
 import updateSong from '../../utils/updateSong'
-import bridgecast from 'bridgecast'
+//import bridgecast from 'bridgecast'
 import fetchSongs from '../../utils/fetchSongs'
 
 const EditSong = () => {
@@ -44,11 +44,11 @@ const EditSong = () => {
 
           // Use bridgecast to send the missing transactions to the TSP Bridge
           await Promise.all(Object.values(error.spendingTransactions).map(async env => {
-            await bridgecast({
-              bridges: [constants.tempoBridge],
+            /**await bridgecast({ //send to confederacy instead of bridgeport
+              topic: [constants.tempoTopic],  
               tx: env,
-              bridgeportResolvers: constants.bridgeportResolvers
-            })
+              confederacyURL: constants.confederacyURL
+            })**/
           }))
           // If we haven't surpassed the limit, try to update the song again
           if (attemptCounter < 3) {

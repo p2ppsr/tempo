@@ -31,6 +31,6 @@ export default async ({ song }) => {
         }]
       }
     },
-    bridges: [constants.tempoBridge]
+    topic: [constants.tempoTopic]
   })
 }

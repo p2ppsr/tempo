@@ -68,7 +68,7 @@ export default async ({ song, filesToUpdate }) => {
         script: updatedBitcoinOutputScript,
         satoshis: Number(song.sats)
       }, ...fileUploadInfo.outputs],
-    bridges: [constants.tempoBridge]
+    topic: [constants.tempoTopic]
   })
 
   // Pay and upload the files to nanostore, if there are new files
