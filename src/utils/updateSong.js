@@ -39,7 +39,7 @@ export default async ({ song, filesToUpdate }) => {
   // Create an updated locking script with the updated data
   const updatedBitcoinOutputScript = await pushdrop.create({
     fields: [
-      Buffer.from(constants.tempoBridge, 'utf8'), // Protocol Namespace Address
+      Buffer.from(constants.tempoTopic, 'utf8'), // Protocol Namespace Address
       Buffer.from(song.title, 'utf8'),
       Buffer.from(song.artist, 'utf8'),
       Buffer.from(song.description, 'utf8'), // TODO: Add to UI

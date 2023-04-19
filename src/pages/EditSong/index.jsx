@@ -131,7 +131,7 @@ const EditSong = () => {
               <h3>ALBUM ARTWORK</h3>
               <Img
                 src={song.artworkFileURL}
-                bridgeportResolvers={constants.bridgeportResolvers}
+                confederacyURL={constants.confederacyURL}
                 style={{ width: '300px' }}
               />
               <button className='button tipBtn' onClick={playSong}>Listen</button>

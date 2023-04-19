@@ -117,7 +117,7 @@ const SongsViewer = ({ props } = {}) => {
               <ListItemText className='songListItem song' primary={i + 1} />
               <Img
                 src={song.artworkFileURL}
-                bridgeportResolvers={constants.bridgeportResolvers}
+                confederacyURL={constants.confederacyURL}
               />
               <ListItemText
                 className='song test'
