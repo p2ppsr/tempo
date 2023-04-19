@@ -1,9 +1,6 @@
 import React, { useEffect } from 'react'
 import './style.css'
 import { FaUserCircle, FaPlus } from 'react-icons/fa'
-import logo from '../../Images/tempoLogo.png'
-import albumArtwork from '../../Images/albumArtwork.jpg'
-import musicDemo from '../../Music/song0.mp3'
 import ReactAudioPlayer from 'react-audio-player'
 import { NavLink } from 'react-router-dom'
 
@@ -25,7 +22,7 @@ const LeftMenu = () => {
     <div>
       <div className='leftMenu'>
         <div className='logoContainer'>
-          <img className='menuLogo' src={logo} />
+          <img className='menuLogo' src='/Images/tempoLogo.png' />
         </div>
         <div className='welcomeMessage'>
           <p>Welcome!</p>

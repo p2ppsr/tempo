@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import './style.css'
-import ProfilePicture from '../../Images/placeholder-image.png'
 import { Link, useLocation } from 'react-router-dom'
 
 const ArtistProfile = () => {
@@ -10,7 +9,7 @@ const ArtistProfile = () => {
   const [followStatus, setFollowStatus] = useState('Follow')
   return (
     <div className='ArtistProfile'>
-      <img alt='artist' src={ProfilePicture} />
+      <img alt='artist' src='/Images/placeholder-image.png' />
       <div>
         <h1>{song.artist}</h1>
         <p className='about'>{song.artist.bio}</p>

@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import useSwipeScroll from './useSwipeScroll'
-//import { animated, useSpring } from 'react-spring'
+import { animated, useSpring } from 'react-spring'
 import { useScroll } from 'react-use-gesture'
 import './style.css'
 import SongsViewer from '../SongsViewer'
@@ -32,7 +32,7 @@ const LatestSongs = () => {
   })
 
   // Testing out a horizontal scroll bar animation.
-  /**const [style, set] = useSpring(() => ({
+  const [style, set] = useSpring(() => ({
     transform: 'perspective(500px) rotateY(0deg)'
   }))
   const bind = useScroll(event => {
@@ -65,6 +65,7 @@ const LatestSongs = () => {
       </div>
       <SongsViewer />
     </div>
-  )**/
+  )
 }
-export default () => null //LatestSongs
+
+export default LatestSongs

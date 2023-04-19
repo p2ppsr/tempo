@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react'
 import LeftMenu from '../../components/LeftMenu'
 import MainMenu from '../../components/MainMenu'
 import './style.css'
-import image from '../../Images/placeholder-image.png'
+// import image from '../../Images/placeholder-image.png'
 import { Link, useLocation } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import SongsViewer from '../../components/SongsViewer'
 // import { getPublicKey } from '@babbage/sdk'
 import ArtistProfile from '../../components/ArtistProfile'
-import ProfilePicture from '../../Images/placeholder-image.png'
 const EditProfile = () => {
   // TODO: Refactor for profile updating.
   // const [song, setSong] = useState({
@@ -77,7 +76,7 @@ const EditProfile = () => {
       <div className='flexBoxContainer'>
         <MainMenu />
         <div className='ArtistProfile'>
-          <img alt='artist' src={ProfilePicture} />
+          <img alt='artist' src='/Images/placeholder-image.png' />
           <div>
             <h1>StageName</h1>
             <p className='about'>Coming soon!</p>

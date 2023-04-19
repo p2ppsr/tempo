@@ -2,8 +2,6 @@ import React, { useEffect } from 'react'
 import './style.css'
 // import { FaUserCircle, FaPlus } from 'react-icons/fa'
 // import logo from '../../Images/tempoLogo.png'
-import albumArtwork from '../../Images/albumArtwork.jpg'
-import musicDemo from '../../Music/song0.mp3'
 import ReactAudioPlayer from 'react-audio-player'
 // import { NavLink } from 'react-router-dom'
 
@@ -12,10 +10,10 @@ const Footer = () => {
   }, [])
   return (
     <div className='footer'>
-      <img alt='' className='logoImage' src={albumArtwork} />
+      <img alt='' className='logoImage' src='/Images/albumArtwork.jpg' />
       <p>Artist Name</p>
       <ReactAudioPlayer
-        src={musicDemo}
+        src='/Music/song0.mp3'
         autoPlay={false}
         controls
         className='playerControls'

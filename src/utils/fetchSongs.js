@@ -1,7 +1,7 @@
 //import parapet from 'parapet-js' replace with confederacy lookup query
 import constants from './constants'
 
-export default (searchFilter) => [] /**parapet({
+export default async (searchFilter) => [] /**parapet({
   resolvers: constants.confederacyResolvers,
   bridge: constants.tempoBridge,
   request: {
