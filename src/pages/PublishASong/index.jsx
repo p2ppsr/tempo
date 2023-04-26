@@ -33,10 +33,15 @@ const PublishASong = () => {
       // Publish Song
       let publishStatus = false
       const pubSong = async () => {
-        publishStatus = await publishSong(song, RETENTION_PERIOD)
-        if (publishStatus) {
-          console.log('success')
-          navigate('/PublishASong/Success')
+        try {
+          publishStatus = await publishSong(song, RETENTION_PERIOD)
+          if (publishStatus) {
+            console.log('success')
+            navigate('/PublishASong/Success')
+          }
+        } catch (e) {
+          console.error(e)
+          throw e
         }
       }
       toast.promise(

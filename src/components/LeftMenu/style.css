@@ -1,7 +1,7 @@
 .leftMenu {
     width: 22vw;
     /* min-width: 235px; */
-    min-height: 100vh;
+    min-height: 140vh;
     background-image: linear-gradient(#2C224A, black);
     z-index: 0;
     /* overflow-y: scroll;

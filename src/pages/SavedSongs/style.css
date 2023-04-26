@@ -7,7 +7,7 @@
 }
 .mainContentContainer2 {
     width: 82vw;
-    height: 100vh;
+    min-height: 130vh; 
     display: grid;
     grid-template: 1fr 10fr / 1fr;
     grid-template-areas:
