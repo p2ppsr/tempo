@@ -4,17 +4,18 @@ import constants from './constants'
 import getFileUploadInfo from './getFileUploadInfo'
 import submitPaymentProof from './submitPaymentProof'
 import publishKey from './publishKey'
+import { Authrite } from 'authrite-js'
 
 export default async (
   song, retentionPeriod
 ) => {
   // Update the selected files
   const fileUploadInfo = await getFileUploadInfo({ selectedArtwork: song.selectedArtwork, selectedMusic: song.selectedMusic, retentionPeriod })
-
+  
   // Create an action script based on the tsp-protocol
   const bitcoinOutputScript = await pushdrop.create({
     fields: [
-      Buffer.from(constants.tempoBridge, 'utf8'), // Protocol Namespace Address
+      Buffer.from(constants.tempoTopic, 'utf8'), // Protocol Namespace Address
       Buffer.from(song.title, 'utf8'),
       Buffer.from(song.artist, 'utf8'),
       Buffer.from('Default description', 'utf8'), // TODO: Add to UI
@@ -33,14 +34,26 @@ export default async (
       script: bitcoinOutputScript
     }, ...fileUploadInfo.outputs],
     description: 'Publish a song',
-    topics: [constants.tempoTopic]
+    //topics: [constants.tempoTopic] commented out for local dev
   }
-
+  
   const payment = await createAction(actionData)
+  await new Authrite().request(
+    `${constants.confederacyURL}/submit`,
+    {
+      method: 'POST',
+      body: {
+        ...payment,
+        topics: [constants.tempoTopic]
+      }
+    }
+  )
 
   // Pay and upload the files to nanostore
   await submitPaymentProof({ fileUploadInfo, payment })
+  console.log("publish")
   // Export encryption key to store on the keyServer
   await publishKey({ key: fileUploadInfo.encryptionKey, songURL: fileUploadInfo.songURL })
+  console.log("done")
   return true
 }

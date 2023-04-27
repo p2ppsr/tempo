@@ -1,17 +1,17 @@
 let constants
-if (window.location.host.startsWith('localhost')) { // local
+if (window.location.host.startsWith('localhost') || process.env.NODE_ENV === 'development') { // local
   constants = {
     confederacyURL: 'http://localhost:3103',
-    nanostoreURL: 'http://localhost:3104',
-    tempoTopic: 'tempo',
-    keyServerURL: process.env.REACT_APP_TEMPO_KEY_SERVER_URL ||
-      'http://localhost:8080'
+    nanostoreURL: 'https://staging-nanostore.babbage.systems',//'http://localhost:3104',
+    tempoTopic: 'TSP',
+    keyServerURL: process.env.REACT_APP_TEMPO_KEY_SERVER_URL || 
+    'https://staging-tempo-keyserver.babbage.systems'//'http://localhost:8080'
   }
 } else if (window.location.host.startsWith('staging')) { // staging
   constants = {
     confederacyURL: 'https://staging-confederacy.babbage.systems',
     nanostoreURL: 'https://staging-nanostore.babbage.systems',
-    tempoTopic: 'tempo',
+    tempoTopic: 'TSP',
     keyServerURL: process.env.REACT_APP_TEMPO_KEY_SERVER_URL ||
       'https://staging-tempo-keyserver.babbage.systems'
   }
@@ -19,7 +19,7 @@ if (window.location.host.startsWith('localhost')) { // local
   constants = {
     confederacyURL: undefined,
     nanostoreURL: 'https://nanostore.babbage.systems',
-    tempoTopic: 'tempo',
+    tempoTopic: 'TSP',
     keyServerURL: process.env.REACT_APP_TEMPO_KEY_SERVER_URL ||
       'https://tempo-keyserver.babbage.systems'
   }

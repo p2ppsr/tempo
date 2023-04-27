@@ -6,7 +6,7 @@ const { decrypt } = require('cwi-crypto')
 const getSongs = async () => {
   return await parapet({
     resolvers: ['http://localhost:3103'],
-    bridge: '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36', // TSP
+    tempoTopic: 'TSP',
     request: {
       type: 'json-query',
       query: {
