@@ -25,10 +25,9 @@ const Msg = ({ action, toastProps }) => (
   </div>
 )
 
-const SongsViewer = ({ props } = {}) => {
+const SongsViewer = ({ props = {filter: {findAll: "true"}}}) => {
   const [currentIdentityKey, setCurrentIdentityKey] = useState()
-  let currentSongId = 0
-
+  let currentSongId = 1
   // const location = useLocation()
   // let song
   // if (location && location.state && location.state.song) {
@@ -111,13 +110,16 @@ const SongsViewer = ({ props } = {}) => {
         <List id='songList' sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
           {songs.map((song, i) => (
             <ListItem
-              key={song.id} alignItems='flex-start'
+              key={i} alignItems='flex-start'
               className='listItem'
             >
               <ListItemText className='songListItem song' primary={i + 1} />
               <Img
-                src={song.artworkFileURL}
-                confederacyURL={constants.confederacyURL}
+                key={i}
+                src='XUUg2vWnCH7vcPvq4Ai4uvuRxFix5ND17VHR9AXM9ZRXHWAMFmhs'
+                // src={song.artworkFileURL}
+                className='card'
+                confederacyHost={constants.confederacyURL}
               />
               <ListItemText
                 className='song test'

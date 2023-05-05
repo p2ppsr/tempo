@@ -7,8 +7,8 @@ import { Img } from 'uhrp-react'
 import constants from '../../utils/constants'
 import decryptSong from '../../utils/decryptSong'
 import updateSong from '../../utils/updateSong'
-//import bridgecast from 'bridgecast'
 import fetchSongs from '../../utils/fetchSongs'
+//const Confederacy = require('@cwi/confederacy')
 
 const EditSong = () => {
   const navigate = useNavigate()
@@ -42,14 +42,17 @@ const EditSong = () => {
           toast.dismiss(alertId)
           alertId = toast.error('Double spend attempt detected! Attempting to resolve state...')
 
-          // Use bridgecast to send the missing transactions to the TSP Bridge
+          //Notify confederacy of missing state change(s)
           await Promise.all(Object.values(error.spendingTransactions).map(async env => {
-            /**await bridgecast({ //send to confederacy instead of bridgeport
-              topic: [constants.tempoTopic],  
-              tx: env,
-              confederacyURL: constants.confederacyURL
-            })**/
+              await new Authrite().request(`${constants.confederacyURL}/submit`, {
+                method: 'POST',
+                body: {
+                  ...envelope,
+                  topics: ['TSP']
+                }
+              })
           }))
+
           // If we haven't surpassed the limit, try to update the song again
           if (attemptCounter < 3) {
             // Get the new state of the song to update
@@ -131,7 +134,7 @@ const EditSong = () => {
               <h3>ALBUM ARTWORK</h3>
               <Img
                 src={song.artworkFileURL}
-                confederacyURL={constants.confederacyURL}
+                confederacyHost={constants.confederacyURL}
                 style={{ width: '300px' }}
               />
               <button className='button tipBtn' onClick={playSong}>Listen</button>

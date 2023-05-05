@@ -4,9 +4,10 @@ import constants from './constants'
 export default async ({ fileUploadInfo, payment }) => {
   // Pay and upload the files to nanostore
   //only submit one file for dev
-  for (let i = 1; i < fileUploadInfo.filesToUpload.length; i++) {//let i = 0; i < fileUploadInfo.filesToUpload.length; i++) {
+  const i = 0
+  //for (let i = 0; i < fileUploadInfo.filesToUpload.length; i++) {
     // Submit the proof of payment to nanostore
-    console.log(i)
+    console.log(i) //added for testing
     const paymentResult = await submitPayment({
       config: {
         nanostoreURL: constants.nanostoreURL
@@ -30,4 +31,4 @@ export default async ({ fileUploadInfo, payment }) => {
     }
     await upload(uploadObject)
   }
-}
+//}
