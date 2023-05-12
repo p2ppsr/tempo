@@ -33,10 +33,10 @@ export default async (
   const actionData = {
     outputs: [{
       satoshis: 1,
-      script: bitcoinOutputScript
+      script: bitcoinOutputScript,
+      description: 'Tempo Song Token'
     }, ...fileUploadInfo.outputs],
-    description: 'Publish a song',
-    topics: [constants.tempoTopic]
+    description: 'Publish a song'
   }
   const payment = await createAction(actionData)
 
