@@ -50,7 +50,7 @@ const LatestSongs = () => {
             <Link key={i} to='/'>
               <animated.div
                 key={src}
-                className='card'
+                className='cardLarge'
                 style={{
                   ...style,
                   backgroundImage: `url(${src})`

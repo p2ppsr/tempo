@@ -7,7 +7,6 @@ export default async ({ fileUploadInfo, payment }) => {
   const i = 0
   //for (let i = 0; i < fileUploadInfo.filesToUpload.length; i++) {
     // Submit the proof of payment to nanostore
-    console.log(i) //added for testing
     const paymentResult = await submitPayment({
       config: {
         nanostoreURL: constants.nanostoreURL

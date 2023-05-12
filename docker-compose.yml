@@ -41,21 +41,6 @@ services:
       PASSTHROUGH_LOGGING: true
       DISABLE_UHRP_MOCKING: true
 
-  ###
-  ## Bridgeport Derived Action Datasets
-  ###
-
-  # MongoDB
-  bridgeport-mongo:
-    image: mongo:5
-    command: |
-      bash -c "mongod --bind_ip_all --replSet rs0 --fork --syslog --port 3113 && mongo --port 3113 --eval \"if (!rs.status().ok) rs.initiate({_id : 'rs0', members : [{_id : 0, host : 'bridgeport-mongo:3113'}]})\" && mongo --port 3113 --eval \"while(true) {if (!rs.status().ok) break;sleep(1000)};\""
-    hostname: "bridgeport-mongo"
-    ports:
-      - 3113:27017
-    volumes:
-     - ./data/bridgeport-mongo-data:/data/db
-
   # Mongo Express — web-based MongoDB database viewer
   mongo-express:
     image: mongo-express

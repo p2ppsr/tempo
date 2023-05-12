@@ -7,8 +7,8 @@ import constants from './constants'
 
 export default async ({ song }) => {
   const { data: encryptedData } = await download({
-    URL: song.songFileURL,
-    confederacyURL: constants.confederacyResolvers
+    UHRPUrl: song.songFileURL,
+    confederacyHost: constants.confederacyURL
   })
 
   // Get purchcase invoice from key-server recipient

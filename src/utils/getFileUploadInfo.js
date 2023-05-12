@@ -96,8 +96,9 @@ export default async ({
     inv.derivedPublicKey = paymentInfo.derivedPublicKey
 
     // Add the new invoice and the new transaction output
-    invoices.push(inv)
     outputs.push(paymentInfo.output)
+    invoices.push(inv)
+    //outputs.push(paymentInfo.output)
   }
 
   return {

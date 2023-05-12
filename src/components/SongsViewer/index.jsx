@@ -116,8 +116,7 @@ const SongsViewer = ({ props = {filter: {findAll: "true"}}}) => {
               <ListItemText className='songListItem song' primary={i + 1} />
               <Img
                 key={i}
-                src='XUUg2vWnCH7vcPvq4Ai4uvuRxFix5ND17VHR9AXM9ZRXHWAMFmhs'
-                // src={song.artworkFileURL}
+                src={song.artworkFileURL}
                 className='card'
                 confederacyHost={constants.confederacyURL}
               />
