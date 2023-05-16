@@ -72,6 +72,10 @@ const SongsViewer = ({ props = {filter: {findAll: "true"}}}) => {
           // Update the audioPlayer to play the selected song
           const audioPlayer = document.getElementById('audioPlayer')
           audioPlayer.src = updatedSongs[selectionIndex].decryptedSongURL
+          const playerImg = document.getElementById('playerImg')
+          playerImg.src = updatedSongs[selectionIndex].artworkFileURL
+          const playerTitle = document.getElementById('songTitle')
+          playerTitle.innerText = updatedSongs[selectionIndex].title
           audioPlayer.autoplay = true
         },
         {

@@ -10,8 +10,8 @@ const Footer = () => {
   }, [])
   return (
     <div className='footer'>
-      <img alt='' className='logoImage' src='/Images/albumArtwork.jpg' />
-      <p>Artist Name</p>
+      <img alt='' className='logoImage' src='/Images/albumArtwork.jpg' id='playerImg'/>
+      <p id='songTitle'> Song Title </p>
       <ReactAudioPlayer
         src='/Music/song0.mp3'
         autoPlay={false}

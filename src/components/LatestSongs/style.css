@@ -1,5 +1,7 @@
 .mainContainer {
     /* height: 50vh; */
+    min-height: fit-content;
+    overflow: scroll;
     width: 82vw;
     z-index: 0;
     flex-grow: 1;

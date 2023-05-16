@@ -21,8 +21,7 @@ export default async (
       Buffer.from(song.artist, 'utf8'),
       Buffer.from('Default description', 'utf8'), // TODO: Add to UI
       Buffer.from('' + fileUploadInfo.songDuration, 'utf8'), // Duration
-      //Buffer.from(fileUploadInfo.songURL, 'utf8'),
-      Buffer.from('XUTxu4GrsRxqYCFAznPYz2zAubL3PKhaFYGVLXq7UEZV5GUpkxyb', 'utf8'), //added for testing
+      Buffer.from(fileUploadInfo.songURL, 'utf8'),
       Buffer.from(fileUploadInfo.artworkFileURL, 'utf8'),
       Buffer.from(Buffer.from(require('crypto').randomBytes(32)).toString('hex')) // Generate a unique songID
     ],
@@ -42,7 +41,6 @@ export default async (
 
   // Pay and upload the files to nanostore
   await submitPaymentProof({ fileUploadInfo, payment })
-  console.log('payment done')
 
   await new Authrite().request(
     `${constants.confederacyURL}/submit`,
@@ -57,6 +55,5 @@ export default async (
 
   // Export encryption key to store on the keyServer
   await publishKey({ key: fileUploadInfo.encryptionKey, songURL: fileUploadInfo.songURL })
-  console.log("published")
   return true
 }

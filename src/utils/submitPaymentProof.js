@@ -5,7 +5,7 @@ export default async ({ fileUploadInfo, payment }) => {
   // Pay and upload the files to nanostore
   //only submit one file for dev
   const i = 0
-  //for (let i = 0; i < fileUploadInfo.filesToUpload.length; i++) {
+  for (let i = 0; i < fileUploadInfo.filesToUpload.length; i++) {
     // Submit the proof of payment to nanostore
     const paymentResult = await submitPayment({
       config: {
@@ -30,4 +30,4 @@ export default async ({ fileUploadInfo, payment }) => {
     }
     await upload(uploadObject)
   }
-//}
+}
