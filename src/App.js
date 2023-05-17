@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 // import './index.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
@@ -13,6 +13,7 @@ import PublishASong from './pages/PublishASong'
 import SuccessPage from './pages/PublishASong/PublishSuccess'
 import LeftMenu from './components/LeftMenu'
 import Footer from './components/Footer'
+import artworkContext from './artworkContext'
 
 // const useStyles = makeStyles(theme => ({
 //   content_wrap: {
@@ -27,28 +28,31 @@ import Footer from './components/Footer'
 // }), { name: 'App' })
 
 const App = () => {
+  const [ artworkValue, setArtworkValue] = useState()
   return (
     <div className='rightSide'>
-      <Router>
-        <div className='main'>
-          <LeftMenu />
-          <Footer />
-          <div>
-            <Routes>
-              <Route exact path='/' element={<Home />} />
-              <Route exact path='/SavedSongs' element={<SavedSongs />} />
-              <Route exact path='/Playlists' element={<Playlists />} />
-              <Route exact path='/Playlists/Create' element={<CreatePlaylist />} />
-              <Route exact path='/ArtistProfile' element={<ArtistProfile />} />
-              <Route exact path='/EditProfile' element={<EditProfile />} />
-              <Route exact path='/MySongs' element={<MySongs />} />
-              <Route exact path='/EditSong' element={<EditSong />} />
-              <Route exact path='/PublishASong' element={<PublishASong />} />
-              <Route exact path='/PublishASong/Success' element={<SuccessPage />} />
-            </Routes>
+      <artworkContext.Provider value={{ artworkValue, setArtworkValue}}>
+        <Router>
+          <div className='main'>
+            <LeftMenu />
+            <Footer />
+            <div>
+              <Routes>
+                <Route exact path='/' element={<Home />} />
+                <Route exact path='/SavedSongs' element={<SavedSongs />} />
+                <Route exact path='/Playlists' element={<Playlists />} />
+                <Route exact path='/Playlists/Create' element={<CreatePlaylist />} />
+                <Route exact path='/ArtistProfile' element={<ArtistProfile />} />
+                <Route exact path='/EditProfile' element={<EditProfile />} />
+                <Route exact path='/MySongs' element={<MySongs />} />
+                <Route exact path='/EditSong' element={<EditSong />} />
+                <Route exact path='/PublishASong' element={<PublishASong />} />
+                <Route exact path='/PublishASong/Success' element={<SuccessPage />} />
+              </Routes>
+            </div>
           </div>
-        </div>
-      </Router>
+        </Router>
+      </artworkContext.Provider>
     </div>
   )
 }

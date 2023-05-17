@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { List, ListItem, ListItemText } from '@material-ui/core'
 import { Link, useLocation } from 'react-router-dom'
 import './style.css'
@@ -11,6 +11,7 @@ import { getPublicKey } from '@babbage/sdk'
 import decryptSong from '../../utils/decryptSong'
 import fetchSongs from '../../utils/fetchSongs'
 import deleteSong from '../../utils/deleteSong'
+import artworkContext from '../../artworkContext'
 
 const Msg = ({ action, toastProps }) => (
   <div>
@@ -33,6 +34,8 @@ const SongsViewer = ({ props = {filter: {findAll: "true"}}}) => {
   // if (location && location.state && location.state.song) {
   //   song = location.state.song
   // }
+
+  const { setArtworkValue } = useContext(artworkContext)
 
   const confirmed = async () => {
     toast.promise(
@@ -72,8 +75,7 @@ const SongsViewer = ({ props = {filter: {findAll: "true"}}}) => {
           // Update the audioPlayer to play the selected song
           const audioPlayer = document.getElementById('audioPlayer')
           audioPlayer.src = updatedSongs[selectionIndex].decryptedSongURL
-          const playerImg = document.getElementById('playerImg')
-          playerImg.src = updatedSongs[selectionIndex].artworkFileURL
+          setArtworkValue(updatedSongs[selectionIndex].artworkFileURL)
           const playerTitle = document.getElementById('songTitle')
           playerTitle.innerText = updatedSongs[selectionIndex].title
           audioPlayer.autoplay = true
