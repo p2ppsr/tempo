@@ -1,0 +1,15 @@
+.playlistLink {
+  background: rgba(255,255,255,0.8);
+  border: none;
+  width:50%;
+  padding:1rem;
+  cursor: pointer;
+
+  &:hover{
+    background: rgba(255,255,255,0.9);
+  }
+
+  &:active{
+    background: rgba(255,255,255,0.8);
+  }
+}

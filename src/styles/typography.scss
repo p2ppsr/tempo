@@ -1,0 +1,12 @@
+@import './styleVariables.scss';
+
+h1 {
+	color: $headerColor;
+	font-size: 40px;
+	font-weight: 750;
+	padding-bottom: 20px;
+}
+
+.whiteText {
+	color: $textColor;
+}

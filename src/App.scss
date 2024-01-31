@@ -1,0 +1,72 @@
+@import "./styles/styleVariables.scss";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+a {
+  text-decoration: none;
+}
+
+.main {
+  display: flex;
+  flex-direction: row;
+}
+
+// Page container class. Provides flexbox and padding
+.container {
+	display: flex;
+	flex-direction: column;
+	padding: 2rem;
+}
+
+.backgroundImage {
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  z-index: -1;
+  filter: blur(0.5rem) brightness(0.8);
+  transform: scale(0.75);
+}
+
+.whiteText {
+  color: $textColor;
+}
+
+// Hide scrollbar
+::-webkit-scrollbar {
+  height: 0px;
+  width: 0px;
+}
+
+.button {
+  background-color: $buttonColor;
+  padding: 10px 40px 10px 40px;
+  color: white;
+  font-weight: 600;
+  width: 100%;
+  border: 5px solid $buttonColor;
+}
+
+.toastButton {
+  background-color: #6f44ee;
+  border: 0;
+  padding: 10px 30px 10px 40px;
+  margin: 10px 0px 0px 0px;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  width: 240px;
+}

@@ -31,7 +31,7 @@ services:
     ports:
       - "3103:3103"
       # - 3205:9229
-    # command: node --inspect=0.0.0.0 ./src/index.js
+    # command: node --inspect=0.0.0.0 ./src/index.tsx
     environment:
       HTTP_PORT: 3103
       PORT: 3103
@@ -100,7 +100,7 @@ services:
       restart: always
       volumes:
       - './data/tempo-key-server-mysql-data:/var/lib/mysql'
-      command: node --inspect=0.0.0.0 ./src/index.js
+      command: node --inspect=0.0.0.0 ./src/index.tsx
       ports:
         - 8080:8080
         - 3205:9229

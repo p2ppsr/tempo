@@ -1,0 +1,84 @@
+@import "../../styles/styleVariables.scss";
+
+.topMenuContainer {
+  position: fixed;
+  display: flex;
+  width: 78vw;
+  height: 7.5%;
+  // max-height: 4rem;
+  background-color: $grayBackground;
+  align-items: center;
+  justify-content: space-between;
+
+  .navigationIcon {
+    cursor: pointer;
+
+    &:hover {
+      fill: #de5f3b;
+    }
+    &:active {
+      fill: #de5f3b;
+      filter: brightness(0.55);
+    }
+  }
+}
+
+.menuProfileContainer {
+  align-items: center;
+  margin-right: 1rem;
+  color: white;
+  &:hover {
+    color: #de5f3b;
+  }
+  &:active {
+    filter: brightness(0.8);
+  }
+
+  p {
+    margin-right: 1rem;
+  }
+}
+
+// .topMenu {
+// 	width: 1fr;
+// 	/* height: 8vh; */
+// 	min-height: 60px;
+// 	justify-content: left;
+// 	display: flex;
+// 	/* grid-template: 1fr / 1.5fr 1fr; */
+// 	align-items: center;
+// 	padding-left: 15px;
+// 	padding-right: 15px;
+// 	color: #ffffff;
+// 	z-index: 3;
+// }
+
+// .topMenu ul {
+// 	justify-content: left;
+// 	display: flex;
+// 	align-items: center;
+// }
+
+// .topMenu ul li {
+// 	list-style: none;
+// 	padding: 10px;
+// }
+
+// .topMenu ul li a {
+// 	text-decoration: none;
+// 	color: #ececec;
+// 	font-size: 16px;
+// }
+
+// .topMenu .active {
+// 	color: white;
+// 	font-weight: 700;
+// }
+
+// .slogan {
+// 	font-style: italic;
+// 	font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial,
+// 		sans-serif;
+// 	position: absolute;
+// 	right: 120px;
+// }
