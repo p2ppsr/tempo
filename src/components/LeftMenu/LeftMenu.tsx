@@ -3,6 +3,8 @@ import { FaCaretDown, FaCaretUp } from "react-icons/fa"
 import { NavLink, useLocation } from "react-router-dom"
 import "./LeftMenu.scss"
 
+import tempoLogo from '../../assets/Images/tempoLogo.png'
+
 const LeftMenu = () => {
   // State for whether library accordion is open or closed
   const [libraryOpen, setLibraryOpen] = useState(false)
@@ -17,7 +19,7 @@ const LeftMenu = () => {
     <div>
       <div className="leftMenu">
         <div className="logoContainer">
-          <img className='menuLogo' src='/Images/tempoLogo.png' />
+          <img className='menuLogo' src={tempoLogo} />
         </div>
         <p className="italics whiteText" style={{ textAlign: "center" }}>
           Feel the beat!

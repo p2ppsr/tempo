@@ -33,11 +33,10 @@ a {
 
 .backgroundImage {
   position: absolute;
-  top: -100%;
-  left: -100%;
+  // top: -100%;
+  // left: -100%;
   z-index: -1;
   filter: blur(0.5rem) brightness(0.8);
-  transform: scale(0.75);
 }
 
 .whiteText {

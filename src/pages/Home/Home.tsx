@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import useAsyncEffect from 'use-async-effect'
-import LatestSongs from '../../components/LatestSongs/LastestSongs.tsx'
+import NewReleases from '../../components/NewReleases/NewReleases.tsx'
 import checkForRoyalties from '../../utils/checkForRoyalties.ts'
 import React from "react"
 
@@ -19,7 +19,7 @@ const Home = () => {
 
 	return (
 		<>
-			<LatestSongs className="mainContent" />
+			<NewReleases />
 		</>
 	)
 }

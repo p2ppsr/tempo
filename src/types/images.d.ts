@@ -18,7 +18,6 @@ declare module '*.heic' {
   export = value;
 }
 
-// Add additional image formats as needed
 declare module '*.gif' {
   const value: any;
   export = value;

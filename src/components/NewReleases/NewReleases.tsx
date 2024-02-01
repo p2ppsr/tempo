@@ -1,17 +1,19 @@
 import { useRef, useState } from "react"
 import useSwipeScroll from "./useSwipeScroll"
 import { useScroll } from "react-use-gesture"
-import "./LatestSongs.scss"
+import "./NewReleases.scss"
 // import SongsViewer from '../SongsViewer/SongsViewer'
 import { Link } from "react-router-dom"
 import { PublicKey } from "babbage-bsv"
 import { motion } from "framer-motion"
 import React from "react"
 
+import beatlesArtwork from '../../assets/AlbumArtwork/beatles.jpg'
+
 const clamp = (value: number, clampAt: number = 60) =>
   Math.min(clampAt, Math.max(-clampAt, value))
 
-const beatlesArtwork = "/AlbumArtwork/beatles.jpg"
+// const beatlesArtwork = "/AlbumArtwork/beatles.jpg"
 
 // TODO: Make this dynamic
 const songArtwork = [
@@ -23,11 +25,11 @@ const songArtwork = [
   beatlesArtwork,
 ]
 
-interface LatestSongProps {
-  className: string
+interface NewReleasesProps {
+  className?: string
 }
 
-const LatestSongs = ({ className }: LatestSongProps) => {
+const LatestSongs = ({ className }: NewReleasesProps) => {
   const ref = useRef(null)
   useSwipeScroll({ sliderRef: ref })
 
@@ -54,7 +56,7 @@ const LatestSongs = ({ className }: LatestSongProps) => {
         ))}
       </div>
       <div className="tableHeader">
-        <h3>New Releases</h3>
+        <h1 className="whiteText">New Releases</h1>
       </div>
       {/* <SongsViewer
 				searchFilter={{

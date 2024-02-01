@@ -35,7 +35,7 @@ const App = () => {
 
       {/* <div className="backgroundImage" /> */}
 
-      <img src="/Images/background.jpg" className="backgroundImage" />
+      <img src="/Images/background.jpg" className="backgroundImage" style={{border:'1px solid red'}}/>
 
       <Router>
         <div className="flex">

@@ -1,5 +1,4 @@
 .footer {
-  /* margin-top: 1rem; */
   padding: 0.5rem;
   background-color: black;
   color: white;
@@ -13,12 +12,27 @@
   flex-direction: row;
   align-items: center;
 }
+
 .playerControls {
-  width: 98vw;
-  height: 25px;
-  padding-right: 10px;
-  /* left: 10;
-    right: 10; */
-  /* align-items: center;
-    justify-content: space-between; */
+  flex-grow: 2;
+  height: 4rem;
+  padding-right: 1rem;
+}
+
+.titleContainer {
+  display: flex;
+  align-items: center;
+  // max-width: 30vw;
+  margin-left:1rem;
+
+  .songTitle {
+    font-size: 2rem;
+    margin-inline: 1rem;
+    width: 20vw;
+    text-align: center;
+  }
+
+  .playerAlbumArt {
+    max-width: 4rem;
+  }
 }
