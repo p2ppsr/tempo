@@ -5,6 +5,10 @@
 	min-height: 140vh;
 	background-image: linear-gradient(#2c224a, black);
 	z-index: 0;
+
+	* {
+		user-select: none;
+	}
 }
 
 .leftMenu .logoContainer {

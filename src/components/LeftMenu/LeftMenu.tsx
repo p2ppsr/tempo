@@ -45,7 +45,7 @@ const LeftMenu = () => {
 
           {libraryOpen && (
             <>
-              <NavLink to="/LikedSongs" className="menuAccordionLink">
+              <NavLink to="/Likes" className="menuAccordionLink">
                 Likes
               </NavLink>
               <div className="menuAccordionDivider" />

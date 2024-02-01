@@ -14,6 +14,7 @@ import PublishSong from "./pages/PublishSong/PublishSong"
 import SuccessPage from "./pages/PublishSong/PublishSuccess/PublishSuccess"
 import LeftMenu from "./components/LeftMenu/LeftMenu"
 import Footer from "./components/Footer/Footer"
+import Profile from "./pages/Profile/Profile"
 
 // Styles
 import "./App.scss"
@@ -21,6 +22,7 @@ import "./styles/utils.scss"
 import "./styles/forms.scss"
 import "./styles/typography.scss"
 import TopMenu from "./components/TopMenu/TopMenu"
+import Likes from "./pages/Library/Likes/Likes"
 
 const App = () => {
   return (
@@ -40,7 +42,7 @@ const App = () => {
           <LeftMenu />
           <div className="rightContainer">
             <TopMenu />
-            <div style={{ marginTop: "5%" }}>
+            <div style={{ marginTop: "3rem" }}>
               <Footer />
               <div>
                 <Routes>
@@ -51,7 +53,7 @@ const App = () => {
                     path="/Playlists/Create"
                     element={<CreatePlaylist />}
                   />
-                  {/* <Route path="/ArtistProfile" element={<ArtistProfile />} /> */}
+                  <Route path="/Profile" element={<Profile />} />
                   <Route path="/MySongs" element={<MySongs />} />
                   <Route path="/EditSong" element={<EditSong />} />
                   <Route path="/PublishSong" element={<PublishSong />} />
@@ -59,6 +61,8 @@ const App = () => {
                     path="/PublishSong/Success"
                     element={<SuccessPage />}
                   />
+
+                  <Route path="/Likes" element={<Likes />} />
                 </Routes>
               </div>
             </div>

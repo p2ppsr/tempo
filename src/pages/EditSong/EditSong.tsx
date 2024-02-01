@@ -8,6 +8,7 @@ import fetchSongs from '../../utils/fetchSongs'
 import updateSong from '../../utils/updateSong'
 import './EditSong.scss'
 import { Authrite } from "authrite-js"
+import React from "react"
 //const Confederacy = require('@cwi/confederacy')
 
 const EditSong = () => {
