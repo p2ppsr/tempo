@@ -34,7 +34,7 @@ declare module "@babbage/sdk" {
     inputs?: any // Define more specifically based on usage
     lockTime?: number
     description: string
-    dangerouslyDisableMapi?: boolean
+    acceptDelayedBroadcast?: boolean
     topic?: string | string[] // TODO: tempoTopic is a string in constants but called as an string[] in utils/updateSong.ts
   }
 
