@@ -1,18 +1,18 @@
 import { getPublicKey } from '@babbage/sdk'
 import { List, ListItem, ListItemText } from '@mui/material'
-import { useState } from 'react'
+import { PublicKey } from 'babbage-bsv'
+import React, { useState } from "react"
 import { Link, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { Img } from 'uhrp-react'
-import { useArtworkStore } from '../../stores/stores'
-import constants from '../../utils/constants'
-import './SongsViewer.scss'
-import { PublicKey } from 'babbage-bsv'
 import useAsyncEffect from 'use-async-effect'
-import { Song } from '../../../types/interfaces'
+import { usePlaybackStore } from '../../stores/stores'
+import { Song } from '../../types/interfaces'
+import constants from '../../utils/constants'
 import decryptSong from '../../utils/decryptSong'
 import deleteSong from '../../utils/deleteSong'
 import fetchSongs from '../../utils/fetchSongs'
+import './SongsViewer.scss'
 
 interface MsgProps {
 	action: () => void
@@ -48,7 +48,7 @@ interface SongsViewerProps {
 const SongsViewer = ({ searchFilter, mySongsOnly }: SongsViewerProps) => {
 	const [currentIdentityKey, setCurrentIdentityKey] = useState<PublicKey | undefined>(undefined)
 	const [songs, setSongs] = useState<Song[]>([])
-	const [artwork, setArtwork] = useArtworkStore((state: any) => [state.artwork, state.setArtwork])
+	const [artwork, setArtwork] = usePlaybackStore((state: any) => [state.artwork, state.setArtwork])
 
 	let currentSongId = 1
 	const location = useLocation()
@@ -122,7 +122,7 @@ const SongsViewer = ({ searchFilter, mySongsOnly }: SongsViewerProps) => {
 					}
 
 					// Set the global player artwork to the song's artwork URL
-					setArtwork(songs[selectionIndex].artworkFileURL)
+					setArtwork(songs[selectionIndex].artworkFileUrl)
 
 					const playerTitle = document.getElementById('songTitle')
 					if (!playerTitle) {
@@ -193,7 +193,7 @@ const SongsViewer = ({ searchFilter, mySongsOnly }: SongsViewerProps) => {
 							<ListItemText className="songListItem song" primary={i + 1} />
 							<Img
 								key={i}
-								src={song.artworkFileURL}
+								src={song.artworkFileUrl}
 								className="card"
 								confederacyHost={constants.confederacyURL}
 								id={''}

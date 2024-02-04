@@ -26,7 +26,14 @@
   margin-left:1rem;
 
   .songTitle {
-    font-size: 2rem;
+    font-size: 1.5rem;
+    margin-inline: 1rem;
+    width: 20vw;
+    text-align: center;
+  }
+
+  .artistName {
+    font-size: 1rem;
     margin-inline: 1rem;
     width: 20vw;
     text-align: center;

@@ -39,7 +39,7 @@ if (
 } else {
   // production
   constants = {
-    confederacyURL: undefined,
+    confederacyURL: undefined, // TODO: this should not be undefined or default "https://production-confederacy.babbage.systems"
     nanostoreURL: "https://nanostore.babbage.systems",
     tempoTopic: "TSP",
     tspProtocolID: "1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36",

@@ -1,52 +1,18 @@
-.mainContainer {
-	/* height: 50vh; */
-	min-height: fit-content;
-	// overflow: scroll;
-	width: 80vw;
-	// max-width: 100%;
-	z-index: 0;
-	flex-grow: 1;
-}
 .horizontalArtworkScroller {
-	// backdrop-filter: blur(10px);
-	display: flex;
-	align-items: center;
-	height: 25vh;
-
-	overflow-x: scroll;
-	white-space: nowrap;
-	padding: 60px 0 60px 0px;
-	margin-top: 60px;
-	// z-index: -3;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  z-index: -3;
+  width:74vw;
 }
 
-.card {
-	flex-shrink: 0;
-	width: 25vh;
-	/*height: 18vh;*/
-	height: 50px;
-	border-radius: 10px;
-	margin-left: 3vw;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-position: center center;
-}
-
-.cardLarge {
-	flex-shrink: 0;
-	width: 25vh;
-	height: 18vh;
-	border-radius: 10px;
-	margin-left: 3vw;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-position: center center;
-}
-
-.arrow {
-	z-index: 3;
-	position: absolute;
-	right: 45px;
-	top: 150px;
-	color: rgba(255, 255, 255, 0.3);
+.newReleaseCard {
+  max-width:15vw;
+  border-radius: 10px;
+  margin-right: 3vw;
+  object-fit: cover;
+  aspect-ratio: 4/3;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
 }

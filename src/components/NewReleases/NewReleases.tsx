@@ -8,14 +8,12 @@ import { PublicKey } from "babbage-bsv"
 import { motion } from "framer-motion"
 import React from "react"
 
-import beatlesArtwork from '../../assets/AlbumArtwork/beatles.jpg'
+import beatlesArtwork from "../../assets/AlbumArtwork/beatles.jpg"
 
 const clamp = (value: number, clampAt: number = 60) =>
   Math.min(clampAt, Math.max(-clampAt, value))
 
-// const beatlesArtwork = "/AlbumArtwork/beatles.jpg"
-
-// TODO: Make this dynamic
+// TODO: This will be dynamic
 const songArtwork = [
   beatlesArtwork,
   beatlesArtwork,
@@ -41,12 +39,13 @@ const LatestSongs = ({ className }: NewReleasesProps) => {
   })
 
   return (
-    <div className={`mainContainer ${className}`}>
+    <div className={`container ${className}`}>
+      <h1 className="whiteText">New Releases</h1>
       <div className="horizontalArtworkScroller" ref={ref} {...bind()}>
         {songArtwork.map((src, i) => (
           <Link key={i} to="/">
             <motion.img
-              className="cardLarge"
+              className="newReleaseCard"
               src={src}
               animate={{
                 transform: `perspective(500px) rotateY(${rotation}deg)`,
@@ -55,9 +54,9 @@ const LatestSongs = ({ className }: NewReleasesProps) => {
           </Link>
         ))}
       </div>
-      <div className="tableHeader">
-        <h1 className="whiteText">New Releases</h1>
-      </div>
+
+      
+
       {/* <SongsViewer
 				searchFilter={{
 					findAll: 'true',

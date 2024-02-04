@@ -1,0 +1,59 @@
+@import "../../styles/styleVariables.scss";
+
+/* 
+  Note: '&::before' styles are necessary because tables 
+  do not use margins the same way as standard divs
+*/
+
+.songListTable {
+  color: $textColor;
+  border: 2px solid $transparentBorder;
+  width: 100%;
+  border-radius: $borderRadius;
+  padding: 1rem;
+
+  thead {
+    text-align: left;
+  }
+
+  tbody {
+    tr {
+      margin-bottom:1rem;
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+}
+
+.songListArtworkContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+
+  .songListArtworkThumbnail {
+    width: 3rem;
+    user-select: none;
+    margin-right:.5rem;
+  }
+
+  .artworkThumbnailPlayIcon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    visibility: hidden;
+  }
+  &:hover .artworkThumbnailPlayIcon {
+    visibility: visible; // Show the icon on hover
+  }
+}
+
+// Overrides for audio playback component
+.rhap_container {
+  background: rgba(0,0,0,0.8) !important;
+
+  .rhap_time {
+    color: $textColor;
+  }
+}

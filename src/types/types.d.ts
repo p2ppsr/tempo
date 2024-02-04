@@ -116,9 +116,9 @@ declare module "uhrp-react" {
   interface ImgProps {
     src: string
     alt?: string
-    id: string
-    className: string
-    confederacyHost: string | undefined
+    id?: string
+    className?: string
+    confederacyHost?: string | undefined
     width?: number | string
     height?: number | string
     // ... add any other props specific to the Img component

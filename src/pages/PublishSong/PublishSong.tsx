@@ -48,8 +48,8 @@ const PublishSong = () => {
 
     const newValues = {
       isPublished: false,
-      artworkFileURL: "",
-      songFileURL: "",
+      artworkFileUrl: "",
+      songFileUrl: "",
       description: "",
       duration: 0,
       songID: "",
@@ -92,7 +92,7 @@ const PublishSong = () => {
   }
 
   return (
-    <div className="container">
+    <div className="publishSongContainer container">
       <h1>Publish A Song</h1>
       <p className="whiteText">
         Become your own publisher and upload your music for the world to hear!

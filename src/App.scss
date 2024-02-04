@@ -27,16 +27,17 @@ a {
 
 // Page container class. Provides flexbox and padding
 .container {
-  
   padding:2rem;
 }
 
 .backgroundImage {
   position: absolute;
-  // top: -100%;
-  // left: -100%;
   z-index: -1;
   filter: blur(0.5rem) brightness(0.8);
+}
+
+.rightContainer {
+  width:100%;
 }
 
 .whiteText {

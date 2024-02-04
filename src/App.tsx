@@ -24,6 +24,8 @@ import "./styles/typography.scss"
 import TopMenu from "./components/TopMenu/TopMenu"
 import Likes from "./pages/Library/Likes/Likes"
 
+import backgroundImage from "./assets/Images/background.jpg"
+
 const App = () => {
   return (
     <>
@@ -35,7 +37,10 @@ const App = () => {
 
       {/* <div className="backgroundImage" /> */}
 
-      <img src="/Images/background.jpg" className="backgroundImage" style={{border:'1px solid red'}}/>
+      <img
+        src={backgroundImage}
+        className="backgroundImage"
+      />
 
       <Router>
         <div className="flex">
@@ -43,28 +48,21 @@ const App = () => {
           <div className="rightContainer">
             <TopMenu />
             <div style={{ marginTop: "3rem" }}>
-              <Footer />
-              <div>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/SavedSongs" element={<SavedSongs />} />
-                  <Route path="/Playlists" element={<Playlists />} />
-                  <Route
-                    path="/Playlists/Create"
-                    element={<CreatePlaylist />}
-                  />
-                  <Route path="/Profile" element={<Profile />} />
-                  <Route path="/MySongs" element={<MySongs />} />
-                  <Route path="/EditSong" element={<EditSong />} />
-                  <Route path="/PublishSong" element={<PublishSong />} />
-                  <Route
-                    path="/PublishSong/Success"
-                    element={<SuccessPage />}
-                  />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/SavedSongs" element={<SavedSongs />} />
+                <Route path="/Playlists" element={<Playlists />} />
+                <Route path="/Playlists/Create" element={<CreatePlaylist />} />
+                <Route path="/Profile" element={<Profile />} />
+                <Route path="/MySongs" element={<MySongs />} />
+                <Route path="/EditSong" element={<EditSong />} />
+                <Route path="/PublishSong" element={<PublishSong />} />
+                <Route path="/PublishSong/Success" element={<SuccessPage />} />
 
-                  <Route path="/Likes" element={<Likes />} />
-                </Routes>
-              </div>
+                <Route path="/Likes" element={<Likes />} />
+              </Routes>
+
+              <Footer />
             </div>
           </div>
         </div>

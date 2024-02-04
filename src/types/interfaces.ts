@@ -8,16 +8,16 @@ export interface Song {
 	title: string
 	artist: string
 	isPublished: boolean
-	selectedMusic: File
-	artworkFileURL: string
+	songFileUrl: string
+	artworkFileUrl: string
 	description: string
-	songFileURL: string
 	duration: number
 	songID: string
 	token: {outputIndex: number, txid: string, lockingScript: string}
 	outputScript: BitcoinOutputScript
 	
 	// Optional
+	selectedMusic?: File
 	selectedArtwork?: File
 	sats?: number
 	decryptedSongURL?: string
