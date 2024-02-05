@@ -122,7 +122,7 @@ const SongsViewer = ({ searchFilter, mySongsOnly }: SongsViewerProps) => {
 					}
 
 					// Set the global player artwork to the song's artwork URL
-					setArtwork(songs[selectionIndex].artworkFileUrl)
+					setArtwork(songs[selectionIndex].artworkFileURL)
 
 					const playerTitle = document.getElementById('songTitle')
 					if (!playerTitle) {
@@ -193,7 +193,7 @@ const SongsViewer = ({ searchFilter, mySongsOnly }: SongsViewerProps) => {
 							<ListItemText className="songListItem song" primary={i + 1} />
 							<Img
 								key={i}
-								src={song.artworkFileUrl}
+								src={song.artworkFileURL}
 								className="card"
 								confederacyHost={constants.confederacyURL}
 								id={''}

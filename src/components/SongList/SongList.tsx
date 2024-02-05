@@ -56,14 +56,14 @@ const SongList = ({ songs }: SongListProps) => {
   const columnHelper = createColumnHelper<Song>()
 
   const columns = [
-    columnHelper.accessor("songFileUrl", {
+    columnHelper.accessor("songFileURL", {
       header: "",
       cell: (info) => {
         // Pull the artwork URL from the row's object data and supply it to the img element
-        const songFileUrl = info.row.original.songFileUrl
+        const songFileUrl = info.row.original.songFileURL
         const songTitle = info.row.original.title
         const songArtist = info.row.original.artist
-        const artworkFileUrl = info.row.original.artworkFileUrl
+        const artworkFileUrl = info.row.original.artworkFileURL
         return (
           <div
             className="songListArtworkContainer"

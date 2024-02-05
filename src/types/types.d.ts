@@ -5,7 +5,7 @@
 
 // Pushdrop ========================================================================
 
-declare module "pushdrop" {
+declare module 'pushdrop' {
   // TODO:
   // export interface RedeemOptions {
   //   protocolID: string;
@@ -24,7 +24,7 @@ declare module "pushdrop" {
 
 // Nanoseek ========================================================================
 
-declare module "nanoseek" {
+declare module 'nanoseek' {
   interface DownloadOptions {
     UHRPUrl: string
     confederacyHost: string | undefined
@@ -41,7 +41,7 @@ declare module "nanoseek" {
 
 // babbage-bsv ======================================================================
 
-declare module "babbage-bsv" {
+declare module 'babbage-bsv' {
   // Address
   export class Address {
     constructor(addressString: string)
@@ -79,29 +79,30 @@ declare module "babbage-bsv" {
 
 // Packetpay ======================================================================
 
-declare module "@packetpay/js" {
+declare module '@packetpay/js' {
   // Define the shape of the request body
   interface PacketPayRequestBody {
     provider: string
-    query: object // You might want to define a more specific type for query
+    query: object
   }
 
-  // Define the function signature
+  interface PacketPayResponse {
+    status: number;
+    headers: Record<string, string | string[]>; // A Record type is used for key-value pairs
+    body: any; // Body can be any type, as the structure can vary
+  }
+
   function PacketPay(
     url: string,
-    options: {
-      method: string
-      body: PacketPayRequestBody
+    fetchConfig?: Object,
+    config?: {
+      authriteConfig?: Object
+      ninjaConfig?: Object
+      clientPrivateKey?: string
+      description?: string
     }
-  ): Promise<any> // Adjust the return type to be more specific if possible
-
-  // If PacketPay is also a class or has additional properties, define them here
-  // namespace PacketPay {
-  //   // Example method, replace with actual methods if PacketPay has any
-  //   function someMethod(): void;
-
-  //   // ... other members of PacketPay
-  // }
+    
+  ): Promise<PacketPayResponse>
 
   export default PacketPay
 }
@@ -109,7 +110,7 @@ declare module "@packetpay/js" {
 // uhrp-react ======================================================================
 
 // TODO: add video and audio
-declare module "uhrp-react" {
+declare module 'uhrp-react' {
   // If the module already contains other components or exports, they should be included here as well.
 
   // Declare the `Img` component along with its props.

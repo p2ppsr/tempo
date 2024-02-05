@@ -10,9 +10,9 @@ declare module "@babbage/sdk" {
     mapiResponses?: any
     inputs: any
   } // Adjust as needed
-  type Signature = Uint8Array // Adjust as needed
-  type Hmac = Uint8Array // Adjust as needed
-  type PublicKey = { key: string } // Adjust as needed
+  type Signature = Uint8Array
+  type Hmac = Uint8Array
+  type PublicKey = { key: string }
 
   // Data structures for specific functions
   interface EncryptedData {
@@ -48,12 +48,9 @@ declare module "@babbage/sdk" {
     outputIndex: number
     satoshis: number
     lockingScript: BufferType
-    // ... define other properties
   }
 
-  interface Certificate {
-    // ... define the structure of Certificate based on actual structure
-  }
+  interface Certificate {}
 
   // Function Definitions
   export function encrypt(args: {

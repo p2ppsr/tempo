@@ -8,8 +8,8 @@ export interface Song {
 	title: string
 	artist: string
 	isPublished: boolean
-	songFileUrl: string
-	artworkFileUrl: string
+	songFileURL: string
+	artworkFileURL: string
 	description: string
 	duration: number
 	songID: string

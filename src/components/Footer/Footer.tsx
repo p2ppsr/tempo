@@ -1,6 +1,5 @@
 import * as metaDataBrowser from "music-metadata-browser"
 import React, { useEffect, useRef } from "react"
-import ReactAudioPlayer from "react-audio-player"
 import AudioPlayer from "react-h5-audio-player"
 import "react-h5-audio-player/lib/styles.css"
 import { Img } from "uhrp-react"
@@ -104,13 +103,6 @@ const Footer = () => {
           <p className="artistName"> {playingAudioArtist} </p>
         </div>
       </div>
-      {/* <ReactAudioPlayer
-        ref={audioPlayerRef}
-        src={playingAudioUrl}
-        controls
-        className="playerControls"
-        id="audioPlayer"
-      /> */}
       <AudioPlayer
         // autoPlay
         src={playingAudioUrl}
