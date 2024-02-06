@@ -62,7 +62,8 @@ const MySongs = () => {
         protocolID: 'Tempo',
         keyID: '1'
       })
-      setCurrentIdentityKey(searchFilter.artistIdentityKey)
+      // TODO: Where will this be used?
+      // setCurrentIdentityKey(searchFilter.artistIdentityKey)
     } catch (e) {
       console.log(e)
     }
