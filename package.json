@@ -16,7 +16,7 @@
     "framer-motion": "^11.0.3",
     "music-metadata-browser": "^2.5.10",
     "nanoseek": "^0.1.38",
-    "nanostore-publisher": "^0.1.50",
+    "nanostore-publisher": "^0.1.54",
     "pushdrop": "^0.1.32",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

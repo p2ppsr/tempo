@@ -22,7 +22,7 @@ const fetchSongs = async (searchFilter: object) => {
 
   const lookupResult = JSON.parse(Buffer.from(response?.body).toString('utf8'))
 
-  let parsedSongs = lookupResult.map(({ song }: { song: Song }) => {
+  let parsedSongs = lookupResult.map((song: Song) => {
     const decodedSong = pushdrop.decode({
       script: song.outputScript,
       fieldFormat: 'utf8'

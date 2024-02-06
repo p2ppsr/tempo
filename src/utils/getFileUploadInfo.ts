@@ -35,6 +35,10 @@ const getFileUploadInfo = async ({
       selectedArtwork instanceof FileList
         ? Array.from(selectedArtwork)
         : [selectedArtwork]
+
+    const artworkBlob = new Blob([artworkFiles[0]])
+		const artworkData = new Uint8Array(await artworkBlob.arrayBuffer())
+		artworkFileURL = getURLForFile(artworkData)
     filesToUpload.push(...artworkFiles)
   }
 
