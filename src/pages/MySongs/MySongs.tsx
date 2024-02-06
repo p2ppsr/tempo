@@ -59,7 +59,7 @@ const MySongs = () => {
     try {
       searchFilter.findAll = true
       searchFilter.artistIdentityKey = await getPublicKey({
-        protocolID: 'Tempo',
+        protocolID: 'tempo',
         keyID: '1'
       })
       setCurrentIdentityKey(searchFilter.artistIdentityKey)
@@ -69,7 +69,6 @@ const MySongs = () => {
 
     try {
       const res = await fetchSongs(searchFilter)
-      
       setSongs(res.reverse()) // Newest songs on top (note performance with large results)
     } catch (e) {
       if (e instanceof Error) {
