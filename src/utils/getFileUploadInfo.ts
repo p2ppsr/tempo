@@ -24,8 +24,8 @@ const getFileUploadInfo = async ({
   retentionPeriod = RETENTION_PERIOD,
 }: Partial<GetFileUploadInfoParams> = {}) => {
   let filesToUpload: File[] = []
-  let artworkFileUrl = ""
-  let songUrl = ""
+  let artworkFileURL = ""
+  let songURL = ""
   let songDuration = 0
   let encryptionKey
 
@@ -67,7 +67,7 @@ const getFileUploadInfo = async ({
       type: "application/octet-stream",
     })
 
-    songUrl = getURLForFile(encryptedData)
+    songURL = getURLForFile(encryptedData)
     filesToUpload.push(encryptedFile)
   }
 
@@ -113,8 +113,8 @@ const getFileUploadInfo = async ({
   return {
     invoices,
     outputs,
-    songUrl,
-    artworkFileUrl,
+    songURL,
+    artworkFileURL,
     filesToUpload,
     encryptionKey,
     songDuration,

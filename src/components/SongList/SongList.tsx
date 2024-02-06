@@ -63,21 +63,21 @@ const SongList = ({ songs }: SongListProps) => {
         const songFileUrl = info.row.original.songFileURL
         const songTitle = info.row.original.title
         const songArtist = info.row.original.artist
-        const artworkFileUrl = info.row.original.artworkFileURL
+        const artworkFileURL = info.row.original.artworkFileURL
         return (
           <div
             className="songListArtworkContainer"
             onClick={() => {
               setIsPlaying(true)
               setPlayingAudioUrl(songFileUrl)
-              setPlayingArtworkUrl(artworkFileUrl)
+              setPlayingArtworkUrl(artworkFileURL)
               setPlayingAudioTitle(songTitle)
               setPlayingAudioArtist(songArtist)
             }}
           >
             <FaPlay className="artworkThumbnailPlayIcon" />
             <Img
-              src={artworkFileUrl}
+              src={artworkFileURL}
               className="songListArtworkThumbnail"
               confederacyHost={constants.confederacyURL}
             />

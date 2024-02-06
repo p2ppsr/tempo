@@ -48,8 +48,8 @@ const PublishSong = () => {
 
     const newValues = {
       isPublished: false,
-      artworkFileUrl: "",
-      songFileUrl: "",
+      artworkFileURL: "",
+      songFileURL: "",
       description: "",
       duration: 0,
       songID: "",
