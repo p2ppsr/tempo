@@ -38,6 +38,7 @@ const Footer = () => {
       const decryptedAudio = await decryptSong(playbackSong)
       
       console.log(decryptedAudio)
+      setLocalSongURL(decryptedAudio)
       setIsPlaying(true)
     } catch (e) {
       console.error(e)
@@ -71,7 +72,7 @@ const Footer = () => {
         </div>
       </div>
       <AudioPlayer
-        src={playbackSong.audioURL}
+        src={localSongURL}
         onPlay={() => {
           setIsPlaying(true)
         }}
