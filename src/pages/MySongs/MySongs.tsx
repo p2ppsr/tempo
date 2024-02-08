@@ -44,7 +44,7 @@ const MySongs = () => {
   ]
 
   const [currentIdentityKey, setCurrentIdentityKey] = useState<PublicKey>({ key: '' })
-  const [songs, setPlaybackSongs] = useState<Song[]>([])
+  const [songs, setSongs] = useState<Song[]>([])
 
   interface SearchFilter {
     findAll: boolean
@@ -70,10 +70,10 @@ const MySongs = () => {
       // Get a list of song objects
       const res = await fetchSongs(searchFilter)
 
-      setPlaybackSongs(res.reverse()) // Newest songs on top (note performance with large results)
+      setSongs(res.reverse()) // Newest songs on top (note performance with large results)
     } catch (e) {
       if (e instanceof Error) {
-        console.log(e.message)
+      console.log(e.message)
       } else {
         // Handle cases where the caught object is not an Error instance
         console.log('An unexpected error occurred:', e)
