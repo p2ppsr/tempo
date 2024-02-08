@@ -14,6 +14,7 @@ import { PublicKey, getPublicKey } from '@babbage/sdk'
 import fetchSongs from '../../utils/fetchSongs'
 import constants from '../../utils/constants'
 import { download } from 'nanoseek'
+import { CircularProgress } from '@mui/material'
 
 const MySongs = () => {
   const testSongs: Song[] = [
@@ -85,7 +86,13 @@ const MySongs = () => {
       <h1>My Songs</h1>
 
       <div>
-        <SongList songs={songs} />
+        {songs.length === 0 ? (
+          <div className="loadingContainer">
+            <CircularProgress />
+          </div>
+        ) : (
+          <SongList songs={songs} />
+        )}
       </div>
     </div>
   )
