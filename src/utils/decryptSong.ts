@@ -45,7 +45,7 @@ const decryptSong = async (song: Song) => {
   console.log(invoice.identityKey)
 
   // Create an output script that can only be unlocked with the corresponding derived private key
-  const scriptObject = bsv.Script.fromAddress(bsv.Address.fromPublicKey(derivedPublicKey))
+  const scriptObject = bsv.Script.fromAddress(bsv.Address.fromPublicKey(bsv.PublicKey.fromString(derivedPublicKey)))
 
   // Convert the Script object to a hexadecimal string
   const scriptHexString = scriptObject.toHex()

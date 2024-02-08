@@ -50,7 +50,7 @@ declare module "@babbage/sdk" {
     lockingScript: BufferType
   }
 
-  interface Certificate {}
+  interface Certificate { }
 
   // Function Definitions
   export function encrypt(args: {
@@ -98,7 +98,7 @@ declare module "@babbage/sdk" {
     counterparty?: IdentityKey
     forSelf?: boolean
     description?: string
-  }): Promise<PublicKey>
+  }): Promise<string>
 
   export function promiseWithTimeout(args: {
     timeout: number
