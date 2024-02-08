@@ -12,6 +12,8 @@ import zodiacGirls from '../../assets/Music/ZodiacGirls.mp3'
 import useAsyncEffect from 'use-async-effect'
 import { PublicKey, getPublicKey } from '@babbage/sdk'
 import fetchSongs from '../../utils/fetchSongs'
+import constants from '../../utils/constants'
+import { download } from 'nanoseek'
 
 const MySongs = () => {
   const testSongs: Song[] = [
@@ -19,12 +21,10 @@ const MySongs = () => {
       title: 'Here Comes the Sun',
       artist: 'The Beatles',
       isPublished: true,
-      songFileURL: hereComesTheSun,
-      // local artwork
-      artworkFileURL: testArtwork,
+      audioURL: hereComesTheSun,
+      artworkURL: testArtwork,
       description: 'A test song',
       duration: 180,
-      songID: '12345',
       token: { outputIndex: 0, txid: '12345', lockingScript: 'asdf' },
       outputScript: { fields: [''], protocolID: 'asdf', keyID: 'asdf' }
     },
@@ -32,20 +32,18 @@ const MySongs = () => {
       title: 'Zodiac Girls',
       artist: 'Black Moth Super Rainbow',
       isPublished: true,
-      songFileURL: zodiacGirls,
-      // imported artwork from url
-      artworkFileURL:
+      audioURL: zodiacGirls,
+      artworkURL:
         'https://i.discogs.com/qRvndWXrCEXL6qXvEAqdr3juNgOxJOgg58mwu85PR1w/rs:fit/g:sm/q:90/h:599/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEyNzg4/MzAtMTIxMDczNzcw/Mi5qcGVn.jpeg',
       description: 'A test song',
       duration: 180,
-      songID: '12345',
       token: { outputIndex: 0, txid: '12345', lockingScript: 'asdf' },
       outputScript: { fields: [''], protocolID: 'asdf', keyID: 'asdf' }
     }
   ]
 
-  const [currentIdentityKey, setCurrentIdentityKey] = useState<PublicKey>({key: ''})
-  const [songs, setSongs] = useState<Song[]>([])
+  const [currentIdentityKey, setCurrentIdentityKey] = useState<PublicKey>({ key: '' })
+  const [songs, setPlaybackSongs] = useState<Song[]>([])
 
   interface SearchFilter {
     findAll: boolean
@@ -53,7 +51,6 @@ const MySongs = () => {
   }
 
   useAsyncEffect(async () => {
-    // searchFilter ? searchFilter : {}
     let searchFilter = {} as SearchFilter
 
     try {
@@ -69,8 +66,10 @@ const MySongs = () => {
     }
 
     try {
+      // Get a list of song objects
       const res = await fetchSongs(searchFilter)
-      setSongs(res.reverse()) // Newest songs on top (note performance with large results)
+
+      setPlaybackSongs(res.reverse()) // Newest songs on top (note performance with large results)
     } catch (e) {
       if (e instanceof Error) {
         console.log(e.message)
@@ -87,10 +86,6 @@ const MySongs = () => {
 
       <div>
         <SongList songs={songs} />
-        {/* <SongsViewer
-					searchFilter={{ findAll: 'true', artistIdentityKey: '' }}
-					mySongsOnly={true}
-				/> */}
       </div>
     </div>
   )

@@ -30,9 +30,10 @@ declare module 'nanoseek' {
     confederacyHost: string | undefined
   }
 
+  // TODO: Update these to their proper types
   interface DownloadResult {
-    data: any // Can be more specific based on what download returns
-    // ... other result properties
+    data: any,
+    mimeType: any
   }
 
   // Export the download function as a named export

@@ -13,17 +13,14 @@
   align-items: center;
 }
 
-.playerControls {
-  flex-grow: 2;
-  height: 4rem;
-  padding-right: 1rem;
-}
-
-.titleContainer {
+.playbackInfoContainer {
   display: flex;
   align-items: center;
-  // max-width: 30vw;
-  margin-left:1rem;
+  margin-left: 1rem;
+
+  .titleArtistContainer {
+    display: block;
+  }
 
   .songTitle {
     font-size: 1.5rem;

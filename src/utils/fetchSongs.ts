@@ -3,6 +3,9 @@ import constants from './constants'
 import { Song } from '../types/interfaces'
 import pushdrop from 'pushdrop'
 
+// hash
+//
+
 const fetchSongs = async (searchFilter: object) => {
   let response
   try {
@@ -15,7 +18,6 @@ const fetchSongs = async (searchFilter: object) => {
         }
       }
     })
-    console.log(response) // TODO: Empty JSON body
   } catch (e) {
     console.log(e)
   }
@@ -34,8 +36,8 @@ const fetchSongs = async (searchFilter: object) => {
       artist: decodedSong.fields[3],
       description: decodedSong.fields[4],
       length: decodedSong.fields[5],
-      songFileURL: decodedSong.fields[6],
-      artworkFileURL: decodedSong.fields[7],
+      audioURL: decodedSong.fields[6],
+      artworkURL: decodedSong.fields[7],
       artistIdentityKey: decodedSong.lockingPublicKey
     }
     return formattedSong

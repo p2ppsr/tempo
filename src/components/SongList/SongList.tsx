@@ -2,15 +2,16 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import React from "react"
-import { FaPlay } from "react-icons/fa"
-import { Song } from "../../types/interfaces"
-import "./SongList.scss"
-import { Img } from "uhrp-react"
-import constants from "../../utils/constants"
-import { usePlaybackStore } from "../../stores/stores"
+  useReactTable
+} from '@tanstack/react-table'
+import React from 'react'
+import { FaPlay } from 'react-icons/fa'
+import { Img } from 'uhrp-react'
+import { usePlaybackStore } from '../../stores/stores'
+import { Song } from '../../types/interfaces'
+import constants from '../../utils/constants'
+import './SongList.scss'
+// import download from 'nanoseek'
 
 interface SongListProps {
   songs: Song[]
@@ -20,106 +21,75 @@ const SongList = ({ songs }: SongListProps) => {
   // State ======================================================
 
   // Global state for audio playback. Includes playing status, audio, artwork url, and setters for each
-  const [
-    isPlaying,
-    setIsPlaying,
-
-    playingAudioUrl,
-    setPlayingAudioUrl,
-
-    playingAudioTitle,
-    setPlayingAudioTitle,
-
-    playingAudioArtist,
-    setPlayingAudioArtist,
-
-    playingArtworkUrl,
-    setPlayingArtworkUrl,
-  ] = usePlaybackStore((state: any) => [
-    state.isPlaying,
-    state.setIsPlaying,
-
-    state.playingAudioUrl,
-    state.setPlayingAudioUrl,
-
-    state.playingAudioTitle,
-    state.setPlayingAudioTitle,
-
-    state.playingAudioArtist,
-    state.setPlayingAudioArtist,
-
-    state.playingArtworkUrl,
-    state.setPlayingArtworkUrl,
-  ])
+  const [isPlaying, setIsPlaying, playbackSong, setPlaybackSong] = usePlaybackStore(
+    (state: any) => [
+      state.isPlaying,
+      state.setIsPlaying,
+      state.playbackSong,
+      state.setPlaybackSong
+    ]
+  )
 
   // Table ==================================================================
   const columnHelper = createColumnHelper<Song>()
 
+  // Define columns for React Table
   const columns = [
-    columnHelper.accessor("songFileURL", {
-      header: "",
-      cell: (info) => {
-        // Pull the artwork URL from the row's object data and supply it to the img element
-        const songFileUrl = info.row.original.songFileURL
-        const songTitle = info.row.original.title
-        const songArtist = info.row.original.artist
-        const artworkFileURL = info.row.original.artworkFileURL
+    columnHelper.accessor('audioURL', {
+      header: '',
+      cell: info => {
+        // Pull the song data from the row's object data and supply it to the img element
+        const { title, artist, audioURL, artworkURL } = info.row.original
         return (
           <div
             className="songListArtworkContainer"
             onClick={() => {
-              setIsPlaying(true)
-              setPlayingAudioUrl(songFileUrl)
-              setPlayingArtworkUrl(artworkFileURL)
-              setPlayingAudioTitle(songTitle)
-              setPlayingAudioArtist(songArtist)
+              setPlaybackSong({
+                title: title,
+                artist: artist,
+                audioURL: audioURL,
+                artworkURL: artworkURL
+              })
             }}
           >
             <FaPlay className="artworkThumbnailPlayIcon" />
             <Img
-              src={artworkFileURL}
+              src={artworkURL}
               className="songListArtworkThumbnail"
               confederacyHost={constants.confederacyURL}
             />
           </div>
         )
-      },
+      }
     }),
-    columnHelper.accessor("title", {
-      header: "Title",
-      cell: (info) => info.getValue(),
+    columnHelper.accessor('title', {
+      header: 'Title',
+      cell: info => info.getValue()
     }),
-    columnHelper.accessor("artist", {
-      header: "Artist",
-      cell: (info) => info.getValue(),
-    }),
+    columnHelper.accessor('artist', {
+      header: 'Artist',
+      cell: info => info.getValue()
+    })
   ]
 
   const table = useReactTable({
     data: songs,
     columns,
-    getCoreRowModel: getCoreRowModel(),
+    getCoreRowModel: getCoreRowModel()
   })
-
-  // Handlers ======================================================
-
-  const handlePlaySong = (songUrl: string, artworkUrl: string) => {}
 
   // Render ========================================================
   return (
     <>
       <table className="songListTable">
         <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
+          {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
+              {headerGroup.headers.map(header => (
                 <th key={header.id}>
                   {header.isPlaceholder
                     ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                    : flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
               ))}
             </tr>
@@ -127,12 +97,10 @@ const SongList = ({ songs }: SongListProps) => {
         </thead>
 
         <tbody>
-          {table.getRowModel().rows.map((row) => (
+          {table.getRowModel().rows.map(row => (
             <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+              {row.getVisibleCells().map(cell => (
+                <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
               ))}
             </tr>
           ))}

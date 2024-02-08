@@ -4,14 +4,14 @@ import { createAction } from '@babbage/sdk'
 import getFileUploadInfo from './getFileUploadInfo'
 import submitPaymentProof from './submitPaymentProof'
 import publishKey from './publishKey'
-import { Song } from "../../types/interfaces"
+import { Song } from '../types/interfaces'
 
 interface updateSongParams {
   song: Song
   filesToUpdate: any
 }
 
-const updateSong = async ({ song, filesToUpdate } : updateSongParams) => {
+const updateSong = async ({ song, filesToUpdate }: updateSongParams) => {
   const unlockingScript = await pushdrop.redeem({
     // To unlock the token, we need to use the same tempo protocol
     // and key ID as when we created the tsp token before. Otherwise, the
@@ -30,13 +30,16 @@ const updateSong = async ({ song, filesToUpdate } : updateSongParams) => {
   })
 
   // Get the upload and payment information for any attached files
-  const fileUploadInfo = await getFileUploadInfo({ selectedArtwork: filesToUpdate.selectedArtwork, selectedMusic: filesToUpdate.selectedMusic })
+  const fileUploadInfo = await getFileUploadInfo({
+    selectedArtwork: filesToUpdate.selectedArtwork,
+    selectedMusic: filesToUpdate.selectedMusic
+  })
 
   if (fileUploadInfo.songURL) {
-    song.songFileURL = fileUploadInfo.songURL
+    song.audioURL = fileUploadInfo.songURL
   }
-  if (fileUploadInfo.artworkFileURL) {
-    song.artworkFileURL = fileUploadInfo.artworkFileURL
+  if (fileUploadInfo.artworkURL) {
+    song.artworkURL = fileUploadInfo.artworkURL
   }
   if (fileUploadInfo.songDuration) {
     song.duration = fileUploadInfo.songDuration
@@ -48,11 +51,10 @@ const updateSong = async ({ song, filesToUpdate } : updateSongParams) => {
       Buffer.from(constants.tempoTopic, 'utf8'), // Protocol Namespace Address
       Buffer.from(song.title, 'utf8'),
       Buffer.from(song.artist, 'utf8'),
-      Buffer.from(song.description, 'utf8'), // TODO: Add to UI
-      Buffer.from('' + song.duration, 'utf8'),
-      Buffer.from(song.songFileURL, 'utf8'),
-      Buffer.from(song.artworkFileURL, 'utf8'),
-      Buffer.from(song.songID)
+      Buffer.from(song.description, 'utf8'),
+      Buffer.from('' + song.duration, 'utf8'), // TODO: is duration a string or number?
+      Buffer.from(song.audioURL, 'utf8'),
+      Buffer.from(song.artworkURL, 'utf8')
     ],
     protocolID: 'tempo',
     keyID: '1'
@@ -63,17 +65,21 @@ const updateSong = async ({ song, filesToUpdate } : updateSongParams) => {
     inputs: {
       [song.token.txid]: {
         ...song.token,
-        outputsToRedeem: [{
-          index: song.token.outputIndex,
-          unlockingScript
-        }]
+        outputsToRedeem: [
+          {
+            index: song.token.outputIndex,
+            unlockingScript
+          }
+        ]
       }
     },
     outputs: [
       {
         script: updatedBitcoinOutputScript,
         satoshis: Number(song.sats)
-      }, ...fileUploadInfo.outputs],
+      },
+      ...fileUploadInfo.outputs
+    ],
     topic: [constants.tempoTopic]
   })
 

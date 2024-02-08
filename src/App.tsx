@@ -35,8 +35,6 @@ const App = () => {
         autoClose={7000}
       />
 
-      {/* <div className="backgroundImage" /> */}
-
       <img
         src={backgroundImage}
         className="backgroundImage"

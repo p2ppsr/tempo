@@ -1,112 +1,83 @@
-import * as metaDataBrowser from "music-metadata-browser"
-import React, { useEffect, useRef } from "react"
-import AudioPlayer from "react-h5-audio-player"
-import "react-h5-audio-player/lib/styles.css"
-import { Img } from "uhrp-react"
-import constants from "../../utils/constants"
+import { download } from 'nanoseek'
+import React, { useState } from 'react'
+import AudioPlayer from 'react-h5-audio-player'
+import 'react-h5-audio-player/lib/styles.css'
+import { Img } from 'uhrp-react'
+import useAsyncEffect from 'use-async-effect'
+import { usePlaybackStore } from '../../stores/stores'
+import constants from '../../utils/constants'
+import './Footer.scss'
 
-import "./Footer.scss"
-
-import useAsyncEffect from "use-async-effect"
-import { usePlaybackStore } from "../../stores/stores"
-
-import dummySong from "../../assets/Music/song1.mp3"
+import dummySong from '../../assets/Music/HereComesTheSun.mp3'
+import decryptSong from "../../utils/decryptSong"
 
 const Footer = () => {
+
   // State ========================================================
 
   const [
     isPlaying,
     setIsPlaying,
-
-    playingAudioUrl,
-    setPlayingAudioUrl,
-
-    playingAudioTitle,
-    setPlayingAudioTitle,
-
-    playingAudioArtist,
-    setPlayingAudioArtist,
-
-    playingArtworkUrl,
-    setPlayingArtworkUrl,
+    playbackSong,
+    setPlaybackSong
   ] = usePlaybackStore((state: any) => [
     state.isPlaying,
     state.setIsPlaying,
-
-    state.playingAudioUrl,
-    state.setPlayingAudioUrl,
-
-    state.playingAudioTitle,
-    state.setPlayingAudioTitle,
-
-    state.playingAudioArtist,
-    state.setPlayingAudioArtist,
-
-    state.playingArtworkUrl,
-    state.setPlayingArtworkUrl,
+    state.playbackSong,
+    state.setPlaybackSong
   ])
 
-  const audioPlayerRef = useRef<any>(null)
+  const [localSongURL, setLocalSongURL] = useState() as any
 
-  // const playAudio = () => {
-  //   audioPlayerRef.current?.play()
-  // }
-
-  // const pauseAudio = () => {
-  //   if (audioPlayerRef.current) {
-  //     audioPlayerRef.current.pause();
-  //   }
-  // }
-
-  // // Connection between global playback state and footer's playback
-  // useEffect(()=>{
-  //   isPlaying ? playAudio() : pauseAudio()
-  // },[isPlaying])
-
-  // Life cycle ===================================================
+  // Lifecycle ===================================================
 
   useAsyncEffect(async () => {
-    try {
-      const metaData = await metaDataBrowser.fetchFromUrl(dummySong)
-      setPlayingAudioTitle(metaData.common.title || "Unknown Title")
+    console.log('playback change')
 
-      // Check if album art is available and set the album art URL
-      const picture = metaData.common.picture && metaData.common.picture[0]
-      if (picture) {
-        const blob = new Blob([picture.data], { type: picture.format })
-        const url = URL.createObjectURL(blob)
-        setPlayingArtworkUrl(url)
-      }
-    } catch (error) {
-      console.error("Error reading metadata", error)
-      setPlayingAudioTitle("Error loading title")
+    try {
+      const decryptedAudio = await decryptSong(playbackSong)
+      
+      console.log(decryptedAudio)
+      setIsPlaying(true)
+    } catch (e) {
+      console.error(e)
     }
-  }, [])
+
+    // Cleanup function
+    return () => {
+      if (playbackSong.audioSource) {
+        URL.revokeObjectURL(playbackSong.audioSource)
+      }
+    }
+  }, [playbackSong])
 
   // Render ======================================================
 
   return (
     <div className="footer">
-      <div className="titleContainer">
-        {playingArtworkUrl && (
+      <div className="playbackInfoContainer">
+        {playbackSong.artworkURL && (
           <Img
-            alt={`${playingAudioTitle} Album Art`}
+            alt={`${playbackSong.playingAudioTitle} Album Art`}
             id="playerAlbumArt"
-            src={playingArtworkUrl}
+            src={playbackSong.artworkURL}
             className="playerAlbumArt"
             confederacyHost={constants.confederacyURL}
           />
         )}
-        <div style={{display:'block'}}>
-          <p className="songTitle"> {playingAudioTitle} </p>
-          <p className="artistName"> {playingAudioArtist} </p>
+        <div className="titleArtistContainer">
+          <p className="songTitle"> {playbackSong.title} </p>
+          <p className="artistName"> {playbackSong.artist} </p>
         </div>
       </div>
       <AudioPlayer
-        // autoPlay
-        src={playingAudioUrl}
-        onPlay={(e) => console.log("onPlay")}
+        src={playbackSong.audioURL}
+        onPlay={() => {
+          setIsPlaying(true)
+        }}
+        onPause={() => {
+          setIsPlaying(false)
+        }}
       />
     </div>
   )
