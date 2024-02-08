@@ -1,23 +1,33 @@
-import PacketPay from "@packetpay/js"
-import constants from "./constants"
-import { Song } from "../../types/interfaces"
-import pushdrop from "pushdrop"
+import PacketPay from '@packetpay/js'
+import constants from './constants'
+import { Song } from '../types/interfaces'
+import pushdrop from 'pushdrop'
+
+// hash
+//
 
 const fetchSongs = async (searchFilter: object) => {
-  const response = await PacketPay(`${constants.confederacyURL}/lookup`, {
-    method: "POST",
-    body: {
-      provider: "TSP",
-      query: {
-        ...searchFilter,
-      },
-    },
-  })
-  const lookupResult = JSON.parse(Buffer.from(response.body).toString("utf8"))
-  let parsedSongs = lookupResult.map(({ song }: { song: Song }) => {
+  let response
+  try {
+    response = await PacketPay(`${constants.confederacyURL}/lookup`, {
+      method: 'POST',
+      body: {
+        provider: 'TSP',
+        query: {
+          ...searchFilter
+        }
+      }
+    })
+  } catch (e) {
+    console.log(e)
+  }
+
+  const lookupResult = JSON.parse(Buffer.from(response?.body).toString('utf8'))
+
+  let parsedSongs = lookupResult.map((song: Song) => {
     const decodedSong = pushdrop.decode({
       script: song.outputScript,
-      fieldFormat: "utf8",
+      fieldFormat: 'utf8'
     })
     const formattedSong = {
       topic: decodedSong.fields[0],
@@ -26,9 +36,9 @@ const fetchSongs = async (searchFilter: object) => {
       artist: decodedSong.fields[3],
       description: decodedSong.fields[4],
       length: decodedSong.fields[5],
-      songFileURL: decodedSong.fields[6],
-      artworkFileURL: decodedSong.fields[7],
-      artistIdentityKey: decodedSong.lockingPublicKey,
+      audioURL: decodedSong.fields[6],
+      artworkURL: decodedSong.fields[7],
+      artistIdentityKey: decodedSong.lockingPublicKey
     }
     return formattedSong
   })

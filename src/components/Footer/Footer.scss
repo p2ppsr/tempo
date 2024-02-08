@@ -1,5 +1,4 @@
 .footer {
-  /* margin-top: 1rem; */
   padding: 0.5rem;
   background-color: black;
   color: white;
@@ -13,12 +12,31 @@
   flex-direction: row;
   align-items: center;
 }
-.playerControls {
-  width: 98vw;
-  height: 25px;
-  padding-right: 10px;
-  /* left: 10;
-    right: 10; */
-  /* align-items: center;
-    justify-content: space-between; */
+
+.playbackInfoContainer {
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
+
+  .titleArtistContainer {
+    display: block;
+  }
+
+  .songTitle {
+    font-size: 1.5rem;
+    margin-inline: 1rem;
+    width: 20vw;
+    text-align: center;
+  }
+
+  .artistName {
+    font-size: 1rem;
+    margin-inline: 1rem;
+    width: 20vw;
+    text-align: center;
+  }
+
+  .playerAlbumArt {
+    max-width: 4rem;
+  }
 }

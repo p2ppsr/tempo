@@ -1,11 +1,11 @@
-import React from "react"
-import { useForm } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
-import { toast } from "react-toastify"
-import constants from "../../utils/constants"
-import publishSong from "../../utils/publishSong"
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import constants from '../../utils/constants'
+import publishSong from '../../utils/publishSong'
 
-import "./PublishSong.scss"
+import './PublishSong.scss'
 
 const PublishSong = () => {
   const navigate = useNavigate()
@@ -19,11 +19,11 @@ const PublishSong = () => {
 
   const form = useForm<FormValues>({
     defaultValues: {
-      title: "",
-      artist: "",
+      title: '',
+      artist: '',
       selectedMusic: undefined,
-      selectedArtwork: undefined,
-    },
+      selectedArtwork: undefined
+    }
   })
 
   const {
@@ -31,7 +31,7 @@ const PublishSong = () => {
     handleSubmit,
     formState: { errors },
     watch,
-    setValue,
+    setValue
   } = form
 
   const values = watch()
@@ -48,18 +48,18 @@ const PublishSong = () => {
 
     const newValues = {
       isPublished: false,
-      artworkFileURL: "",
-      songFileURL: "",
-      description: "",
+      artworkURL: '',
+      audioURL: '',
+      description: '',
       duration: 0,
-      songID: "",
-      token: { outputIndex: 0, txid: "", lockingScript: "" },
+      songID: '',
+      token: { outputIndex: 0, txid: '', lockingScript: '' },
       outputScript: {
-        fields: [""],
-        protocolID: "",
-        keyID: "",
+        fields: [''],
+        protocolID: '',
+        keyID: ''
       },
-      ...values,
+      ...values
     }
 
     try {
@@ -68,13 +68,10 @@ const PublishSong = () => {
       const pubSong = async () => {
         try {
           // Publish status returns true if success, or false
-          publishStatus = await publishSong(
-            newValues,
-            constants.RETENTION_PERIOD
-          )
+          publishStatus = await publishSong(newValues, constants.RETENTION_PERIOD)
           if (publishStatus) {
-            console.log("success")
-            navigate("/PublishSong/Success")
+            console.log('success')
+            navigate('/PublishSong/Success')
           }
         } catch (e) {
           console.error(e)
@@ -82,9 +79,9 @@ const PublishSong = () => {
         }
       }
       toast.promise(pubSong(), {
-        pending: "Publishing song...",
-        success: "Song published! 👌",
-        error: "Failed to publish song! 🤯",
+        pending: 'Publishing song...',
+        success: 'Song published! 👌',
+        error: 'Failed to publish song! 🤯'
       })
     } catch (error) {
       console.log(error)
@@ -92,7 +89,7 @@ const PublishSong = () => {
   }
 
   return (
-    <div className="container">
+    <div className="publishSongContainer container">
       <h1>Publish A Song</h1>
       <p className="whiteText">
         Become your own publisher and upload your music for the world to hear!
@@ -101,50 +98,25 @@ const PublishSong = () => {
       <form className="formContainer" onSubmit={handleSubmit(onSubmit)}>
         <div className="fieldContainer">
           <label>Title</label>
-          <input
-            type="text"
-            className="textInput"
-            {...register("title")}
-            required
-          />
+          <input type="text" className="textInput" {...register('title')} required />
         </div>
 
         <div className="fieldContainer">
           <label>Artist</label>
-          <input
-            type="text"
-            className="textInput"
-            {...register("artist")}
-            required
-          />
+          <input type="text" className="textInput" {...register('artist')} required />
         </div>
 
         <div className="fieldContainer">
           <label>Music</label>
-          <input
-            type="file"
-            className="uploadInput"
-            {...register("selectedMusic")}
-            required
-          />
+          <input type="file" className="uploadInput" {...register('selectedMusic')} required />
         </div>
 
         <div className="fieldContainer">
           <label>Artwork</label>
-          <input
-            type="file"
-            className="uploadInput"
-            {...register("selectedArtwork")}
-            required
-          />
+          <input type="file" className="uploadInput" {...register('selectedArtwork')} required />
         </div>
 
-        <button
-          name="submitForm"
-          className="button"
-          type="submit"
-          style={{ marginTop: "1rem" }}
-        >
+        <button name="submitForm" className="button" type="submit" style={{ marginTop: '1rem' }}>
           Publish Song
         </button>
       </form>

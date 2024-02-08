@@ -145,7 +145,7 @@ const EditSong = () => {
 						<div className="albumArtwork">
 							<h3>ALBUM ARTWORK</h3>
 							<Img
-								src={song.artworkFileURL}
+								src={songrl}
 								confederacyHost={constants.confederacyURL}
 								style={{ width: '300px' }}
 							/>
