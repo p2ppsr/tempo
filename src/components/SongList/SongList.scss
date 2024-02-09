@@ -35,6 +35,8 @@
     width: 3rem;
     user-select: none;
     margin-right:.5rem;
+    aspect-ratio: 1/1;
+    object-fit: contain;
   }
 
   .artworkThumbnailPlayIcon {

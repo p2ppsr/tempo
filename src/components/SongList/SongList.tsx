@@ -98,7 +98,7 @@ const SongList = ({ songs }: SongListProps) => {
 
         <tbody>
           {table.getRowModel().rows.map(row => (
-            <tr key={row.id}>
+            <tr key={row.id} className="songRow">
               {row.getVisibleCells().map(cell => (
                 <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
               ))}

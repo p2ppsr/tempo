@@ -7,12 +7,9 @@ import useAsyncEffect from 'use-async-effect'
 import { usePlaybackStore } from '../../stores/stores'
 import constants from '../../utils/constants'
 import './Footer.scss'
-
-import dummySong from '../../assets/Music/HereComesTheSun.mp3'
-import decryptSong from "../../utils/decryptSong"
+import decryptSong from '../../utils/decryptSong'
 
 const Footer = () => {
-
   // State ========================================================
 
   const [
@@ -36,10 +33,7 @@ const Footer = () => {
 
     try {
       const decryptedAudio = await decryptSong(playbackSong)
-      
-      console.log(decryptedAudio)
       setLocalSongURL(decryptedAudio)
-      setIsPlaying(true)
     } catch (e) {
       console.error(e)
     }
@@ -71,15 +65,7 @@ const Footer = () => {
           <p className="artistName"> {playbackSong.artist} </p>
         </div>
       </div>
-      <AudioPlayer
-        src={localSongURL}
-        onPlay={() => {
-          setIsPlaying(true)
-        }}
-        onPause={() => {
-          setIsPlaying(false)
-        }}
-      />
+      <AudioPlayer src={localSongURL} />
     </div>
   )
 }
