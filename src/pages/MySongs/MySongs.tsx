@@ -56,12 +56,6 @@ const MySongs = () => {
 
     try {
       searchFilter.findAll = true
-      searchFilter.artistIdentityKey = await getPublicKey({
-        protocolID: 'tempo',
-        keyID: '1'
-      })
-      // TODO: Where will this be used?
-      // setCurrentIdentityKey(searchFilter.artistIdentityKey)
     } catch (e) {
       console.log(e)
     }

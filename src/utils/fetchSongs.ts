@@ -3,9 +3,6 @@ import constants from './constants'
 import { Song } from '../types/interfaces'
 import pushdrop from 'pushdrop'
 
-// hash
-//
-
 const fetchSongs = async (searchFilter: object) => {
   let response
   try {
