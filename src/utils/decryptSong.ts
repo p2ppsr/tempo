@@ -86,7 +86,7 @@ const decryptSong = async (song: Song) => {
   })
 
   // Parse out the decryption key and decrypt the song data
-  const key = JSON.parse(Buffer.from(purchasedKey.body).toString('utf8')).result
+  const key = JSON.parse(Buffer.from(purchasedKey.body).toString('utf8')).result // !! Receiving undefined purchasedKey.body
   const keyAsBuffer = Buffer.from(key, 'base64')
   const decryptionKey = await window.crypto.subtle.importKey(
     'raw',

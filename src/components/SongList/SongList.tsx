@@ -11,7 +11,6 @@ import { usePlaybackStore } from '../../stores/stores'
 import { Song } from '../../types/interfaces'
 import constants from '../../utils/constants'
 import './SongList.scss'
-// import download from 'nanoseek'
 
 interface SongListProps {
   songs: Song[]

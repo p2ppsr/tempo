@@ -36,6 +36,11 @@ export const useAuthStore = create(set => ({
 
 export const usePlaybackStore = create(set => ({
   isPlaying: false,
+  setIsPlaying: (newState: boolean) => set(() => ({ isPlaying: newState })),
+
+  isLoading: false,
+  setIsLoading: (newState: boolean) => set(() => ({ isLoading: newState })),
+
   playbackSong: {
     title: '',
     artist: '',
@@ -45,7 +50,6 @@ export const usePlaybackStore = create(set => ({
     description: '',
     duration: 0
   },
-  setIsPlaying: (newState: boolean) => set(() => ({ isPlaying: newState })),
   setPlaybackSong: (newSong: any) =>
     set((state: any) => ({
       playbackSong: {

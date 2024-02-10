@@ -1,12 +1,11 @@
+import React from "react"
 import { useRef, useState } from "react"
-import useSwipeScroll from "./useSwipeScroll"
 import { useScroll } from "react-use-gesture"
 import "./NewReleases.scss"
+import useSwipeScroll from "./useSwipeScroll"
 // import SongsViewer from '../SongsViewer/SongsViewer'
-import { Link } from "react-router-dom"
-import { PublicKey } from "babbage-bsv"
 import { motion } from "framer-motion"
-import React from "react"
+import { Link } from "react-router-dom"
 
 import beatlesArtwork from "../../assets/AlbumArtwork/beatles.jpg"
 

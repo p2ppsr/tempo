@@ -1,20 +1,18 @@
 import React, { useState } from 'react'
-import './MySongs.scss'
 import 'react-toastify/dist/ReactToastify.css'
 import { Song } from '../../types/interfaces'
+import './MySongs.scss'
 
 import testArtwork from '../../assets/AlbumArtwork/beatles.jpg'
 import SongList from '../../components/SongList/SongList'
 
 // test audio
+import { PublicKey } from '@babbage/sdk'
+import { CircularProgress } from '@mui/material'
+import useAsyncEffect from 'use-async-effect'
 import hereComesTheSun from '../../assets/Music/HereComesTheSun.mp3'
 import zodiacGirls from '../../assets/Music/ZodiacGirls.mp3'
-import useAsyncEffect from 'use-async-effect'
-import { PublicKey, getPublicKey } from '@babbage/sdk'
 import fetchSongs from '../../utils/fetchSongs'
-import constants from '../../utils/constants'
-import { download } from 'nanoseek'
-import { CircularProgress } from '@mui/material'
 
 const MySongs = () => {
   const testSongs: Song[] = [
