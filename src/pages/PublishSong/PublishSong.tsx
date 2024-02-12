@@ -5,6 +5,8 @@ import { toast } from 'react-toastify'
 import constants from '../../utils/constants'
 import publishSong from '../../utils/publishSong'
 
+import { FileUploader } from "react-drag-drop-files";
+
 import './PublishSong.scss'
 
 const PublishSong = () => {
@@ -35,13 +37,6 @@ const PublishSong = () => {
   } = form
 
   const values = watch()
-
-  // function handleMusicChange(e: React.ChangeEvent<HTMLInputElement>) {
-  // 	const file = e.target.files?.[0]
-  // 	if (file) {
-  // 		setValue('selectedMusic', file)
-  // 	}
-  // }
 
   const onSubmit = async () => {
     // TODO: set these params from uploaded file
@@ -90,10 +85,10 @@ const PublishSong = () => {
 
   return (
     <div className="publishSongContainer container">
-      <h1>Publish A Song</h1>
-      <p className="whiteText">
+      <h1>Publish</h1>
+      {/* <p className="whiteText">
         Become your own publisher and upload your music for the world to hear!
-      </p>
+      </p> */}
 
       <form className="formContainer" onSubmit={handleSubmit(onSubmit)}>
         <div className="fieldContainer">
@@ -114,6 +109,10 @@ const PublishSong = () => {
         <div className="fieldContainer">
           <label>Artwork</label>
           <input type="file" className="uploadInput" {...register('selectedArtwork')} required />
+        </div>
+
+        <div className="fieldContainer" >
+          <FileUploader label='Tap, click, or drop a file to upload' required {...register('selectedMusic')} />
         </div>
 
         <button name="submitForm" className="button" type="submit" style={{ marginTop: '1rem' }}>

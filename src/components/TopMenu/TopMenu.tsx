@@ -15,11 +15,6 @@ const TopMenu = () => {
 
 	return (
 		<div className="topMenuContainer">
-			{/* <NavLink to="/" style={{ marginInline: '5%' }}>
-				Home
-			</NavLink> */}
-
-			{/* <NavLink to="/PublishASong">Publish A Song</NavLink> */}
 
 			<IoArrowBackCircle
 				size={30}
@@ -41,10 +36,6 @@ const TopMenu = () => {
 			/>
 
 			<div className="flexSpacer" />
-
-			{/* <p className="italics whiteText" style={{ marginRight: '5%' }}>
-				Feel the beat!
-			</p> */}
 
 			<NavLink
 				to="/Profile"

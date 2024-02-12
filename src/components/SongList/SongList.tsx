@@ -11,6 +11,7 @@ import { usePlaybackStore } from '../../stores/stores'
 import { Song } from '../../types/interfaces'
 import constants from '../../utils/constants'
 import './SongList.scss'
+import { CircularProgress } from '@mui/material'
 
 interface SongListProps {
   songs: Song[]
@@ -20,14 +21,17 @@ const SongList = ({ songs }: SongListProps) => {
   // State ======================================================
 
   // Global state for audio playback. Includes playing status, audio, artwork url, and setters for each
-  const [isPlaying, setIsPlaying, playbackSong, setPlaybackSong] = usePlaybackStore(
-    (state: any) => [
-      state.isPlaying,
-      state.setIsPlaying,
-      state.playbackSong,
-      state.setPlaybackSong
-    ]
-  )
+  const [
+    isPlaying,
+    setIsPlaying,
+    playbackSong,
+    setPlaybackSong
+  ] = usePlaybackStore((state: any) => [
+    state.isPlaying,
+    state.setIsPlaying,
+    state.playbackSong,
+    state.setPlaybackSong
+  ])
 
   // Table ==================================================================
   const columnHelper = createColumnHelper<Song>()
@@ -52,11 +56,19 @@ const SongList = ({ songs }: SongListProps) => {
             }}
           >
             <FaPlay className="artworkThumbnailPlayIcon" />
-            <Img
-              src={artworkURL}
-              className="songListArtworkThumbnail"
-              confederacyHost={constants.confederacyURL}
-            />
+            {artworkURL ? (
+              <>
+                <Img
+                  src={artworkURL}
+                  className="songListArtworkThumbnail"
+                  confederacyHost={constants.confederacyURL}
+                  // onLoad={() => {console.log('image load')}}
+                  loading={false}
+                />
+              </>
+            ) : (
+              <CircularProgress />
+            )}
           </div>
         )
       }
