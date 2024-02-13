@@ -29,35 +29,45 @@ const Footer = () => {
     state.setPlaybackSong
   ])
 
-  const [localSongURL, setLocalSongURL] = useState() as any
+  const [footerAudioURL, setFooterAudioURL] = useState() as any
   const [firstLoad, setFirstLoad] = useState(true)
 
   // Lifecycle ===================================================
 
-  useAsyncEffect(async () => {
-    if (!firstLoad) {
-      // This ensures isLoading is only set to true after the first load
-      setIsLoading(true)
-    }
-    console.log('requested song')
+  /* 
+    In this useEffect, we do 3 things:
 
-    try {
+    1. When the component loads, check if it is the first load.
+      If so, toggle the "firstLoad" state to false.
+
+    2. If there is no playbackSong data, break out of the useEffect.
+
+    3. If we pass that check, enter a try/catch block that will 
+      attempt to decrypt a song object. 
+      Successfully decrypting a song sets footerAudioURL to a localized URL.
+  */
+  useAsyncEffect(async () => {
+    //@ 1
+    firstLoad ? setIsLoading(false) : setIsLoading(true)
+
+    //@ 2
+    if (!playbackSong) { 
+      return
+    }
+
+    //@ 3
+    try { 
       const decryptedAudio = await decryptSong(playbackSong)
-      setLocalSongURL(decryptedAudio)
+      setFooterAudioURL(decryptedAudio)
       console.log('song loaded and playing')
     } catch (e) {
       console.error(e)
     } finally {
-      // Always set isLoading to false when done, irrespective of first load or not
+      // Set isLoading to false when done
       setIsLoading(false)
     }
 
-    // After the first successful load, ensure subsequent loads set the loading state
-    if (firstLoad) {
-      setFirstLoad(false)
-    }
-
-    // Cleanup function
+    // Cleanup function when component unmounts
     return () => {
       if (playbackSong.audioSource) {
         URL.revokeObjectURL(playbackSong.audioSource)
@@ -65,9 +75,9 @@ const Footer = () => {
     }
   }, [playbackSong, firstLoad])
 
-  useEffect(() => {
-    console.log('loading change')
-  }, [isLoading])
+  // useEffect(() => {
+  //   console.log('loading change')
+  // }, [isLoading])
 
   // Render ======================================================
 
@@ -95,7 +105,7 @@ const Footer = () => {
         </div>
       </div>
       <AudioPlayer
-        src={localSongURL}
+        src={footerAudioURL}
         onPlay={() => {
           setIsPlaying(true)
         }}

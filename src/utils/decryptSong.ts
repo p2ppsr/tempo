@@ -7,6 +7,11 @@ import constants from './constants'
 import { Song } from '../types/interfaces'
 
 const decryptSong = async (song: Song) => {
+  // 
+  if(!song.audioURL) {
+    return
+  }
+  
   const { data: encryptedData } = await download({
     UHRPUrl: song.audioURL,
     confederacyHost: constants.confederacyURL
@@ -41,8 +46,6 @@ const decryptSong = async (song: Song) => {
     keyID: `${derivationPrefix} ${derivationSuffix}`,
     counterparty: invoice.identityKey
   })
-
-  console.log(invoice.identityKey)
 
   // Create an output script that can only be unlocked with the corresponding derived private key
   const scriptObject = bsv.Script.fromAddress(bsv.Address.fromPublicKey(bsv.PublicKey.fromString(derivedPublicKey)))

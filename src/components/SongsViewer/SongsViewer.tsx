@@ -90,13 +90,17 @@ const SongsViewer = ({ searchFilter, mySongsOnly }: SongsViewerProps) => {
 
     // Decrypt the song selection if there is not a decryptedSongURL at the selected index
     if (!songs[selectionIndex].decryptedSongURL) {
-      let decryptedSongURL: string
+      let decryptedSongURL: string | undefined
 
       toast.promise(
         (async () => {
           // Decrypt the song
-          // TODO:
-          decryptedSongURL = await decryptSong(songs[selectionIndex])
+          try {
+            decryptedSongURL = await decryptSong(songs[selectionIndex])
+          } catch (e) {
+            // Log errors to console if decrypt fails
+            console.log(e)
+          }
 
           // Map through songs and update the decryptedSongUrl if it matches the selected song index
           const updatedSongs = songs.map((song, index) =>

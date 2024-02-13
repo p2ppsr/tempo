@@ -11,7 +11,6 @@ import { usePlaybackStore } from '../../stores/stores'
 import { Song } from '../../types/interfaces'
 import constants from '../../utils/constants'
 import './SongList.scss'
-import { CircularProgress } from '@mui/material'
 
 interface SongListProps {
   songs: Song[]
@@ -41,8 +40,11 @@ const SongList = ({ songs }: SongListProps) => {
     columnHelper.accessor('audioURL', {
       header: '',
       cell: info => {
-        // Pull the song data from the row's object data and supply it to the img element
+
+        // Deconstruct song data from the row's object data to provide it to the img element
         const { title, artist, audioURL, artworkURL } = info.row.original
+        console.log(info.row.original)
+        
         return (
           <div
             className="songListArtworkContainer"
@@ -56,19 +58,15 @@ const SongList = ({ songs }: SongListProps) => {
             }}
           >
             <FaPlay className="artworkThumbnailPlayIcon" />
-            {artworkURL ? (
-              <>
-                <Img
-                  src={artworkURL}
-                  className="songListArtworkThumbnail"
-                  confederacyHost={constants.confederacyURL}
-                  // onLoad={() => {console.log('image load')}}
-                  loading={false}
-                />
-              </>
-            ) : (
-              <CircularProgress />
-            )}
+
+            <Img
+              src={artworkURL}
+              className="songListArtworkThumbnail"
+              confederacyHost={constants.confederacyURL}
+              // TODO: update UHRP-React types to accept onLoad
+              // onLoad={() => {console.log('image load')}}
+              // loading={false}
+            />
           </div>
         )
       }
