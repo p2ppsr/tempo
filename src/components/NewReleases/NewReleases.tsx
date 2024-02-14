@@ -12,7 +12,8 @@ import useAsyncEffect from 'use-async-effect'
 import fetchSongs from '../../utils/fetchSongs'
 import { SearchFilter, Song } from '../../types/interfaces'
 import decryptSong from '../../utils/decryptSong'
-import { Img } from "uhrp-react"
+import { Img } from 'uhrp-react'
+import { CircularProgress } from "@mui/material"
 
 const clamp = (value: number, clampAt: number = 60) => Math.min(clampAt, Math.max(-clampAt, value))
 
@@ -72,26 +73,31 @@ const NewReleases = ({ className }: NewReleasesProps) => {
     }
   }, [])
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(newReleaseSongs)
-  },[newReleaseSongs])
+  }, [newReleaseSongs])
 
   return (
     <div className={`container ${className}`}>
       <h1 className="whiteText">New Releases</h1>
-      <div className="horizontalArtworkScroller" ref={ref} {...bind()}>
-        {newReleaseSongs.map((newRelease, i) => (
-          <div className="" key={i}>
-            <Img
-              className="newReleaseCard"
-              src={newRelease.artworkURL}
-              // animate={{
-              //   transform: `perspective(500px) rotateY(${rotation}deg)`
-              // }}
-            />
+      {newReleaseSongs.length === 0 ? (
+        <CircularProgress/>
+      ) : (
+        <>
+          <div className="horizontalArtworkScroller" ref={ref} {...bind()}>
+            {newReleaseSongs.map((newRelease, i) => (
+              <motion.div
+                key={i}
+                animate={{
+                  transform: `perspective(500px) rotateY(${rotation}deg)`
+                }}
+              >
+                <Img className="newReleaseCard" src={newRelease.artworkURL} />
+              </motion.div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </div>
   )
 }

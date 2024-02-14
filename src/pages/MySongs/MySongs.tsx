@@ -44,8 +44,6 @@ const MySongs = () => {
   const [currentIdentityKey, setCurrentIdentityKey] = useState<PublicKey>({ key: '' })
   const [songs, setSongs] = useState<Song[]>([])
 
-  
-
   useAsyncEffect(async () => {
     let searchFilter = {} as SearchFilter
 
