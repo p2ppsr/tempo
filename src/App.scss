@@ -19,7 +19,7 @@ a {
 
 .appLayout {
   display: grid;
-  grid-template-columns: 20% 80%; // 20% for LeftMenu, 80% for content including TopMenu
+  grid-template-columns: minmax(10rem, 20%) 1fr; // Adjusted this line
   grid-template-rows: 10vh auto; // 10vh for TopMenu, auto for MainContent
   grid-template-areas:
     'leftmenu topmenu'
@@ -46,7 +46,7 @@ a {
 
 // Page container class. Provides flexbox and padding
 .container {
-  padding: 2rem;
+  padding-inline: 1rem;
 }
 
 .backgroundImage {
