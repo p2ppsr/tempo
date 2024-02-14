@@ -40,11 +40,9 @@ const SongList = ({ songs }: SongListProps) => {
     columnHelper.accessor('audioURL', {
       header: '',
       cell: info => {
-
         // Deconstruct song data from the row's object data to provide it to the img element
         const { title, artist, audioURL, artworkURL } = info.row.original
-        console.log(info.row.original)
-        
+
         return (
           <div
             className="songListArtworkContainer"
@@ -64,7 +62,9 @@ const SongList = ({ songs }: SongListProps) => {
               className="songListArtworkThumbnail"
               confederacyHost={constants.confederacyURL}
               // TODO: update UHRP-React types to accept onLoad
-              // onLoad={() => {console.log('image load')}}
+              // onLoad={() => {
+              //   console.log('image load')
+              // }}
               // loading={false}
             />
           </div>

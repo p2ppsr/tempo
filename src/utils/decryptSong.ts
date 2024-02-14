@@ -7,17 +7,20 @@ import constants from './constants'
 import { Song } from '../types/interfaces'
 
 const decryptSong = async (song: Song) => {
-  // 
+  
   if(!song.audioURL) {
     return
   }
   
+  console.time('Nanoseek download time')
   const { data: encryptedData } = await download({
     UHRPUrl: song.audioURL,
     confederacyHost: constants.confederacyURL
   })
+  console.timeEnd('Nanoseek download time')
 
   // Get purchcase invoice from key-server recipient
+  console.time('Authrite invoice reponse time')
   const invoiceResponse = await new Authrite().request(`${constants.keyServerURL}/invoice`, {
     body: {
       songURL: song.audioURL
@@ -27,6 +30,7 @@ const decryptSong = async (song: Song) => {
       'Content-Type': 'application/json'
     }
   })
+  console.timeEnd('Authrite invoice reponse time')
 
   const invoice = JSON.parse(Buffer.from(invoiceResponse.body).toString('utf8'))
 
@@ -41,11 +45,13 @@ const decryptSong = async (song: Song) => {
     .toString('base64')
 
   // Derive the public key used for creating the output script
+  console.time('getPublicKey response time')
   const derivedPublicKey = await getPublicKey({
     protocolID: [2, '3241645161d8'],
     keyID: `${derivationPrefix} ${derivationSuffix}`,
     counterparty: invoice.identityKey
   })
+  console.timeEnd('getPublicKey response time')
 
   // Create an output script that can only be unlocked with the corresponding derived private key
   const scriptObject = bsv.Script.fromAddress(bsv.Address.fromPublicKey(bsv.PublicKey.fromString(derivedPublicKey)))
@@ -53,6 +59,7 @@ const decryptSong = async (song: Song) => {
   // Convert the Script object to a hexadecimal string
   const scriptHexString = scriptObject.toHex()
 
+  console.time('createAction response time')
   const payment = await createAction({
     description: paymentDescription,
     inputs: [], // Provide the appropriate value for inputs
@@ -64,8 +71,10 @@ const decryptSong = async (song: Song) => {
       }
     ]
   })
+  console.timeEnd('createAction response time')
 
   // Send the recipient proof of payment
+  console.time('Authrite pay response time')
   const purchasedKey = await new Authrite().request(`${constants.keyServerURL}/pay`, {
     body: {
       derivationPrefix,
@@ -87,6 +96,7 @@ const decryptSong = async (song: Song) => {
       'Content-Type': 'application/json'
     }
   })
+  console.timeEnd('Authrite pay response time')
 
   // Parse out the decryption key and decrypt the song data
   const key = JSON.parse(Buffer.from(purchasedKey.body).toString('utf8')).result // !! Receiving undefined purchasedKey.body
@@ -100,7 +110,9 @@ const decryptSong = async (song: Song) => {
     true,
     ['decrypt']
   )
+  console.time('Decrypt result response time')
   const decryptedResult = await decrypt(new Uint8Array(encryptedData), decryptionKey, 'Uint8Array')
+  console.timeEnd('Decrypt result response time')
 
   // test.resolve()
 

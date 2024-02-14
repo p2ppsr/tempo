@@ -1,5 +1,5 @@
 import { download } from 'nanoseek'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import AudioPlayer from 'react-h5-audio-player'
 import 'react-h5-audio-player/lib/styles.css'
 import { Img } from 'uhrp-react'
@@ -29,55 +29,44 @@ const Footer = () => {
     state.setPlaybackSong
   ])
 
-  const [footerAudioURL, setFooterAudioURL] = useState() as any
-  const [firstLoad, setFirstLoad] = useState(true)
+  const [footerAudioURL, setFooterAudioURL] = useState<string | undefined>(undefined)
+  const audioPlayerRef = useRef<AudioPlayer>(null)
 
   // Lifecycle ===================================================
 
-  /* 
-    In this useEffect, we do 3 things:
-
-    1. When the component loads, check if it is the first load.
-      If so, toggle the "firstLoad" state to false.
-
-    2. If there is no playbackSong data, break out of the useEffect.
-
-    3. If we pass that check, enter a try/catch block that will 
-      attempt to decrypt a song object. 
-      Successfully decrypting a song sets footerAudioURL to a localized URL.
-  */
   useAsyncEffect(async () => {
-    //@ 1
-    firstLoad ? setIsLoading(false) : setIsLoading(true)
-
-    //@ 2
-    if (!playbackSong) { 
-      return
-    }
-
-    //@ 3
-    try { 
-      const decryptedAudio = await decryptSong(playbackSong)
-      setFooterAudioURL(decryptedAudio)
-      console.log('song loaded and playing')
-    } catch (e) {
-      console.error(e)
-    } finally {
-      // Set isLoading to false when done
-      setIsLoading(false)
-    }
-
-    // Cleanup function when component unmounts
-    return () => {
-      if (playbackSong.audioSource) {
-        URL.revokeObjectURL(playbackSong.audioSource)
+    if (playbackSong) {
+      setIsLoading(true)
+      try {
+        const decryptedAudio = await decryptSong(playbackSong)
+        setIsLoading(false)
+        setFooterAudioURL(decryptedAudio) // Load and set new song URL
+        setIsPlaying(true)
+      } catch (e) {
+        console.error(e)
       }
     }
-  }, [playbackSong, firstLoad])
+  }, [playbackSong])
 
-  // useEffect(() => {
-  //   console.log('loading change')
-  // }, [isLoading])
+  /* Clearing the src directly was not working; 
+  use the reference to player element to manually pause and clear the source */
+  useEffect(() => {
+    if (isLoading) {
+      setFooterAudioURL('')
+      // if (audioPlayerRef.current && audioPlayerRef.current.audio.current) {
+      //   audioPlayerRef.current.audio.current.pause()
+      //   audioPlayerRef.current.audio.current.src = ''
+      // }
+    }
+  }, [isLoading])
+
+  useEffect(() => {
+    return () => {
+      if (footerAudioURL) {
+        URL.revokeObjectURL(footerAudioURL)
+      }
+    }
+  }, [footerAudioURL])
 
   // Render ======================================================
 
@@ -105,13 +94,13 @@ const Footer = () => {
         </div>
       </div>
       <AudioPlayer
+        ref={audioPlayerRef}
         src={footerAudioURL}
-        onPlay={() => {
-          setIsPlaying(true)
-        }}
-        onPause={() => {
-          setIsPlaying(false)
-        }}
+        autoPlayAfterSrcChange={true}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+        onEnded={() => setIsPlaying(false)}
+        progressUpdateInterval={10}
       />
     </div>
   )
