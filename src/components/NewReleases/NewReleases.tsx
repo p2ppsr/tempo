@@ -1,31 +1,18 @@
-import React, { useEffect } from 'react'
-import { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useScroll } from 'react-use-gesture'
 import './NewReleases.scss'
 import useSwipeScroll from './useSwipeScroll'
 // import SongsViewer from '../SongsViewer/SongsViewer'
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
 
-import beatlesArtwork from '../../assets/AlbumArtwork/beatles.jpg'
-import useAsyncEffect from 'use-async-effect'
-import fetchSongs from '../../utils/fetchSongs'
-import { SearchFilter, Song } from '../../types/interfaces'
-import decryptSong from '../../utils/decryptSong'
+import { CircularProgress } from '@mui/material'
 import { Img } from 'uhrp-react'
-import { CircularProgress } from "@mui/material"
+import useAsyncEffect from 'use-async-effect'
+import { usePlaybackStore } from '../../stores/stores'
+import { SearchFilter, Song } from '../../types/interfaces'
+import fetchSongs from '../../utils/fetchSongs'
 
 const clamp = (value: number, clampAt: number = 60) => Math.min(clampAt, Math.max(-clampAt, value))
-
-// TODO: This will be dynamic
-const songArtwork = [
-  beatlesArtwork,
-  beatlesArtwork,
-  beatlesArtwork,
-  beatlesArtwork,
-  beatlesArtwork,
-  beatlesArtwork
-]
 
 // const [newReleaseSongs, setNewReleaseSongs] = useState([{}])
 
@@ -34,6 +21,19 @@ interface NewReleasesProps {
 }
 
 const NewReleases = ({ className }: NewReleasesProps) => {
+  // Global state for audio playback. Includes playing status, audio, artwork url, and setters for each
+  const [
+    isPlaying,
+    setIsPlaying,
+    playbackSong,
+    setPlaybackSong
+  ] = usePlaybackStore((state: any) => [
+    state.isPlaying,
+    state.setIsPlaying,
+    state.playbackSong,
+    state.setPlaybackSong
+  ])
+
   const [newReleaseSongs, setNewReleaseSongs] = useState<Song[]>([])
 
   const ref = useRef(null)
@@ -81,7 +81,9 @@ const NewReleases = ({ className }: NewReleasesProps) => {
     <div className={`container ${className}`}>
       <h1 className="whiteText">New Releases</h1>
       {newReleaseSongs.length === 0 ? (
-        <CircularProgress/>
+        <div className="container">
+          <CircularProgress />
+        </div>
       ) : (
         <>
           <div className="horizontalArtworkScroller" ref={ref} {...bind()}>
@@ -91,8 +93,22 @@ const NewReleases = ({ className }: NewReleasesProps) => {
                 animate={{
                   transform: `perspective(500px) rotateY(${rotation}deg)`
                 }}
+                className="newReleaseCardContainer"
               >
-                <Img className="newReleaseCard" src={newRelease.artworkURL} />
+                <Img
+                  className="newReleaseCard"
+                  src={newRelease.artworkURL}
+                  //@ts-ignore TODO: update uhrp-react to not throw TS errors for img attributes
+                  onClick={() => {
+                    const { title, artist, audioURL, artworkURL } = newRelease
+                    setPlaybackSong({
+                      title: title,
+                      artist: artist,
+                      audioURL: audioURL,
+                      artworkURL: artworkURL
+                    })
+                  }}
+                />
               </motion.div>
             ))}
           </div>

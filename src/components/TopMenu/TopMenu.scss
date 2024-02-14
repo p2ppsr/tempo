@@ -11,10 +11,10 @@
     cursor: pointer;
 
     &:hover {
-      fill: #de5f3b;
+      fill: $accentColor;
     }
     &:active {
-      fill: #de5f3b;
+      fill: $accentColor;
       filter: brightness(0.55);
     }
   }
@@ -27,7 +27,7 @@
   margin-right: 1rem; // Adjust right margin as needed
 
   &:hover {
-    color: #de5f3b;
+    color: $accentColor;
   }
 
   p {
