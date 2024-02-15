@@ -47,16 +47,10 @@ const Footer = () => {
       }
     }
   }, [playbackSong])
-
-  /* Clearing the src directly was not working; 
-  use the reference to player element to manually pause and clear the source */
+  
   useEffect(() => {
     if (isLoading) {
       setFooterAudioURL('')
-      // if (audioPlayerRef.current && audioPlayerRef.current.audio.current) {
-      //   audioPlayerRef.current.audio.current.pause()
-      //   audioPlayerRef.current.audio.current.src = ''
-      // }
     }
   }, [isLoading])
 

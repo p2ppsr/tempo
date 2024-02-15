@@ -12,7 +12,7 @@ declare module "@babbage/sdk" {
   } // Adjust as needed
   type Signature = Uint8Array
   type Hmac = Uint8Array
-  type PublicKey = { key: string }
+  type PublicKey = { key: string } | string
 
   // Data structures for specific functions
   interface EncryptedData {

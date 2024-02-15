@@ -11,6 +11,7 @@ import useAsyncEffect from 'use-async-effect'
 import { usePlaybackStore } from '../../stores/stores'
 import { SearchFilter, Song } from '../../types/interfaces'
 import fetchSongs from '../../utils/fetchSongs'
+import SongList from "../SongList/SongList"
 
 const clamp = (value: number, clampAt: number = 60) => Math.min(clampAt, Math.max(-clampAt, value))
 
@@ -34,7 +35,7 @@ const NewReleases = ({ className }: NewReleasesProps) => {
     state.setPlaybackSong
   ])
 
-  const [newReleaseSongs, setNewReleaseSongs] = useState<Song[]>([])
+  const [songs, setSongs] = useState<Song[]>([])
 
   const ref = useRef(null)
   useSwipeScroll({ sliderRef: ref })
@@ -46,48 +47,33 @@ const NewReleases = ({ className }: NewReleasesProps) => {
   })
 
   useAsyncEffect(async () => {
-    let searchFilter = {} as SearchFilter
-
-    try {
-      searchFilter.findAll = true
-    } catch (e) {
-      console.log(e)
-    }
+    const searchFilter = { findAll: true, artistIdentityKey: '' } as SearchFilter
 
     try {
       // Get a list of song objects
       const res = await fetchSongs(searchFilter)
-      const songs = await Promise.all(
-        res.map(async (fetchedSong: any) => {
-          return fetchedSong
-        })
-      )
-      setNewReleaseSongs(songs)
+
+      setSongs(res.reverse()) // Newest songs on top (note performance with large results)
     } catch (e) {
-      if (e instanceof Error) {
-        console.log(e.message)
-      } else {
-        // Handle cases where the caught object is not an Error instance
-        console.log('An unexpected error occurred:', e)
-      }
+      console.log(e)
     }
   }, [])
 
   useEffect(() => {
-    console.log(newReleaseSongs)
-  }, [newReleaseSongs])
+    console.log(songs)
+  }, [songs])
 
   return (
     <div className={`container ${className}`}>
       <h1 className="whiteText">New Releases</h1>
-      {newReleaseSongs.length === 0 ? (
+      {songs.length === 0 ? (
         <div className="container">
           <CircularProgress />
         </div>
       ) : (
         <>
           <div className="horizontalArtworkScroller" ref={ref} {...bind()}>
-            {newReleaseSongs.map((newRelease, i) => (
+            {songs.map((newRelease, i) => (
               <motion.div
                 key={i}
                 animate={{
@@ -112,6 +98,8 @@ const NewReleases = ({ className }: NewReleasesProps) => {
               </motion.div>
             ))}
           </div>
+
+          <SongList songs={songs} />
         </>
       )}
     </div>

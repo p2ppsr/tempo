@@ -111,9 +111,9 @@ const PublishSong = () => {
           <input type="file" className="uploadInput" {...register('selectedArtwork')} required />
         </div>
 
-        <div className="fieldContainer" >
+        {/* <div className="fieldContainer" >
           <FileUploader label='Tap, click, or drop a file to upload' required {...register('selectedMusic')} />
-        </div>
+        </div> */}
 
         <button name="submitForm" className="button" type="submit" style={{ marginTop: '1rem' }}>
           Publish Song

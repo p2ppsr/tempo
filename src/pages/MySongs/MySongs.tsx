@@ -7,7 +7,7 @@ import testArtwork from '../../assets/AlbumArtwork/beatles.jpg'
 import SongList from '../../components/SongList/SongList'
 
 // test audio
-import { PublicKey } from '@babbage/sdk'
+import { PublicKey, getPublicKey } from '@babbage/sdk'
 import { CircularProgress } from '@mui/material'
 import useAsyncEffect from 'use-async-effect'
 import hereComesTheSun from '../../assets/Music/HereComesTheSun.mp3'
@@ -45,13 +45,12 @@ const MySongs = () => {
   const [songs, setSongs] = useState<Song[]>([])
 
   useAsyncEffect(async () => {
-    let searchFilter = {} as SearchFilter
+    const artistIdentityKey = await getPublicKey({
+      protocolID: 'Tempo',
+      keyID: '1'
+    })
 
-    try {
-      searchFilter.findAll = true
-    } catch (e) {
-      console.log(e)
-    }
+    const searchFilter = { findAll: true, artistIdentityKey: artistIdentityKey } as SearchFilter
 
     try {
       // Get a list of song objects
@@ -60,7 +59,7 @@ const MySongs = () => {
       setSongs(res.reverse()) // Newest songs on top (note performance with large results)
     } catch (e) {
       if (e instanceof Error) {
-      console.log(e.message)
+        console.log(e.message)
       } else {
         // Handle cases where the caught object is not an Error instance
         console.log('An unexpected error occurred:', e)
