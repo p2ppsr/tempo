@@ -1,4 +1,4 @@
-# tempo - Feel the beat!
+# Tempo - Feel the beat!
  ![Getting Started](./src/assets/Images/tempoLogo.png)
 
  A music streaming and publishing platform built with Babbage
@@ -9,11 +9,16 @@ This is a react app that demonstrates the capabilities of [Babbage](https://proj
 
 ## Getting started
 
-1. download the metanet client and create an account:
+1. Download the metanet client and create an account:
+   
 [Windows](https://projectbabbage.com/desktop/res/stageline/MetaNet%20Stageline.exe)
+
 [macOS](https://projectbabbage.com/desktop/res/stageline/MetaNet%20Stageline.exe)
+
 [Linux](https://projectbabbage.com/desktop/res/stageline/MetaNet%20Stageline.AppImage)
 
 2. npm i
 3. npm run start
+
+Note: The metanet client must be running to use Tempo
 
