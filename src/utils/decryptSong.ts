@@ -6,6 +6,8 @@ import { download } from 'nanoseek'
 import constants from './constants'
 import { Song } from '../types/interfaces'
 
+const authrite = new Authrite()
+
 const decryptSong = async (song: Song) => {
 
   if (!song.audioURL) {
@@ -25,7 +27,7 @@ const decryptSong = async (song: Song) => {
     (async (): Promise<AuthriteResponse> => {
       // Get purchcase invoice from key-server recipient
       console.time('Authrite invoice response time')
-      const invoiceResponse = await new Authrite().request(`${constants.keyServerURL}/invoice`, {
+      const invoiceResponse = await authrite.request(`${constants.keyServerURL}/invoice`, {
         body: {
           songURL: song.audioURL
         },
@@ -79,7 +81,7 @@ const decryptSong = async (song: Song) => {
 
       // Send the recipient proof of payment
       console.time('Authrite pay response time')
-      const purchasedKey = await new Authrite().request(`${constants.keyServerURL}/pay`, {
+      const purchasedKey = await authrite.request(`${constants.keyServerURL}/pay`, {
         body: {
           derivationPrefix,
           songURL: song.audioURL,
