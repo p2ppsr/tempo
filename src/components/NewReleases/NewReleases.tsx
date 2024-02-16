@@ -11,7 +11,7 @@ import useAsyncEffect from 'use-async-effect'
 import { usePlaybackStore } from '../../stores/stores'
 import { SearchFilter, Song } from '../../types/interfaces'
 import fetchSongs from '../../utils/fetchSongs'
-import SongList from "../SongList/SongList"
+import SongList from '../SongList/SongList'
 
 const clamp = (value: number, clampAt: number = 60) => Math.min(clampAt, Math.max(-clampAt, value))
 

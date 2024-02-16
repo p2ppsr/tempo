@@ -36,7 +36,7 @@ a {
 
 .mainContent {
   grid-area: maincontent;
-  overflow: auto;
+  overflow-y: auto;
 }
 
 .main {
@@ -44,10 +44,10 @@ a {
   flex-direction: row;
 }
 
-// Page container class. Provides flexbox and padding
 .container {
   padding-inline: 2rem;
-  overflow: hidden;
+  height:calc(80vh);
+  overflow-y: auto;
 }
 
 .backgroundImage {
