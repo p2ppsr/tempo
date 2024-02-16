@@ -11,9 +11,14 @@
   width: 100%;
   border-radius: $borderRadius;
   padding: 1rem;
+  margin-bottom:5rem;
 
   thead {
     text-align: left;
+  }
+
+  th {
+    padding-left:.5rem
   }
 
   tbody {
@@ -23,6 +28,10 @@
         background-color: rgba(255, 255, 255, 0.1);
       }
     }
+  }
+
+  td {
+    padding-left:.5rem;
   }
 }
 
@@ -35,6 +44,8 @@
     width: 3rem;
     user-select: none;
     margin-right:.5rem;
+    aspect-ratio: 1/1;
+    object-fit: contain;
   }
 
   .artworkThumbnailPlayIcon {

@@ -1,4 +1,4 @@
-@import "./styles/styleVariables.scss";
+@import './styles/styleVariables.scss';
 
 * {
   margin: 0;
@@ -8,11 +8,8 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
 }
 
@@ -20,14 +17,37 @@ a {
   text-decoration: none;
 }
 
+.appLayout {
+  display: grid;
+  grid-template-columns: minmax(10rem, 20%) 1fr;
+  grid-template-rows: 10vh auto;
+  grid-template-areas:
+    'leftmenu topmenu'
+    'leftmenu maincontent';
+}
+
+.leftMenu {
+  grid-area: leftmenu;
+}
+
+.topMenu {
+  grid-area: topmenu;
+}
+
+.mainContent {
+  grid-area: maincontent;
+  overflow-y: auto;
+}
+
 .main {
   display: flex;
   flex-direction: row;
 }
 
-// Page container class. Provides flexbox and padding
 .container {
-  padding:2rem;
+  padding-inline: 2rem;
+  height:calc(80vh);
+  overflow-y: auto;
 }
 
 .backgroundImage {
@@ -37,7 +57,7 @@ a {
 }
 
 .rightContainer {
-  width:100%;
+  width: 100%;
 }
 
 .whiteText {
@@ -73,5 +93,5 @@ a {
 .loadingContainer {
   display: flex;
   justify-content: center;
-  width:100%;
+  width: 100%;
 }

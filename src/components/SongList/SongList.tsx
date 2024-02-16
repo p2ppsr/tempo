@@ -11,7 +11,6 @@ import { usePlaybackStore } from '../../stores/stores'
 import { Song } from '../../types/interfaces'
 import constants from '../../utils/constants'
 import './SongList.scss'
-// import download from 'nanoseek'
 
 interface SongListProps {
   songs: Song[]
@@ -21,14 +20,17 @@ const SongList = ({ songs }: SongListProps) => {
   // State ======================================================
 
   // Global state for audio playback. Includes playing status, audio, artwork url, and setters for each
-  const [isPlaying, setIsPlaying, playbackSong, setPlaybackSong] = usePlaybackStore(
-    (state: any) => [
-      state.isPlaying,
-      state.setIsPlaying,
-      state.playbackSong,
-      state.setPlaybackSong
-    ]
-  )
+  const [
+    isPlaying,
+    setIsPlaying,
+    playbackSong,
+    setPlaybackSong
+  ] = usePlaybackStore((state: any) => [
+    state.isPlaying,
+    state.setIsPlaying,
+    state.playbackSong,
+    state.setPlaybackSong
+  ])
 
   // Table ==================================================================
   const columnHelper = createColumnHelper<Song>()
@@ -38,8 +40,9 @@ const SongList = ({ songs }: SongListProps) => {
     columnHelper.accessor('audioURL', {
       header: '',
       cell: info => {
-        // Pull the song data from the row's object data and supply it to the img element
+        // Deconstruct song data from the row's object data to provide it to the img element
         const { title, artist, audioURL, artworkURL } = info.row.original
+
         return (
           <div
             className="songListArtworkContainer"
@@ -53,10 +56,16 @@ const SongList = ({ songs }: SongListProps) => {
             }}
           >
             <FaPlay className="artworkThumbnailPlayIcon" />
+
             <Img
               src={artworkURL}
               className="songListArtworkThumbnail"
               confederacyHost={constants.confederacyURL}
+              // TODO: update UHRP-React types to accept onLoad
+              // onLoad={() => {
+              //   console.log('image load')
+              // }}
+              // loading={false}
             />
           </div>
         )
@@ -98,7 +107,7 @@ const SongList = ({ songs }: SongListProps) => {
 
         <tbody>
           {table.getRowModel().rows.map(row => (
-            <tr key={row.id}>
+            <tr key={row.id} className="songRow">
               {row.getVisibleCells().map(cell => (
                 <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
               ))}

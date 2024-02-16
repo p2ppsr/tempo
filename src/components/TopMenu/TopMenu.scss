@@ -1,84 +1,36 @@
-@import "../../styles/styleVariables.scss";
+@import '../../styles/styleVariables.scss';
 
 .topMenuContainer {
-  position: fixed;
   display: flex;
-  width: 78vw;
-  height: 3rem;
-  // max-height: 4rem;
-  background-color: $grayBackground;
   align-items: center;
   justify-content: space-between;
+  height: 3rem;
+  background-color: $grayBackground;
 
   .navigationIcon {
     cursor: pointer;
 
     &:hover {
-      fill: #de5f3b;
+      fill: $accentColor;
     }
     &:active {
-      fill: #de5f3b;
+      fill: $accentColor;
       filter: brightness(0.55);
     }
   }
 }
 
 .menuProfileContainer {
+  display: flex;
   align-items: center;
-  margin-right: 1rem;
   color: white;
+  margin-right: 1rem; // Adjust right margin as needed
+
   &:hover {
-    color: #de5f3b;
-  }
-  &:active {
-    filter: brightness(0.8);
+    color: $accentColor;
   }
 
   p {
-    margin-right: 1rem;
+    margin-right: 0.5rem; // Adjust space between the username and the icon
   }
 }
-
-// .topMenu {
-// 	width: 1fr;
-// 	/* height: 8vh; */
-// 	min-height: 60px;
-// 	justify-content: left;
-// 	display: flex;
-// 	/* grid-template: 1fr / 1.5fr 1fr; */
-// 	align-items: center;
-// 	padding-left: 15px;
-// 	padding-right: 15px;
-// 	color: #ffffff;
-// 	z-index: 3;
-// }
-
-// .topMenu ul {
-// 	justify-content: left;
-// 	display: flex;
-// 	align-items: center;
-// }
-
-// .topMenu ul li {
-// 	list-style: none;
-// 	padding: 10px;
-// }
-
-// .topMenu ul li a {
-// 	text-decoration: none;
-// 	color: #ececec;
-// 	font-size: 16px;
-// }
-
-// .topMenu .active {
-// 	color: white;
-// 	font-weight: 700;
-// }
-
-// .slogan {
-// 	font-style: italic;
-// 	font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial,
-// 		sans-serif;
-// 	position: absolute;
-// 	right: 120px;
-// }

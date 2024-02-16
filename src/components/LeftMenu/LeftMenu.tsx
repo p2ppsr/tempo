@@ -3,6 +3,7 @@ import { FaCaretDown, FaCaretUp } from "react-icons/fa"
 import { NavLink, useLocation } from "react-router-dom"
 import "./LeftMenu.scss"
 
+// @ts-ignore
 import tempoLogo from '../../assets/Images/tempoLogo.png'
 
 const LeftMenu = () => {
@@ -21,9 +22,6 @@ const LeftMenu = () => {
         <div className="logoContainer">
           <img className='menuLogo' src={tempoLogo} />
         </div>
-        <p className="italics whiteText" style={{ textAlign: "center" }}>
-          Feel the beat!
-        </p>
         <ul>
           <NavLink to="/">
             <li className="link">Home</li>

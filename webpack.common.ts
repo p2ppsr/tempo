@@ -49,8 +49,9 @@ const common: Configuration = {
         use: ["style-loader", "css-loader", "sass-loader"],
       },
 
+      // Image file loaders
       {
-        test: /\.(png|jpe?g|gif|svg)$/,
+        test: /\.(png|jpe?g|gif|svg|webp)$/,
         use: [
           {
             loader: "url-loader",
@@ -59,6 +60,7 @@ const common: Configuration = {
         ],
       },
 
+      // Font file loaders
       {
         test: /\.(woff|woff2|eot|ttf)$/,
         use: {
@@ -69,6 +71,7 @@ const common: Configuration = {
         },
       },
 
+      // Audio file loaders
       {
         test: /\.(mp3|wav|m4v|flac|aiff)$/,
         use: {

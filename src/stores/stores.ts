@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { Song } from '../types/interfaces'
 
 export const useAuthStore = create(set => ({
   // TODO: These will be dynamic
@@ -11,31 +10,13 @@ export const useAuthStore = create(set => ({
   setProfilePictureUrl: (newState: string) => set(() => ({ profilePictureUrl: newState }))
 }))
 
-// TODO: Make these set a song object instead of individual params
-// export const usePlaybackStore = create(set => ({
-
-//   // Playback state
-//   isPlaying: false,
-//   setIsPlaying: (newState: boolean) => set((state: any) => ({ isPlaying: newState })),
-//   toggleIsPlaying: (newState: boolean) => set((state: any) => ({ isPlaying: !state.isPlaying })),
-
-//   // TODO: This should probably be one Song type handler instead of multiple states
-//   playingAudioURL: '',
-//   setplayingAudioURL: (newState: string) => set((state: any) => ({ playingAudioURL: newState })),
-
-//   playingAudioTitle: '',
-//   setPlayingAudioTitle: (newState: string) =>
-//     set((state: any) => ({ playingAudioTitle: newState })),
-
-//   playingAudioArtist: '',
-//   setPlayingAudioArtist: (newState: string) => set(() => ({ playingAudioArtist: newState })),
-
-//   playingArtworkURL: '',
-//   setplayingArtworkURL: (newState: string) => set(() => ({ playingArtworkURL: newState }))
-// }))
-
 export const usePlaybackStore = create(set => ({
   isPlaying: false,
+  setIsPlaying: (newState: boolean) => set(() => ({ isPlaying: newState })),
+
+  isLoading: false,
+  setIsLoading: (newState: boolean) => set(() => ({ isLoading: newState })),
+
   playbackSong: {
     title: '',
     artist: '',
@@ -45,7 +26,6 @@ export const usePlaybackStore = create(set => ({
     description: '',
     duration: 0
   },
-  setIsPlaying: (newState: boolean) => set(() => ({ isPlaying: newState })),
   setPlaybackSong: (newSong: any) =>
     set((state: any) => ({
       playbackSong: {
