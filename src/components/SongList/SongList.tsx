@@ -10,6 +10,7 @@ import { Img } from 'uhrp-react'
 import { usePlaybackStore } from '../../stores/stores'
 import { Song } from '../../types/interfaces'
 import constants from '../../utils/constants'
+import placeholderImage from '../../assets/Images/placeholder-image.png'
 import './SongList.scss'
 
 interface SongListProps {
@@ -61,11 +62,12 @@ const SongList = ({ songs }: SongListProps) => {
               src={artworkURL}
               className="songListArtworkThumbnail"
               confederacyHost={constants.confederacyURL}
-              // TODO: update UHRP-React types to accept onLoad
-              // onLoad={() => {
-              //   console.log('image load')
-              // }}
-              // loading={false}
+              //@ts-ignore TODO: update uhrp-react to not throw TS errors for img attributes
+              // Set the image to a placeholder if an image was not found
+              onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                const target = e.target as HTMLImageElement
+                target.src = placeholderImage
+              }}
             />
           </div>
         )
