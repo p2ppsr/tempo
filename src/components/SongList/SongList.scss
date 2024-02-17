@@ -1,4 +1,4 @@
-@import "../../styles/styleVariables.scss";
+@import '../../styles/styleVariables.scss';
 
 /* 
   Note: '&::before' styles are necessary because tables 
@@ -11,19 +11,19 @@
   width: 100%;
   border-radius: $borderRadius;
   padding: 1rem;
-  margin-bottom:5rem;
+  margin-bottom: 5rem;
 
   thead {
     text-align: left;
   }
 
   th {
-    padding-left:.5rem
+    padding-left: 0.5rem;
   }
 
   tbody {
     tr {
-      margin-bottom:1rem;
+      margin-bottom: 1rem;
       &:hover {
         background-color: rgba(255, 255, 255, 0.1);
       }
@@ -31,7 +31,7 @@
   }
 
   td {
-    padding-left:.5rem;
+    padding-left: 0.5rem;
   }
 }
 
@@ -42,10 +42,10 @@
 
   .songListArtworkThumbnail {
     width: 3rem;
-    height:3rem;
+    height: 3rem;
     user-select: none;
-    margin-right:.5rem;
-    margin-bottom:.5rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
     aspect-ratio: 1/1;
     object-fit: cover;
   }
@@ -64,9 +64,27 @@
 
 // Overrides for audio playback component
 .rhap_container {
-  background: rgba(0,0,0,0.8) !important;
+  background: rgba(0, 0, 0, 0.8) !important;
 
   .rhap_time {
     color: $textColor;
+  }
+}
+
+.likedContainer {
+  .likedIcon {
+    font-size: 1.5rem;
+    visibility: hidden; // Keep the icon hidden by default
+    cursor: pointer;
+  }
+
+  .alwaysVisible {
+    visibility: visible !important; // Always show the icon if it's liked
+  }
+}
+
+.songRow {
+  &:hover .likedIcon:not(.alwaysVisible) {
+    visibility: visible; // Only show the icon on hover if it's not always visible
   }
 }

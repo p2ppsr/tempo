@@ -15,7 +15,6 @@ import zodiacGirls from '../../assets/Music/ZodiacGirls.mp3'
 import fetchSongs from '../../utils/fetchSongs'
 
 const MySongs = () => {
-
   const [currentIdentityKey, setCurrentIdentityKey] = useState<PublicKey>({ key: '' })
   const [songs, setSongs] = useState<Song[]>([])
 
@@ -46,15 +45,7 @@ const MySongs = () => {
     <div className="container">
       <h1>My Songs</h1>
 
-      <div>
-        {songs.length === 0 ? (
-          <div className="loadingContainer">
-            <CircularProgress />
-          </div>
-        ) : (
-          <SongList songs={songs} />
-        )}
-      </div>
+      <div>{songs.length === 0 ? <CircularProgress /> : <SongList songs={songs} />}</div>
     </div>
   )
 }

@@ -4,8 +4,8 @@ import {
   getCoreRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import React from 'react'
-import { FaPlay } from 'react-icons/fa'
+import React, { useEffect, useState } from 'react'
+import { FaPlay, FaHeart, FaRegHeart } from 'react-icons/fa'
 import { Img } from 'uhrp-react'
 import { usePlaybackStore } from '../../stores/stores'
 import { Song } from '../../types/interfaces'
@@ -20,6 +20,12 @@ interface SongListProps {
 const SongList = ({ songs }: SongListProps) => {
   // State ======================================================
 
+  const [likedSongs, setLikedSongs] = useState<string[]>([])
+  useEffect(() => {
+    const storedLikes = localStorage.getItem('likedSongs')
+    setLikedSongs(storedLikes ? storedLikes.split(',') : [])
+  }, [])
+
   // Global state for audio playback. Includes playing status, audio, artwork url, and setters for each
   const [
     isPlaying,
@@ -32,6 +38,22 @@ const SongList = ({ songs }: SongListProps) => {
     state.playbackSong,
     state.setPlaybackSong
   ])
+
+  // Handlers
+
+  const toggleSongLike = (audioURL: string) => {
+    let updatedLikedSongs
+    if (likedSongs.includes(audioURL)) {
+      // Remove the song from likedSongs if it's already liked
+      updatedLikedSongs = likedSongs.filter(song => song !== audioURL)
+    } else {
+      // Add the song to likedSongs if it's not already liked
+      updatedLikedSongs = [...likedSongs, audioURL]
+    }
+    // Update state and localStorage with the new list of liked songs
+    setLikedSongs(updatedLikedSongs)
+    localStorage.setItem('likedSongs', updatedLikedSongs.join(','))
+  }
 
   // Table ==================================================================
   const columnHelper = createColumnHelper<Song>()
@@ -80,6 +102,25 @@ const SongList = ({ songs }: SongListProps) => {
     columnHelper.accessor('artist', {
       header: 'Artist',
       cell: info => info.getValue()
+    }),
+    columnHelper.accessor('audioURL', {
+      id: 'liked',
+      header: '',
+      cell: info => {
+        const isLiked = likedSongs.includes(info.row.original.audioURL)
+        return (
+          <div
+            className="likedContainer"
+            onClick={() => toggleSongLike(info.row.original.audioURL)}
+          >
+            {isLiked ? (
+              <FaHeart className={`likedIcon ${isLiked ? 'alwaysVisible' : ''}`} />
+            ) : (
+              <FaRegHeart className="likedIcon" />
+            )}
+          </div>
+        )
+      }
     })
   ]
 
