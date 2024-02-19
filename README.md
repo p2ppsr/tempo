@@ -13,7 +13,7 @@ This is a react app that demonstrates the capabilities of [Babbage](https://proj
    
 [Windows](https://projectbabbage.com/desktop/res/stageline/MetaNet%20Stageline.exe)
 
-[macOS](https://projectbabbage.com/desktop/res/stageline/MetaNet%20Stageline.exe)
+[macOS](https://projectbabbage.com/desktop/res/stageline/MetaNet%20Stageline.dmg)
 
 [Linux](https://projectbabbage.com/desktop/res/stageline/MetaNet%20Stageline.AppImage)
 
