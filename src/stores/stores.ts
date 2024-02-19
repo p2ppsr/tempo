@@ -32,5 +32,8 @@ export const usePlaybackStore = create(set => ({
         ...state.playbackSong,
         ...newSong
       }
-    }))
+    })),
+
+  playNextSong: false,
+  togglePlayNextSong: () => set((state: any) => ({ playNextSong: !state.playNextSong })),
 }))

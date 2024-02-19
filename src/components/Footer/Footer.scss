@@ -39,5 +39,7 @@
 
   .playerAlbumArt {
     max-width: 4rem;
+    aspect-ratio: 1/1;
+    object-fit: cover;
   }
 }

@@ -84,7 +84,12 @@
 }
 
 .songRow {
+  cursor: pointer;
   &:hover .likedIcon:not(.alwaysVisible) {
     visibility: visible; // Only show the icon on hover if it's not always visible
   }
+}
+
+.songRow.selectedRow {
+  background-color: rgba(255, 255, 255, 0.1);
 }

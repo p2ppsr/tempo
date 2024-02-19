@@ -41,7 +41,7 @@ const Likes = () => {
     <>
       <div className="container">
         <h1>Likes</h1>
-        {songs.length === 0 && !isLoaded && (
+        {(songs.length === 0 && !isLoaded) && (
           <>
             <CircularProgress style={{ marginTop: '1rem' }} />
           </>
@@ -53,7 +53,7 @@ const Likes = () => {
             </div>
           </>
         )}
-        {songs.length === 0 && isLoaded && (
+        {(songs.length === 0 && isLoaded) && (
           <>
             <p className="whiteText" style={{marginTop:'1rem'}}>No songs have been liked yet.</p>
           </>

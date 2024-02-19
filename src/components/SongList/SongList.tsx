@@ -18,10 +18,11 @@ interface SongListProps {
 }
 
 const SongList = ({ songs }: SongListProps) => {
-  useEffect(()=>{
-    console.log(songs)
-  },[songs])
-  // State ======================================================
+  // useEffect(()=>{
+  //   console.log(songs)
+  // },[songs])
+
+  // Liked songs ==================================================
 
   const [likedSongs, setLikedSongs] = useState<string[]>([])
   useEffect(() => {
@@ -29,20 +30,44 @@ const SongList = ({ songs }: SongListProps) => {
     setLikedSongs(storedLikes ? storedLikes.split(',') : [])
   }, [])
 
-  // Global state for audio playback. Includes playing status, audio, artwork url, and setters for each
+  // Selected song ===============================================
+
+  const [selectedSongIndex, setSelectedSongIndex] = useState<string | null>(null)
+
+  // Global state for audio playback =============================
+
   const [
     isPlaying,
     setIsPlaying,
     playbackSong,
-    setPlaybackSong
+    setPlaybackSong,
+    playNextSong
   ] = usePlaybackStore((state: any) => [
     state.isPlaying,
     state.setIsPlaying,
     state.playbackSong,
-    state.setPlaybackSong
+    state.setPlaybackSong,
+    state.playNextSong
   ])
 
-  // Handlers
+  // Lifecycle =================================================
+
+  // Play next song after song ends
+  useEffect(() => {
+    const currentSongIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
+    const nextSongIndex = (currentSongIndex + 1) % songs.length // Loop back to the first song if at the end
+    const nextSong = songs[nextSongIndex]
+
+    setPlaybackSong({
+      title: nextSong.title,
+      artist: nextSong.artist,
+      audioURL: nextSong.audioURL,
+      artworkURL: nextSong.artworkURL
+    })
+    setIsPlaying(true)
+  }, [playNextSong])
+
+  // Handlers ==================================================
 
   const toggleSongLike = (audioURL: string) => {
     let updatedLikedSongs
@@ -56,6 +81,16 @@ const SongList = ({ songs }: SongListProps) => {
     // Update state and localStorage with the new list of liked songs
     setLikedSongs(updatedLikedSongs)
     localStorage.setItem('likedSongs', updatedLikedSongs.join(','))
+  }
+
+  const handleDoubleClick = (song: Song) => {
+    setPlaybackSong({
+      title: song.title,
+      artist: song.artist,
+      audioURL: song.audioURL,
+      artworkURL: song.artworkURL
+    })
+    setIsPlaying(true) // Start playback immediately
   }
 
   // Table ==================================================================
@@ -116,8 +151,8 @@ const SongList = ({ songs }: SongListProps) => {
             className="likedContainer"
             onClick={() => {
               console.log(localStorage.getItem('likedSongs'))
-              toggleSongLike(info.row.original.audioURL)}
-            }
+              toggleSongLike(info.row.original.audioURL)
+            }}
           >
             {isLiked ? (
               <FaHeart className={`likedIcon ${isLiked ? 'alwaysVisible' : ''}`} />
@@ -153,10 +188,14 @@ const SongList = ({ songs }: SongListProps) => {
             </tr>
           ))}
         </thead>
-
         <tbody>
           {table.getRowModel().rows.map(row => (
-            <tr key={row.id} className="songRow">
+            <tr
+              key={row.id}
+              className={`songRow ${selectedSongIndex === row.id ? 'selectedRow' : ''}`}
+              onClick={() => setSelectedSongIndex(row.id)} // Updated to use row.id for consistency
+              onDoubleClick={() => handleDoubleClick(row.original)} // Add this line for handling double-click
+            >
               {row.getVisibleCells().map(cell => (
                 <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
               ))}
