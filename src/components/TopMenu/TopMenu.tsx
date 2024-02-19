@@ -37,13 +37,13 @@ const TopMenu = () => {
 
 			<div className="flexSpacer" />
 
-			<NavLink
+			{/* <NavLink
 				to="/Profile"
 				className="menuProfileContainer flex"
 			>
 				<p>{userName}</p>
 				<FaUserCircle size={30}/>
-			</NavLink>
+			</NavLink> */}
 		</div>
 	)
 }

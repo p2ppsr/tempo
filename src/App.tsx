@@ -5,7 +5,6 @@ import { ToastContainer } from 'react-toastify'
 
 // Components
 import Home from './pages/Home/Home'
-import SavedSongs from './pages/SavedSongs/SavedSongs'
 import Playlists from './pages/Playlists/Playlists'
 import CreatePlaylist from './pages/Playlists/Create/CreatePlaylist'
 import MySongs from './pages/MySongs/MySongs'
@@ -52,7 +51,6 @@ const App = () => {
           <div className="mainContent">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/SavedSongs" element={<SavedSongs />} />
               <Route path="/Playlists" element={<Playlists />} />
               <Route path="/Playlists/Create" element={<CreatePlaylist />} />
               <Route path="/Profile" element={<Profile />} />
@@ -61,6 +59,7 @@ const App = () => {
               <Route path="/PublishSong" element={<PublishSong />} />
               <Route path="/PublishSong/Success" element={<SuccessPage />} />
 
+              {/* TODO: Might be a subpath eventually under /library/* */}
               <Route path="/Likes" element={<Likes />} />
             </Routes>
           </div>

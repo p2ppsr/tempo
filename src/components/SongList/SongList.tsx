@@ -18,6 +18,9 @@ interface SongListProps {
 }
 
 const SongList = ({ songs }: SongListProps) => {
+  useEffect(()=>{
+    console.log(songs)
+  },[songs])
   // State ======================================================
 
   const [likedSongs, setLikedSongs] = useState<string[]>([])
@@ -111,7 +114,10 @@ const SongList = ({ songs }: SongListProps) => {
         return (
           <div
             className="likedContainer"
-            onClick={() => toggleSongLike(info.row.original.audioURL)}
+            onClick={() => {
+              console.log(localStorage.getItem('likedSongs'))
+              toggleSongLike(info.row.original.audioURL)}
+            }
           >
             {isLiked ? (
               <FaHeart className={`likedIcon ${isLiked ? 'alwaysVisible' : ''}`} />
