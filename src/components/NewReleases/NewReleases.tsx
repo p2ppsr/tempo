@@ -62,7 +62,7 @@ const NewReleases = ({ className }: NewReleasesProps) => {
     <div className={`container ${className}`}>
       <h1 className="whiteText">New Releases</h1>
       {songs.length === 0 ? (
-        <CircularProgress />
+        <CircularProgress style={{marginTop:'1rem'}}/>
       ) : (
         <>
           <div className="horizontalArtworkScroller" ref={ref} {...bind()}>

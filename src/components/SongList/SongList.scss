@@ -1,17 +1,15 @@
 @import '../../styles/styleVariables.scss';
 
-/* 
-  Note: '&::before' styles are necessary because tables 
-  do not use margins the same way as standard divs
-*/
-
 .songListTable {
   color: $textColor;
   border: 2px solid $transparentBorder;
   width: 100%;
+  max-width: 60rem;
   border-radius: $borderRadius;
   padding: 1rem;
+  margin: auto;
   margin-bottom: 5rem;
+  background: rgba(14, 39, 60, 0.25);
 
   thead {
     text-align: left;
@@ -44,7 +42,6 @@
     width: 3rem;
     height: 3rem;
     user-select: none;
-    // margin-right: 0.5rem;
     margin-block: 0.25rem;
     aspect-ratio: 1/1;
     object-fit: cover;
@@ -90,9 +87,19 @@
 
 .songRow {
   cursor: pointer;
-  &:hover .likedIcon:not(.alwaysVisible),
+
+  &:hover .likedIcon,
   &:hover .addPlaylistIcon {
-    visibility: visible; // Show the icon on hover
+    visibility: visible; // Show the icons on hover
+  }
+
+  &.selectedRow {
+    background-color: rgba(255, 255, 255, 0.1);
+
+    .likedIcon,
+    .addPlaylistIcon {
+      visibility: visible; // Ensure both icons are always visible for the selected row
+    }
   }
 
   td:first-child {
@@ -102,4 +109,45 @@
 
 .songRow.selectedRow {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+.addToPlayListModal {
+  margin: auto;
+  overflow: auto;
+  height: calc(67vh + 100px);
+  margin-top: 5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: $borderRadius;
+  background: rgba(0, 0, 0, 0.9);
+  width: 50vw;
+  min-width: 20rem;
+  padding: 1rem;
+  &:focus {
+    outline: none;
+  }
+
+  .modalCloseIcon {
+    font-size: 2rem;
+    font-weight: bolder;
+    align-self: center;
+    margin-right: 2.5%;
+    cursor: pointer;
+
+    &:hover {
+      fill: tomato;
+    }
+  }
+
+  .playlistName {
+    color: $textColor;
+    margin-block: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 0.5rem;
+    border-radius: $borderRadius;
+    cursor: pointer;
+    &:hover {
+      border: 1px solid $accentColor;
+      color: $accentColor;
+    }
+  }
 }

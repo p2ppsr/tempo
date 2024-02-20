@@ -4,8 +4,8 @@ import { Playlist } from '../../types/interfaces'
 import SongList from '../../components/SongList/SongList'
 
 const ViewPlaylist = () => {
-  const { id } = useParams() // Extracting the ID from the URL parameters
-  const [playlist, setPlaylist] = useState<Playlist | null>(null) // State to store the found playlist
+  const { id } = useParams()
+  const [playlist, setPlaylist] = useState<Playlist | null>(null)
 
   // Function to fetch playlist by ID from localStorage
   const fetchPlaylistById = (playlistId: string | undefined) => {
@@ -18,22 +18,21 @@ const ViewPlaylist = () => {
 
   useEffect(() => {
     const foundPlaylist = fetchPlaylistById(id) // Fetch the playlist using the extracted ID
-    setPlaylist(foundPlaylist) // Update state with the found playlist
-  }, [id]) // Rerun the effect if the ID changes
+    setPlaylist(foundPlaylist)
+  }, [id])
 
-  // Conditional rendering based on whether a playlist is found
   return (
     <div className="container">
       {playlist ? (
         <div>
           <h1>{playlist.name}</h1>
-          <div style={{marginTop:'1rem'}}>
+          <div style={{ marginTop: '1rem' }}>
             {playlist.songs ? (
-              <p className="whiteText">This playlist doesn't contain any songs...yet!</p>
-            ) : (
               <>
                 <SongList songs={playlist.songs} />
               </>
+            ) : (
+              <p className="whiteText">This playlist doesn't contain any songs...yet!</p>
             )}
           </div>
         </div>

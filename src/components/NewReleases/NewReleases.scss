@@ -9,8 +9,8 @@
 
 .newReleaseCardContainer {
   .newReleaseCard {
-    max-width: 15vw;
-    margin-inline: 1.5vw;
+    max-width: 12rem;
+    margin-inline: 1rem;
     border-radius: 0.5rem;
     object-fit: cover;
     aspect-ratio: 1/1;
@@ -25,5 +25,9 @@
       transform: scale(0.9);
     }
     transition: 0.2s ease;
+
+    // @media screen and (min-width:1200px){
+    //   margin-inline: 1vw;
+    // }
   }
 }

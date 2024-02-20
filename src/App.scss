@@ -46,7 +46,7 @@ a {
 
 .container {
   padding-inline: 2rem;
-  height:calc(80vh);
+  height: calc(80vh);
   overflow-y: auto;
 }
 
@@ -54,6 +54,7 @@ a {
   position: absolute;
   z-index: -1;
   filter: blur(0.5rem) brightness(0.8);
+  min-width: 100vw;
 }
 
 .rightContainer {

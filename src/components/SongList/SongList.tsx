@@ -1,17 +1,20 @@
+import React, { useEffect, useState } from 'react'
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import React, { useEffect, useState } from 'react'
 import { FaPlay, FaHeart, FaRegHeart, FaListUl } from 'react-icons/fa'
+import { IoIosCloseCircleOutline } from 'react-icons/io'
+
 import { Img } from 'uhrp-react'
 import { usePlaybackStore } from '../../stores/stores'
-import { Song } from '../../types/interfaces'
+import { Playlist, Song } from '../../types/interfaces'
 import constants from '../../utils/constants'
 import placeholderImage from '../../assets/Images/placeholder-image.png'
 import './SongList.scss'
+import { Modal } from '@mui/material'
 
 interface SongListProps {
   songs: Song[]
@@ -19,10 +22,6 @@ interface SongListProps {
 }
 
 const SongList = ({ songs, style }: SongListProps) => {
-  // useEffect(()=>{
-  //   console.log(songs)
-  // },[songs])
-
   // Liked songs ==================================================
 
   const [likedSongs, setLikedSongs] = useState<string[]>([])
@@ -53,18 +52,20 @@ const SongList = ({ songs, style }: SongListProps) => {
 
   // Autoplay after song end =================================================
 
+  // First load check to prevent playing first song on component mount
   const [firstLoad, setFirstLoad] = useState(true)
 
-  // Play next song after song ends
   useEffect(() => {
+    // If the first load, toggle the state and return early
     if (firstLoad) {
       setFirstLoad(false)
       return
     }
+
+    // Get the index of the current playing song and set the playback to the next song
     const currentSongIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
     const nextSongIndex = (currentSongIndex + 1) % songs.length // Loop back to the first song if at the end
     const nextSong = songs[nextSongIndex]
-
     setPlaybackSong({
       title: nextSong.title,
       artist: nextSong.artist,
@@ -72,7 +73,7 @@ const SongList = ({ songs, style }: SongListProps) => {
       artworkURL: nextSong.artworkURL
     })
     setIsPlaying(true)
-  }, [playNextSong])
+  }, [playNextSong]) // Footer toggles this global state when the song ends
 
   // Handlers ==================================================
 
@@ -100,7 +101,19 @@ const SongList = ({ songs, style }: SongListProps) => {
     setIsPlaying(true) // Start playback immediately
   }
 
+  // Modal =========================================================
+
+  const [openAddToPlaylistModal, setOpenAddToPlaylistModal] = useState(false)
+  const handleOpen = (song: Song) => {
+    setOpenAddToPlaylistModal(true)
+    setSelectedSong(song) // Assuming you have access to the song object here
+  }
+  const handleCloseAddToPlaylistModal = () => setOpenAddToPlaylistModal(false)
+
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null)
+
   // Table ==================================================================
+
   const columnHelper = createColumnHelper<Song>()
 
   // Define columns for React Table
@@ -160,7 +173,7 @@ const SongList = ({ songs, style }: SongListProps) => {
                 console.log(localStorage.getItem('likedSongs'))
                 toggleSongLike(info.row.original.audioURL)
               }}
-              style={{width:'fit-content'}}
+              style={{ width: 'fit-content' }}
             >
               {isLiked ? (
                 <FaHeart className={`likedIcon ${isLiked ? 'alwaysVisible' : ''}`} />
@@ -168,7 +181,14 @@ const SongList = ({ songs, style }: SongListProps) => {
                 <FaRegHeart className="likedIcon" />
               )}
             </div>
-            <FaListUl className="addPlaylistIcon" color='white'/>
+            <FaListUl
+              className="addPlaylistIcon"
+              color="white"
+              onClick={() => {
+                const song = info.row.original
+                handleOpen(song)
+              }}
+            />
           </div>
         )
       }
@@ -181,9 +201,58 @@ const SongList = ({ songs, style }: SongListProps) => {
     getCoreRowModel: getCoreRowModel()
   })
 
+  // Playlists =====================================================
+
+  const [playlists, setPlaylists] = useState<Playlist[]>([])
+  useEffect(() => {
+    const playlistStorage = localStorage.getItem('playlists')
+    if (playlistStorage) {
+      setPlaylists(JSON.parse(playlistStorage))
+    }
+  }, [])
+
+  const addSongToPlaylist = (playlistId: string, song: Song) => {
+    const updatedPlaylists = playlists.map(playlist => {
+      if (playlist.id === playlistId) {
+        // Check if the song is already in the playlist to avoid duplicates
+        const songExists = playlist.songs.some(s => s.audioURL === song.audioURL)
+        if (!songExists) {
+          return { ...playlist, songs: [...playlist.songs, song] }
+        }
+      }
+      return playlist
+    })
+
+    setPlaylists(updatedPlaylists)
+    localStorage.setItem('playlists', JSON.stringify(updatedPlaylists))
+  }
+
   // Render ========================================================
   return (
     <>
+      <Modal open={openAddToPlaylistModal} onClose={handleCloseAddToPlaylistModal}>
+        <div className="addToPlayListModal">
+          <div className="flex" style={{ marginBottom: '1rem' }}>
+            <h1>Add to playlist</h1>
+            <div className="flexSpacer" />
+            <IoIosCloseCircleOutline
+              color="white"
+              onClick={handleCloseAddToPlaylistModal}
+              className="modalCloseIcon"
+            />
+          </div>
+          {playlists.map((playlist: Playlist) => (
+            <div
+              key={playlist.id}
+              onClick={() => selectedSong && addSongToPlaylist(playlist.id, selectedSong)}
+              style={{ cursor: 'pointer' }}
+            >
+              <h2 className="playlistName">{playlist.name}</h2>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
       <table className={`songListTable ${style}`}>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
@@ -203,8 +272,8 @@ const SongList = ({ songs, style }: SongListProps) => {
             <tr
               key={row.id}
               className={`songRow ${selectedSongIndex === row.id ? 'selectedRow' : ''}`}
-              onClick={() => setSelectedSongIndex(row.id)} // Updated to use row.id for consistency
-              onDoubleClick={() => handleDoubleClick(row.original)} // Add this line for handling double-click
+              onClick={() => setSelectedSongIndex(row.id)}
+              onDoubleClick={() => handleDoubleClick(row.original)}
             >
               {row.getVisibleCells().map(cell => (
                 <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
