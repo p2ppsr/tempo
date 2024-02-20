@@ -1,7 +1,13 @@
 @import "../../styles/styleVariables.scss";
 
-// Allows scrolling inside parent div
 .publishSongContainer {
   // height: calc(500px);
   overflow-y: scroll;
+
+  .publishButton {
+    background:rgb(36, 149, 36);
+    border:none;
+    height:3rem;
+    cursor: pointer;
+  }
 }

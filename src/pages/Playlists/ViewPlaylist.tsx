@@ -27,7 +27,7 @@ const ViewPlaylist = () => {
         <div>
           <h1>{playlist.name}</h1>
           <div style={{ marginTop: '1rem' }}>
-            {playlist.songs ? (
+            {playlist.songs.length > 0 ? (
               <>
                 <SongList songs={playlist.songs} />
               </>

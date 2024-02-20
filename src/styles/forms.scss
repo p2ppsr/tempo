@@ -20,13 +20,16 @@ label {
   color: white;
   padding-left: 10px;
   font-size: 16px;
+
+  outline-style: none;
+  box-shadow: none;
+  border-color: transparent;
 }
 
 .uploadInput {
-  background-color: $accentColor;
-  display: flex;
-  align-items: center;
-  padding: 15px 0px 0px 10px;
+  background-color: $buttonColor;
+  padding: 1rem;
+  color: $textColor;
 }
 
 .dateInput {

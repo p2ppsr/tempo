@@ -40,12 +40,15 @@
 
 .menuAccordionLink {
   display: block;
+  width:67%;
   padding: 0.5rem;
+  padding-left:1rem;
   margin-inline: 10%;
   margin-block: 5%;
   user-select: none;
   font-weight: 700;
   color: $navTextColor;
+  border-radius: $borderRadius;
 
   &:hover {
     color: $accentColor;
