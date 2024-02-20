@@ -73,7 +73,7 @@ const Footer = () => {
   // Render ======================================================
 
   return (
-    <div className="footer">
+    <div className="footerContainer">
       <div className="playbackInfoContainer">
         {isLoading ? (
           <CircularProgress />
@@ -84,8 +84,8 @@ const Footer = () => {
                 alt={`${playbackSong.playingAudioTitle} Album Art`}
                 id="playerAlbumArt"
                 src={playbackSong.artworkURL}
-                className="playerAlbumArt"
                 confederacyHost={constants.confederacyURL}
+                className="playerAlbumArt"
                 // @ts-ignore
                 onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
                   const target = e.target as HTMLImageElement

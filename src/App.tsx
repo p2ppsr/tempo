@@ -26,6 +26,7 @@ import Likes from './pages/Library/Likes/Likes'
 import backgroundImage from './assets/Images/background.jpg'
 
 import WebFont from 'webfontloader';
+import ViewPlaylist from "./pages/Playlists/ViewPlaylist"
 
 
 const App = () => {
@@ -51,7 +52,8 @@ const App = () => {
           <div className="mainContent">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/Playlists" element={<Playlists />} />
+              <Route path="/Playlists/*" element={<Playlists />} />
+              <Route path="/Playlists/:id" element={<ViewPlaylist />} />
               <Route path="/Playlists/Create" element={<CreatePlaylist />} />
               <Route path="/Profile" element={<Profile />} />
               <Route path="/MySongs" element={<MySongs />} />

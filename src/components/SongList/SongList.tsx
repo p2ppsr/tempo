@@ -5,7 +5,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import React, { useEffect, useState } from 'react'
-import { FaPlay, FaHeart, FaRegHeart } from 'react-icons/fa'
+import { FaPlay, FaHeart, FaRegHeart, FaListUl } from 'react-icons/fa'
 import { Img } from 'uhrp-react'
 import { usePlaybackStore } from '../../stores/stores'
 import { Song } from '../../types/interfaces'
@@ -15,9 +15,10 @@ import './SongList.scss'
 
 interface SongListProps {
   songs: Song[]
+  style?: Object
 }
 
-const SongList = ({ songs }: SongListProps) => {
+const SongList = ({ songs, style }: SongListProps) => {
   // useEffect(()=>{
   //   console.log(songs)
   // },[songs])
@@ -50,10 +51,16 @@ const SongList = ({ songs }: SongListProps) => {
     state.playNextSong
   ])
 
-  // Lifecycle =================================================
+  // Autoplay after song end =================================================
+
+  const [firstLoad, setFirstLoad] = useState(true)
 
   // Play next song after song ends
   useEffect(() => {
+    if (firstLoad) {
+      setFirstLoad(false)
+      return
+    }
     const currentSongIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
     const nextSongIndex = (currentSongIndex + 1) % songs.length // Loop back to the first song if at the end
     const nextSong = songs[nextSongIndex]
@@ -142,23 +149,26 @@ const SongList = ({ songs }: SongListProps) => {
       cell: info => info.getValue()
     }),
     columnHelper.accessor('audioURL', {
-      id: 'liked',
+      id: 'actions',
       header: '',
       cell: info => {
         const isLiked = likedSongs.includes(info.row.original.audioURL)
         return (
-          <div
-            className="likedContainer"
-            onClick={() => {
-              console.log(localStorage.getItem('likedSongs'))
-              toggleSongLike(info.row.original.audioURL)
-            }}
-          >
-            {isLiked ? (
-              <FaHeart className={`likedIcon ${isLiked ? 'alwaysVisible' : ''}`} />
-            ) : (
-              <FaRegHeart className="likedIcon" />
-            )}
+          <div className="actionsContainer flex">
+            <div
+              onClick={() => {
+                console.log(localStorage.getItem('likedSongs'))
+                toggleSongLike(info.row.original.audioURL)
+              }}
+              style={{width:'fit-content'}}
+            >
+              {isLiked ? (
+                <FaHeart className={`likedIcon ${isLiked ? 'alwaysVisible' : ''}`} />
+              ) : (
+                <FaRegHeart className="likedIcon" />
+              )}
+            </div>
+            <FaListUl className="addPlaylistIcon" color='white'/>
           </div>
         )
       }
@@ -174,7 +184,7 @@ const SongList = ({ songs }: SongListProps) => {
   // Render ========================================================
   return (
     <>
-      <table className="songListTable">
+      <table className={`songListTable ${style}`}>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>

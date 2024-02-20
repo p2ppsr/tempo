@@ -44,8 +44,8 @@
     width: 3rem;
     height: 3rem;
     user-select: none;
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
+    // margin-right: 0.5rem;
+    margin-block: 0.25rem;
     aspect-ratio: 1/1;
     object-fit: cover;
   }
@@ -71,11 +71,16 @@
   }
 }
 
-.likedContainer {
-  .likedIcon {
+.actionsContainer {
+  // border:1px solid red;
+  gap: 0.5rem;
+  justify-content: space-evenly;
+  padding-right: 0.5rem;
+  cursor: pointer;
+  .likedIcon,
+  .addPlaylistIcon {
     font-size: 1.5rem;
     visibility: hidden; // Keep the icon hidden by default
-    cursor: pointer;
   }
 
   .alwaysVisible {
@@ -85,8 +90,13 @@
 
 .songRow {
   cursor: pointer;
-  &:hover .likedIcon:not(.alwaysVisible) {
-    visibility: visible; // Only show the icon on hover if it's not always visible
+  &:hover .likedIcon:not(.alwaysVisible),
+  &:hover .addPlaylistIcon {
+    visibility: visible; // Show the icon on hover
+  }
+
+  td:first-child {
+    padding-left: 0px; // Apply 0px padding-left to the first td of each row
   }
 }
 
