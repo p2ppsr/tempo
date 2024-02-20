@@ -75,7 +75,8 @@
   padding-right: 0.5rem;
   cursor: pointer;
   .likedIcon,
-  .addPlaylistIcon {
+  .addToPlaylistIcon,
+  .deleteFromPlaylistIcon {
     font-size: 1.5rem;
     visibility: hidden; // Keep the icon hidden by default
   }
@@ -89,7 +90,9 @@
   cursor: pointer;
 
   &:hover .likedIcon,
-  &:hover .addPlaylistIcon {
+  &:hover .addToPlaylistIcon,
+  &:hover .deleteFromPlaylistIcon {
+    /* Ensure this line is correctly specifying hover */
     visibility: visible; // Show the icons on hover
   }
 
@@ -97,8 +100,9 @@
     background-color: rgba(255, 255, 255, 0.1);
 
     .likedIcon,
-    .addPlaylistIcon {
-      visibility: visible; // Ensure both icons are always visible for the selected row
+    .addToPlaylistIcon,
+    .deleteFromPlaylistIcon {
+      visibility: visible; // Ensure icons are always visible for the selected row
     }
   }
 

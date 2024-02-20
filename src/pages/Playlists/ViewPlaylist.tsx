@@ -16,6 +16,25 @@ const ViewPlaylist = () => {
     return playlists.find((p: Playlist) => p.id === playlistId) // Find the playlist with the matching ID
   }
 
+  // Function to update the playlist after a song has been deleted
+  const handleSongDelete = (songId: string) => {
+    if (!playlist) return
+
+    const updatedSongs = playlist.songs.filter(song => song.audioURL !== songId)
+    const updatedPlaylist = { ...playlist, songs: updatedSongs }
+
+    // Update the playlist in the component state
+    setPlaylist(updatedPlaylist)
+
+    // Optionally, update the playlist in localStorage
+    const playlistsString = localStorage.getItem('playlists')
+    if (playlistsString) {
+      const playlists: Playlist[] = JSON.parse(playlistsString)
+      const updatedPlaylists = playlists.map(p => (p.id === id ? updatedPlaylist : p))
+      localStorage.setItem('playlists', JSON.stringify(updatedPlaylists))
+    }
+  }
+
   useEffect(() => {
     const foundPlaylist = fetchPlaylistById(id) // Fetch the playlist using the extracted ID
     setPlaylist(foundPlaylist)
@@ -29,7 +48,7 @@ const ViewPlaylist = () => {
           <div style={{ marginTop: '1rem' }}>
             {playlist.songs.length > 0 ? (
               <>
-                <SongList songs={playlist.songs} />
+                <SongList songs={playlist.songs} onSongDelete={handleSongDelete}/>
               </>
             ) : (
               <p className="whiteText">This playlist doesn't contain any songs...yet!</p>

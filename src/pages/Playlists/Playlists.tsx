@@ -103,8 +103,6 @@ const Playlists = () => {
 
     // Set the editing index to the last item in the array (the new playlist)
     setEditingPlaylist({ index: newPlaylists.length - 1, text: '' })
-
-    // Optionally, ensure the input gets focused by using a ref (see below)
   }
 
   const updatePlaylistName = (index: number, newName: string) => {
@@ -161,7 +159,7 @@ const Playlists = () => {
       <div className="container">
         <div className="flex" style={{ alignItems: 'center' }}>
           <h1>Playlists</h1>
-          <FaPlusCircle fill="white" className="addPlayListIcon" onClick={handleAddPlaylist} />
+          <FaPlusCircle fill="white" className="newPlayListIcon" onClick={handleAddPlaylist} />
         </div>
 
         <div className="playlistsContainer">

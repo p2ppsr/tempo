@@ -1,27 +1,38 @@
 import React, { useEffect, useState } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
+
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { FaPlay, FaHeart, FaRegHeart, FaListUl } from 'react-icons/fa'
+import { FaPlay, FaHeart, FaRegHeart, FaListUl, FaTrash } from 'react-icons/fa'
 import { IoIosCloseCircleOutline } from 'react-icons/io'
 
 import { Img } from 'uhrp-react'
 import { usePlaybackStore } from '../../stores/stores'
 import { Playlist, Song } from '../../types/interfaces'
+import { Modal } from '@mui/material'
+import { toast } from 'react-toastify'
+
 import constants from '../../utils/constants'
 import placeholderImage from '../../assets/Images/placeholder-image.png'
 import './SongList.scss'
-import { Modal } from '@mui/material'
 
 interface SongListProps {
   songs: Song[]
   style?: Object
+  onSongDelete?: (songId: string) => void
 }
 
-const SongList = ({ songs, style }: SongListProps) => {
+const SongList = ({ songs, style, onSongDelete }: SongListProps) => {
+  // Determine whether component is being used in the playlists component
+  const location = useLocation()
+  const isInPlaylistsPage = location.pathname.includes('Playlists')
+
+  const { id: playlistID } = useParams()
+
   // Liked songs ==================================================
 
   const [likedSongs, setLikedSongs] = useState<string[]>([])
@@ -182,13 +193,25 @@ const SongList = ({ songs, style }: SongListProps) => {
               )}
             </div>
             <FaListUl
-              className="addPlaylistIcon"
+              className="addToPlaylistIcon"
               color="white"
               onClick={() => {
                 const song = info.row.original
                 handleOpen(song)
               }}
             />
+
+            {isInPlaylistsPage && (
+              <FaTrash
+                className="deleteFromPlaylistIcon"
+                color="white"
+                onClick={event => {
+                  // Prevent event propagation to avoid triggering row selection or other actions
+                  event.stopPropagation()
+                  handleRemoveSongFromPlaylist(info.row.original)
+                }}
+              />
+            )}
           </div>
         )
       }
@@ -214,9 +237,10 @@ const SongList = ({ songs, style }: SongListProps) => {
   const addSongToPlaylist = (playlistId: string, song: Song) => {
     const updatedPlaylists = playlists.map(playlist => {
       if (playlist.id === playlistId) {
-        // Check if the song is already in the playlist to avoid duplicates
         const songExists = playlist.songs.some(s => s.audioURL === song.audioURL)
         if (!songExists) {
+          // Show a toast message when the song is added
+          toast.success(`Added ${song.title} by ${song.artist} to playlist: ${playlist.name}`)
           return { ...playlist, songs: [...playlist.songs, song] }
         }
       }
@@ -225,6 +249,14 @@ const SongList = ({ songs, style }: SongListProps) => {
 
     setPlaylists(updatedPlaylists)
     localStorage.setItem('playlists', JSON.stringify(updatedPlaylists))
+  }
+
+  // Adjust the deletion function to call onSongDelete
+  const handleRemoveSongFromPlaylist = (song: Song) => {
+    // Invoke the callback with the song's unique identifier
+    if (onSongDelete) {
+      onSongDelete(song.audioURL)
+    }
   }
 
   // Render ========================================================
