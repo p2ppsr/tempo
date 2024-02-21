@@ -1,4 +1,4 @@
-// Interfaces (types) used across multiple functions/components
+// Interfaces & types used across multiple functions & components
 
 import { BitcoinOutputScript, PublicKey } from '@babbage/sdk'
 
@@ -25,4 +25,10 @@ export interface Song {
 export interface SearchFilter {
   findAll: boolean
   artistIdentityKey: PublicKey
+}
+
+export interface Playlist {
+  id: string
+  name:string
+  songs: Song[]
 }

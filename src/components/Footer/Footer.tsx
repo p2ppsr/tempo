@@ -1,14 +1,16 @@
 import { download } from 'nanoseek'
 import React, { useEffect, useRef, useState } from 'react'
-import AudioPlayer from 'react-h5-audio-player'
-import 'react-h5-audio-player/lib/styles.css'
-import { Img } from 'uhrp-react'
 import useAsyncEffect from 'use-async-effect'
+import AudioPlayer from 'react-h5-audio-player'
+import { Img } from 'uhrp-react'
 import { usePlaybackStore } from '../../stores/stores'
-import constants from '../../utils/constants'
-import './Footer.scss'
-import decryptSong from '../../utils/decryptSong'
 import { CircularProgress } from '@mui/material'
+import constants from '../../utils/constants'
+import decryptSong from '../../utils/decryptSong'
+import placeholderImage from '../../assets/Images/placeholder-image.png'
+
+import 'react-h5-audio-player/lib/styles.css'
+import './Footer.scss'
 
 const Footer = () => {
   // State ========================================================
@@ -19,18 +21,24 @@ const Footer = () => {
     setIsLoading,
     setIsPlaying,
     playbackSong,
-    setPlaybackSong
+    setPlaybackSong,
+    togglePlayNextSong,
   ] = usePlaybackStore((state: any) => [
     state.isPlaying,
     state.isLoading,
     state.setIsLoading,
     state.setIsPlaying,
     state.playbackSong,
-    state.setPlaybackSong
+    state.setPlaybackSong,
+    state.togglePlayNextSong
   ])
 
   const [footerAudioURL, setFooterAudioURL] = useState<string | undefined>(undefined)
   const audioPlayerRef = useRef<AudioPlayer>(null)
+
+  // Handlers ====================================================
+
+  
 
   // Lifecycle ===================================================
 
@@ -47,7 +55,7 @@ const Footer = () => {
       }
     }
   }, [playbackSong])
-  
+
   useEffect(() => {
     if (isLoading) {
       setFooterAudioURL('')
@@ -65,7 +73,7 @@ const Footer = () => {
   // Render ======================================================
 
   return (
-    <div className="footer">
+    <div className="footerContainer">
       <div className="playbackInfoContainer">
         {isLoading ? (
           <CircularProgress />
@@ -76,8 +84,13 @@ const Footer = () => {
                 alt={`${playbackSong.playingAudioTitle} Album Art`}
                 id="playerAlbumArt"
                 src={playbackSong.artworkURL}
-                className="playerAlbumArt"
                 confederacyHost={constants.confederacyURL}
+                className="playerAlbumArt"
+                // @ts-ignore
+                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                  const target = e.target as HTMLImageElement
+                  target.src = placeholderImage
+                }}
               />
             )}
           </>
@@ -93,7 +106,7 @@ const Footer = () => {
         autoPlayAfterSrcChange={true}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
-        onEnded={() => setIsPlaying(false)}
+        onEnded={() => togglePlayNextSong()}
         progressUpdateInterval={10}
       />
     </div>

@@ -12,10 +12,9 @@ import { usePlaybackStore } from '../../stores/stores'
 import { SearchFilter, Song } from '../../types/interfaces'
 import fetchSongs from '../../utils/fetchSongs'
 import SongList from '../SongList/SongList'
+import placeholderImage from '../../assets/Images/placeholder-image.png'
 
 const clamp = (value: number, clampAt: number = 60) => Math.min(clampAt, Math.max(-clampAt, value))
-
-// const [newReleaseSongs, setNewReleaseSongs] = useState([{}])
 
 interface NewReleasesProps {
   className?: string
@@ -59,44 +58,40 @@ const NewReleases = ({ className }: NewReleasesProps) => {
     }
   }, [])
 
-  useEffect(() => {
-    console.log(songs)
-  }, [songs])
-
   return (
     <div className={`container ${className}`}>
       <h1 className="whiteText">New Releases</h1>
       {songs.length === 0 ? (
-        <div className="container">
-          <CircularProgress />
-        </div>
+        <CircularProgress style={{marginTop:'1rem'}}/>
       ) : (
         <>
           <div className="horizontalArtworkScroller" ref={ref} {...bind()}>
-            {songs.map((newRelease, i) => (
-              <motion.div
-                key={i}
-                animate={{
-                  transform: `perspective(500px) rotateY(${rotation}deg)`
-                }}
-                className="newReleaseCardContainer"
-              >
-                <Img
-                  className="newReleaseCard"
-                  src={newRelease.artworkURL}
-                  //@ts-ignore TODO: update uhrp-react to not throw TS errors for img attributes
-                  onClick={() => {
-                    const { title, artist, audioURL, artworkURL } = newRelease
-                    setPlaybackSong({
-                      title: title,
-                      artist: artist,
-                      audioURL: audioURL,
-                      artworkURL: artworkURL
-                    })
+            {songs.map((newRelease, i) => {
+              return (
+                <motion.div
+                  key={i}
+                  animate={{
+                    transform: `perspective(500px) rotateY(${rotation}deg)`
                   }}
-                />
-              </motion.div>
-            ))}
+                  className="newReleaseCardContainer"
+                >
+                  <Img
+                    className="newReleaseCard"
+                    src={newRelease.artworkURL} // placeholderImage
+                    //@ts-ignore TODO: update uhrp-react to not throw TS errors for img attributes
+                    onClick={() => {
+                      const { title, artist, audioURL, artworkURL } = newRelease
+                      setPlaybackSong(newRelease)
+                    }}
+                    // Set the image to a placeholder if an image was not found
+                    onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                      const target = e.target as HTMLImageElement
+                      target.src = placeholderImage
+                    }}
+                  />
+                </motion.div>
+              )
+            })}
           </div>
 
           <SongList songs={songs} />

@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import constants from '../../utils/constants'
 import publishSong from '../../utils/publishSong'
 
-import { FileUploader } from "react-drag-drop-files";
+import { FileUploader } from 'react-drag-drop-files'
 
 import './PublishSong.scss'
 
@@ -115,7 +115,7 @@ const PublishSong = () => {
           <FileUploader label='Tap, click, or drop a file to upload' required {...register('selectedMusic')} />
         </div> */}
 
-        <button name="submitForm" className="button" type="submit" style={{ marginTop: '1rem' }}>
+        <button name="submitForm" className="button publishButton" type="submit" style={{ marginTop: '1rem' }}>
           Publish Song
         </button>
       </form>

@@ -11,7 +11,7 @@ const fetchSongs = async (searchFilter: object) => {
       body: {
         provider: 'TSP',
         query: {
-          ...searchFilter
+          ...searchFilter 
         }
       }
     })

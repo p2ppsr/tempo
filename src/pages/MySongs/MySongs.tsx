@@ -15,32 +15,6 @@ import zodiacGirls from '../../assets/Music/ZodiacGirls.mp3'
 import fetchSongs from '../../utils/fetchSongs'
 
 const MySongs = () => {
-  // const testSongs: Song[] = [
-  //   {
-  //     title: 'Here Comes the Sun',
-  //     artist: 'The Beatles',
-  //     isPublished: true,
-  //     audioURL: hereComesTheSun,
-  //     artworkURL: testArtwork,
-  //     description: 'A test song',
-  //     duration: 180,
-  //     token: { outputIndex: 0, txid: '12345', lockingScript: 'asdf' },
-  //     outputScript: { fields: [''], protocolID: 'asdf', keyID: 'asdf' }
-  //   },
-  //   {
-  //     title: 'Zodiac Girls',
-  //     artist: 'Black Moth Super Rainbow',
-  //     isPublished: true,
-  //     audioURL: zodiacGirls,
-  //     artworkURL:
-  //       'https://i.discogs.com/qRvndWXrCEXL6qXvEAqdr3juNgOxJOgg58mwu85PR1w/rs:fit/g:sm/q:90/h:599/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEyNzg4/MzAtMTIxMDczNzcw/Mi5qcGVn.jpeg',
-  //     description: 'A test song',
-  //     duration: 180,
-  //     token: { outputIndex: 0, txid: '12345', lockingScript: 'asdf' },
-  //     outputScript: { fields: [''], protocolID: 'asdf', keyID: 'asdf' }
-  //   }
-  // ]
-
   const [currentIdentityKey, setCurrentIdentityKey] = useState<PublicKey>({ key: '' })
   const [songs, setSongs] = useState<Song[]>([])
 
@@ -71,15 +45,7 @@ const MySongs = () => {
     <div className="container">
       <h1>My Songs</h1>
 
-      <div>
-        {songs.length === 0 ? (
-          <div className="loadingContainer">
-            <CircularProgress />
-          </div>
-        ) : (
-          <SongList songs={songs} />
-        )}
-      </div>
+      <div style={{marginTop:'1rem'}}>{songs.length === 0 ? <CircularProgress /> : <SongList songs={songs} />}</div>
     </div>
   )
 }

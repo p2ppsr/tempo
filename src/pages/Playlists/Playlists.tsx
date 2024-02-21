@@ -1,86 +1,208 @@
-import { useEffect, useState } from 'react'
-import * as musicMetadata from 'music-metadata-browser'
+import React, { useEffect, useRef, useState } from 'react'
+import { FaEdit, FaPlusCircle, FaTrash } from 'react-icons/fa'
+
+import uuid4 from 'uuid4'
 import './Playlists.scss'
-import { Song } from '../../types/interfaces'
-import React from 'react'
 
-interface Playlist {
-  id: string
-  title: string
-  songs: Song[]
-}
-
-const songExample: Song = {
-  title: 'Here Comes the Sun',
-  artist: 'The Beatles',
-  isPublished: true,
-  selectedMusic: new File([], 'placeholder.txt'),
-  artworkURL: '',
-  description: '',
-  audioURL: '',
-  duration: 185,
-  songID: '',
-  token: { outputIndex: 0, txid: '', lockingScript: '' },
-  outputScript: {
-    fields: [new Buffer('')],
-    protocolID: [0, ''],
-    keyID: ''
-  }
-}
+import { useNavigate } from 'react-router'
+import { Playlist } from '../../types/interfaces'
 
 const Playlists = () => {
-  const [coverArt, setCoverArt] = useState('')
+  const navigate = useNavigate()
 
-  const fetchCoverArt = async () => {
-    let url = '' // Variable to hold the object URL
+  // const playlistsStorage = localStorage.getItem('playlists')
 
-    try {
-      const response = await fetch('/Music/song0.mp3')
-      const blob = await response.blob()
+  // const testSongs: Song[] = [
+  //   {
+  //     title: 'Here Comes the Sun',
+  //     artist: 'The Beatles',
+  //     isPublished: true,
+  //     audioURL: hereComesTheSun,
+  //     artworkURL: testArtwork,
+  //     description: 'A test song',
+  //     duration: 180,
+  //     token: { outputIndex: 0, txid: '12345', lockingScript: 'asdf' },
+  //     outputScript: { fields: [''], protocolID: 'asdf', keyID: 'asdf' }
+  //   },
+  //   {
+  //     title: 'Zodiac Girls',
+  //     artist: 'Black Moth Super Rainbow',
+  //     isPublished: true,
+  //     audioURL: zodiacGirls,
+  //     artworkURL:
+  //       'https://i.discogs.com/qRvndWXrCEXL6qXvEAqdr3juNgOxJOgg58mwu85PR1w/rs:fit/g:sm/q:90/h:599/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEyNzg4/MzAtMTIxMDczNzcw/Mi5qcGVn.jpeg',
+  //     description: 'A test song',
+  //     duration: 180,
+  //     token: { outputIndex: 0, txid: '12345', lockingScript: 'asdf' },
+  //     outputScript: { fields: [''], protocolID: 'asdf', keyID: 'asdf' }
+  //   }
+  // ]
 
-      // Log the Blob type and properties for debugging
-      console.log('Blob type:', blob.constructor.name) // Should log 'Blob'
-      console.log('Blob size:', blob.size)
-      console.log('Blob content type:', blob.type) // Should be 'audio/mpeg' for MP3 files
+  const [playlists, setPlaylists] = useState(() => {
+    const storagePlaylists = localStorage.getItem('playlists')
+    return storagePlaylists ? JSON.parse(storagePlaylists) : []
+  })
 
-      // Convert the Blob to a Buffer or Uint8Array
-      const arrayBuffer = await blob.arrayBuffer()
-      const buffer = new Uint8Array(arrayBuffer)
+  useEffect(() => {
+    localStorage.setItem('playlists', JSON.stringify(playlists))
+  }, [playlists])
 
-      // Use the buffer with parseBlob
-      const metadata = await musicMetadata.parseBuffer(buffer, {
-        mimeType: blob.type,
-        size: blob.size
-      })
+  const [editingPlaylist, setEditingPlaylist] = useState({ index: -1, text: '' })
 
-      if (metadata.common.picture && metadata.common.picture.length > 0) {
-        const picture = metadata.common.picture[0]
-        url = URL.createObjectURL(new Blob([picture.data], { type: picture.format }))
-        setCoverArt(url)
+  // Confirm delete modal ========================================================
+
+  const [open, setOpen] = React.useState(false)
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
+
+  // Click Outside PLaylist ====================================================================
+
+  const handleClickOutside = (event: MouseEvent) => {
+    // Assert event.target as Node to satisfy the type expected by contains method
+    const target = event.target as Node
+
+    if (editingInputRef.current && !editingInputRef.current.contains(target)) {
+      // If the click is outside the input and the name is empty, remove the playlist
+      if (editingPlaylist.text.trim() === '') {
+        const updatedPlaylists = playlists.filter(
+          (_: any, idx: number) => idx !== editingPlaylist.index
+        )
+        setPlaylists(updatedPlaylists)
       } else {
-        console.log('No cover art found in the MP3 file.')
+        // If there's text, update the playlist name
+        updatePlaylistName(editingPlaylist.index, editingPlaylist.text)
       }
-    } catch (error) {
-      console.error('Error fetching cover art:', error)
+      // Reset editing state
+      setEditingPlaylist({ index: -1, text: '' })
     }
   }
 
   useEffect(() => {
-    fetchCoverArt()
-
-    return () => {
-      if (url) {
-        URL.revokeObjectURL(url) // Clean up the object URL
-      }
+    // Only add the listener if we're currently editing a playlist
+    if (editingPlaylist.index !== -1) {
+      document.addEventListener('mousedown', handleClickOutside)
     }
-  }, [])
+
+    // Cleanup the event listener
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [editingPlaylist.index])
+
+  // Handlers ====================================================================
+
+  const handleAddPlaylist = () => {
+    const newPlaylist = {
+      id: uuid4(),
+      name: '',
+      songs: [] // Assuming songs is an array of song objects
+    }
+    // Add the new playlist
+    const newPlaylists = [...playlists, newPlaylist]
+    setPlaylists(newPlaylists)
+
+    // Set the editing index to the last item in the array (the new playlist)
+    setEditingPlaylist({ index: newPlaylists.length - 1, text: '' })
+  }
+
+  const updatePlaylistName = (index: number, newName: string) => {
+    if (newName.trim() === '') {
+      // Remove the playlist if the new name is empty
+      const updatedPlaylists = playlists.filter((_: any, idx: number) => idx !== index)
+      setPlaylists(updatedPlaylists)
+    } else {
+      // Update the playlist name if it's not empty
+      const updatedPlaylists = playlists.map((playlist: Playlist, idx: number) =>
+        idx === index ? { ...playlist, name: newName } : playlist
+      )
+      setPlaylists(updatedPlaylists)
+    }
+    // Reset editing state regardless of whether a playlist was updated or removed
+    setEditingPlaylist({ index: -1, text: '' })
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (event.key === 'Enter') {
+      updatePlaylistName(index, editingPlaylist.text)
+    }
+  }
+
+  const handleDelete = (event: React.MouseEvent<SVGElement, MouseEvent>, index: number) => {
+    event.stopPropagation()
+    const updatedPlaylists = playlists.filter((_: any, idx: number) => idx !== index)
+    setPlaylists(updatedPlaylists)
+  }
+
+  const editingInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    // Check if the ref is currently pointing to an input element
+    if (editingInputRef.current) {
+      editingInputRef.current.focus()
+    }
+  }, [editingPlaylist.index])
 
   return (
     <>
+      {/* <Button onClick={handleOpen}>Open modal</Button>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <div className="">
+          <h1>Delete Modal</h1>
+        </div>
+      </Modal> */}
+
       <div className="container">
-        <h1>Playlists</h1>
-        <button className="playlistLink">Beatles Playlist</button>
-        {coverArt && <img src={coverArt} alt="Cover Art" />}
+        <div className="flex" style={{ alignItems: 'center' }}>
+          <h1>Playlists</h1>
+          <FaPlusCircle fill="white" className="newPlayListIcon" onClick={handleAddPlaylist} />
+        </div>
+
+        <div className="playlistsContainer">
+          {playlists.map((playlist: Playlist, index: number) => {
+            return (
+              <div
+                className="playlist flex"
+                key={playlist.id}
+                onClick={() => {
+                  navigate(playlist.id)
+                }}
+              >
+                {editingPlaylist.index === index ? (
+                  <input
+                    ref={editingPlaylist.index === index ? editingInputRef : null}
+                    className="editingPlaylistInput"
+                    value={editingPlaylist.text}
+                    onChange={e => setEditingPlaylist({ ...editingPlaylist, text: e.target.value })}
+                    onKeyDown={e => handleKeyDown(e, index)}
+                  />
+                ) : (
+                  <p className="whiteText">{playlist.name}</p>
+                )}
+                <div className="flexSpacer" />
+                <FaEdit
+                  color="white"
+                  className="playlistIcon playlistEditIcon"
+                  onClick={event => {
+                    event.stopPropagation()
+                    setEditingPlaylist({ index: index, text: playlist.name })
+                  }}
+                />
+                <FaTrash
+                  color="white"
+                  className="playlistIcon playlistDeleteIcon"
+                  onClick={event => {
+                    handleDelete(event, index)
+                  }}
+                />
+              </div>
+            )
+          })}
+        </div>
       </div>
     </>
   )

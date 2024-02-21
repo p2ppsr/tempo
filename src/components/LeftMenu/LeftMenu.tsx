@@ -52,14 +52,14 @@ const LeftMenu = () => {
               <NavLink to="/Playlists" className="menuAccordionLink">
                 Playlists
               </NavLink>
-              <div className="menuAccordionDivider" />
-              <NavLink to="/Artists" className="menuAccordionLink">
+              {/* <div className="menuAccordionDivider" /> */}
+              {/* <NavLink to="/Artists" className="menuAccordionLink">
                 Artists
               </NavLink>
               <div className="menuAccordionDivider" />
               <NavLink to="/Podcasts" className="menuAccordionLink">
                 Podcasts
-              </NavLink>
+              </NavLink> */}
             </>
           )}
 

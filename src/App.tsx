@@ -5,7 +5,6 @@ import { ToastContainer } from 'react-toastify'
 
 // Components
 import Home from './pages/Home/Home'
-import SavedSongs from './pages/SavedSongs/SavedSongs'
 import Playlists from './pages/Playlists/Playlists'
 import CreatePlaylist from './pages/Playlists/Create/CreatePlaylist'
 import MySongs from './pages/MySongs/MySongs'
@@ -27,6 +26,7 @@ import Likes from './pages/Library/Likes/Likes'
 import backgroundImage from './assets/Images/background.jpg'
 
 import WebFont from 'webfontloader';
+import ViewPlaylist from "./pages/Playlists/ViewPlaylist"
 
 
 const App = () => {
@@ -52,8 +52,8 @@ const App = () => {
           <div className="mainContent">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/SavedSongs" element={<SavedSongs />} />
-              <Route path="/Playlists" element={<Playlists />} />
+              <Route path="/Playlists/*" element={<Playlists />} />
+              <Route path="/Playlists/:id" element={<ViewPlaylist />} />
               <Route path="/Playlists/Create" element={<CreatePlaylist />} />
               <Route path="/Profile" element={<Profile />} />
               <Route path="/MySongs" element={<MySongs />} />
@@ -61,6 +61,7 @@ const App = () => {
               <Route path="/PublishSong" element={<PublishSong />} />
               <Route path="/PublishSong/Success" element={<SuccessPage />} />
 
+              {/* TODO: Might be a subpath eventually under /library/* */}
               <Route path="/Likes" element={<Likes />} />
             </Routes>
           </div>

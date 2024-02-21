@@ -1,29 +1,27 @@
-@import "../../styles/styleVariables.scss";
-
-/* 
-  Note: '&::before' styles are necessary because tables 
-  do not use margins the same way as standard divs
-*/
+@import '../../styles/styleVariables.scss';
 
 .songListTable {
   color: $textColor;
   border: 2px solid $transparentBorder;
   width: 100%;
+  max-width: 60rem;
   border-radius: $borderRadius;
   padding: 1rem;
-  margin-bottom:5rem;
+  margin: auto;
+  margin-bottom: 5rem;
+  background: rgba(14, 39, 60, 0.25);
 
   thead {
     text-align: left;
   }
 
   th {
-    padding-left:.5rem
+    padding-left: 0.5rem;
   }
 
   tbody {
     tr {
-      margin-bottom:1rem;
+      margin-bottom: 1rem;
       &:hover {
         background-color: rgba(255, 255, 255, 0.1);
       }
@@ -31,7 +29,7 @@
   }
 
   td {
-    padding-left:.5rem;
+    padding-left: 0.5rem;
   }
 }
 
@@ -42,10 +40,11 @@
 
   .songListArtworkThumbnail {
     width: 3rem;
+    height: 3rem;
     user-select: none;
-    margin-right:.5rem;
+    margin-block: 0.25rem;
     aspect-ratio: 1/1;
-    object-fit: contain;
+    object-fit: cover;
   }
 
   .artworkThumbnailPlayIcon {
@@ -62,9 +61,97 @@
 
 // Overrides for audio playback component
 .rhap_container {
-  background: rgba(0,0,0,0.8) !important;
+  background: rgba(0, 0, 0, 0.8) !important;
 
   .rhap_time {
     color: $textColor;
+  }
+}
+
+.actionsContainer {
+  // border:1px solid red;
+  gap: 0.5rem;
+  justify-content: space-evenly;
+  padding-right: 0.5rem;
+  cursor: pointer;
+  .likedIcon,
+  .addToPlaylistIcon,
+  .deleteFromPlaylistIcon {
+    font-size: 1.5rem;
+    visibility: hidden; // Keep the icon hidden by default
+  }
+
+  .alwaysVisible {
+    visibility: visible !important; // Always show the icon if it's liked
+  }
+}
+
+.songRow {
+  cursor: pointer;
+
+  &:hover .likedIcon,
+  &:hover .addToPlaylistIcon,
+  &:hover .deleteFromPlaylistIcon {
+    /* Ensure this line is correctly specifying hover */
+    visibility: visible; // Show the icons on hover
+  }
+
+  &.selectedRow {
+    background-color: rgba(255, 255, 255, 0.1);
+
+    .likedIcon,
+    .addToPlaylistIcon,
+    .deleteFromPlaylistIcon {
+      visibility: visible; // Ensure icons are always visible for the selected row
+    }
+  }
+
+  td:first-child {
+    padding-left: 0px; // Apply 0px padding-left to the first td of each row
+  }
+}
+
+.songRow.selectedRow {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.addToPlayListModal {
+  margin: auto;
+  overflow: auto;
+  height: calc(67vh + 100px);
+  margin-top: 5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: $borderRadius;
+  background: rgba(0, 0, 0, 0.9);
+  width: 50vw;
+  min-width: 20rem;
+  padding: 1rem;
+  &:focus {
+    outline: none;
+  }
+
+  .modalCloseIcon {
+    font-size: 2rem;
+    font-weight: bolder;
+    align-self: center;
+    margin-right: 2.5%;
+    cursor: pointer;
+
+    &:hover {
+      fill: tomato;
+    }
+  }
+
+  .playlistName {
+    color: $textColor;
+    margin-block: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 0.5rem;
+    border-radius: $borderRadius;
+    cursor: pointer;
+    &:hover {
+      border: 1px solid $accentColor;
+      color: $accentColor;
+    }
   }
 }

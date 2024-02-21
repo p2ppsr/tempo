@@ -16,6 +16,7 @@ const decryptSong = async (song: Song) => {
 
   const [encryptedData, purchasedKey] = await Promise.all([
     (async () => {
+      // could be cached
       console.time('Nanoseek download time')
       const { data: encryptedData } = await download({
         UHRPUrl: song.audioURL,
