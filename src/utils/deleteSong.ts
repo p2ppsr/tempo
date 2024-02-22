@@ -8,7 +8,7 @@ interface DeleteSongProps {
 }
 
 const deleteSong = async ({ song }: DeleteSongProps) => {
-  console.log(song)
+  // console.log(song)
   const unlockingScript = await pushdrop.redeem({
     // To unlock the token, we need to use the same tempo protocol
     // and key ID as when we created the tsp token before. Otherwise, the

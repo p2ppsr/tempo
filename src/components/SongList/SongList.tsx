@@ -29,13 +29,12 @@ interface SongListProps {
 }
 
 const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongListProps) => {
+
   // Determine whether component is being used in the playlists component
   const location = useLocation()
   const isInPlaylistsPage = location.pathname.includes('Playlists')
 
-  const { id: playlistID } = useParams()
-
-  // Liked songs ==================================================
+  // Liked songs ==============================================================
 
   const [likedSongs, setLikedSongs] = useState<string[]>([])
   useEffect(() => {
@@ -43,11 +42,15 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     setLikedSongs(storedLikes ? storedLikes.split(',') : [])
   }, [])
 
-  // Selected song ===============================================
+  // Selected song ============================================================
 
+  // Index of selected song
   const [selectedSongIndex, setSelectedSongIndex] = useState<string | null>(null)
 
-  // Global state for audio playback =============================
+  // Selected Song object
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null)
+
+  // Global state for audio playback ===========================================
 
   const [
     isPlaying,
@@ -67,9 +70,8 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
 
   // First load check to prevent playing first song on component mount
   const [firstLoad, setFirstLoad] = useState(true)
-
   useEffect(() => {
-    // If the first load, toggle the state and return early
+    // If first load, toggle the state and break out
     if (firstLoad) {
       setFirstLoad(false)
       return
@@ -122,12 +124,6 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     setSelectedSong(song)
   }
   const closeAddToPlaylistModal = () => setIsAddToPlaylistModalOpen(false)
-
-  const [selectedSong, setSelectedSong] = useState<Song | null>(null)
-
-  useEffect(() => {
-    console.log(selectedSong)
-  }, [selectedSong])
 
   // Confirm delete modal ===================================================
 

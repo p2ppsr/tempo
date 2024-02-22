@@ -11,7 +11,7 @@ const fetchSongs = async (searchFilter: object) => {
       body: {
         provider: 'TSP',
         query: {
-          ...searchFilter 
+          ...searchFilter
         }
       }
     })
@@ -21,12 +21,14 @@ const fetchSongs = async (searchFilter: object) => {
 
   const lookupResult = JSON.parse(Buffer.from(response?.body).toString('utf8'))
 
-  let parsedSongs = lookupResult.map((song: Song) => {
+  let parsedSongs = lookupResult.map((song: any) => {
+    console.log('satoshis: ', song.satoshis)
+
     const decodedSong = pushdrop.decode({
       script: song.outputScript,
       fieldFormat: 'utf8'
     })
-    console.log(decodedSong)
+
     const formattedSong = {
       topic: decodedSong.fields[0],
       protocolID: decodedSong.fields[1],
@@ -36,7 +38,9 @@ const fetchSongs = async (searchFilter: object) => {
       length: decodedSong.fields[5],
       audioURL: decodedSong.fields[6],
       artworkURL: decodedSong.fields[7],
-      artistIdentityKey: decodedSong.lockingPublicKey
+      artistIdentityKey: decodedSong.lockingPublicKey,
+      token: { txid: song.txid, outputIndex: song.vout, lockingScript: song.outputScript },
+      sats: song.satoshis
     }
     return formattedSong
   })
