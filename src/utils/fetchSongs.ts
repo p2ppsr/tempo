@@ -26,6 +26,7 @@ const fetchSongs = async (searchFilter: object) => {
       script: song.outputScript,
       fieldFormat: 'utf8'
     })
+    console.log(decodedSong)
     const formattedSong = {
       topic: decodedSong.fields[0],
       protocolID: decodedSong.fields[1],

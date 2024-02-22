@@ -1,7 +1,12 @@
 /*
-  Type declarations that are unfinished or for temporarily satisfying TSlint.
+  Type declarations that are unfinished or for satisfying TSlint.
   These will be updated as time goes on
 */
+
+declare module '@babbage/react-prompt' {
+  const BabbagePrompt: any
+  export default BabbagePrompt
+}
 
 // Pushdrop ========================================================================
 

@@ -115,7 +115,8 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.addToPlayListModal {
+.addToPlayListModal,
+.confirmDeleteModal {
   margin: auto;
   overflow: auto;
   height: calc(67vh + 100px);
@@ -153,5 +154,31 @@
       border: 1px solid $accentColor;
       color: $accentColor;
     }
+  }
+}
+
+.confirmDeleteModal {
+  height: fit-content;
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  button {
+    border: none;
+    border-radius: $borderRadius;
+    cursor: pointer;
+    &:hover {
+
+    }
+  }
+
+  .deleteButton {
+    margin-right: 2rem;
+    background: tomato;
+  }
+
+  .cancelButton {
+    background: gray;
   }
 }

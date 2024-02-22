@@ -45,7 +45,7 @@ const MySongs = () => {
     <div className="container">
       <h1>My Songs</h1>
 
-      <div style={{marginTop:'1rem'}}>{songs.length === 0 ? <CircularProgress /> : <SongList songs={songs} />}</div>
+      <div style={{marginTop:'1rem'}}>{songs.length === 0 ? <CircularProgress /> : <SongList songs={songs} isMySongsOnly/>}</div>
     </div>
   )
 }

@@ -19,14 +19,16 @@ import { toast } from 'react-toastify'
 import constants from '../../utils/constants'
 import placeholderImage from '../../assets/Images/placeholder-image.png'
 import './SongList.scss'
+import deleteSong from '../../utils/deleteSong'
 
 interface SongListProps {
   songs: Song[]
   style?: Object
-  onSongDelete?: (songId: string) => void
+  onRemoveFromPlaylist?: (songId: string) => void
+  isMySongsOnly?: boolean
 }
 
-const SongList = ({ songs, style, onSongDelete }: SongListProps) => {
+const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongListProps) => {
   // Determine whether component is being used in the playlists component
   const location = useLocation()
   const isInPlaylistsPage = location.pathname.includes('Playlists')
@@ -112,16 +114,29 @@ const SongList = ({ songs, style, onSongDelete }: SongListProps) => {
     setIsPlaying(true) // Start playback immediately
   }
 
-  // Modal =========================================================
+  // Add to playlist modal ==================================================
 
-  const [openAddToPlaylistModal, setOpenAddToPlaylistModal] = useState(false)
-  const handleOpen = (song: Song) => {
-    setOpenAddToPlaylistModal(true)
-    setSelectedSong(song) // Assuming you have access to the song object here
+  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false)
+  const openAddToPlaylistModal = (song: Song) => {
+    setIsAddToPlaylistModalOpen(true)
+    setSelectedSong(song)
   }
-  const handleCloseAddToPlaylistModal = () => setOpenAddToPlaylistModal(false)
+  const closeAddToPlaylistModal = () => setIsAddToPlaylistModalOpen(false)
 
   const [selectedSong, setSelectedSong] = useState<Song | null>(null)
+
+  useEffect(() => {
+    console.log(selectedSong)
+  }, [selectedSong])
+
+  // Confirm delete modal ===================================================
+
+  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false)
+  const openConfirmDeleteModal = (song: Song) => {
+    setIsConfirmDeleteModalOpen(true)
+    setSelectedSong(song)
+  }
+  const closeConfirmDeleteModal = () => setIsConfirmDeleteModalOpen(false)
 
   // Table ==================================================================
 
@@ -197,7 +212,7 @@ const SongList = ({ songs, style, onSongDelete }: SongListProps) => {
               color="white"
               onClick={() => {
                 const song = info.row.original
-                handleOpen(song)
+                openAddToPlaylistModal(song)
               }}
             />
 
@@ -209,6 +224,19 @@ const SongList = ({ songs, style, onSongDelete }: SongListProps) => {
                   // Prevent event propagation to avoid triggering row selection or other actions
                   event.stopPropagation()
                   handleRemoveSongFromPlaylist(info.row.original)
+                }}
+              />
+            )}
+
+            {isMySongsOnly && (
+              <FaTrash
+                className="deleteFromPlaylistIcon"
+                color="white"
+                onClick={event => {
+                  // Prevent event propagation to avoid triggering row selection or other actions
+                  event.stopPropagation()
+                  openConfirmDeleteModal(info.row.original)
+                  // deleteSong({ song: info.row.original })
                 }}
               />
             )}
@@ -254,22 +282,25 @@ const SongList = ({ songs, style, onSongDelete }: SongListProps) => {
   // Adjust the deletion function to call onSongDelete
   const handleRemoveSongFromPlaylist = (song: Song) => {
     // Invoke the callback with the song's unique identifier
-    if (onSongDelete) {
-      onSongDelete(song.audioURL)
+    if (onRemoveFromPlaylist) {
+      onRemoveFromPlaylist(song.audioURL)
+    } else {
+      toast.error('Erorr removing from playlist. Function onRemovePlaylist was not found.')
     }
   }
 
   // Render ========================================================
   return (
     <>
-      <Modal open={openAddToPlaylistModal} onClose={handleCloseAddToPlaylistModal}>
+      {/* Add to playlist modal */}
+      <Modal open={isAddToPlaylistModalOpen} onClose={closeAddToPlaylistModal}>
         <div className="addToPlayListModal">
           <div className="flex" style={{ marginBottom: '1rem' }}>
             <h1>Add to playlist</h1>
             <div className="flexSpacer" />
             <IoIosCloseCircleOutline
               color="white"
-              onClick={handleCloseAddToPlaylistModal}
+              onClick={closeAddToPlaylistModal}
               className="modalCloseIcon"
             />
           </div>
@@ -282,6 +313,34 @@ const SongList = ({ songs, style, onSongDelete }: SongListProps) => {
               <h2 className="playlistName">{playlist.name}</h2>
             </div>
           ))}
+        </div>
+      </Modal>
+
+      {/* Confirm delete song modal (MySongs only) */}
+      <Modal open={isConfirmDeleteModalOpen} onClose={closeConfirmDeleteModal}>
+        <div className="confirmDeleteModal">
+          <div className="flex" style={{ marginBottom: '1rem' }}>
+            <h1>Are you sure you want to delete this song?</h1>
+            <div className="flexSpacer" />
+            <IoIosCloseCircleOutline
+              color="white"
+              onClick={closeConfirmDeleteModal}
+              className="modalCloseIcon"
+            />
+          </div>
+          <div className="flex">
+            <button
+              className="button deleteButton"
+              onClick={() => {
+                selectedSong ? deleteSong({ song: selectedSong }) : null
+              }}
+            >
+              Delete
+            </button>
+            <button className="button cancelButton" onClick={closeConfirmDeleteModal}>
+              Cancel
+            </button>
+          </div>
         </div>
       </Modal>
 
