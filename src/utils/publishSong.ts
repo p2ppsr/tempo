@@ -47,7 +47,8 @@ const publishSong = async (song: Song, retentionPeriod?: number) => {
         description: output.description // Assuming output has a description property
       }))
     ],
-    description: 'Publish a song'
+    description: 'Publish a song',
+    acceptDelayedBroadcast: false
   }
 
   const payment = await createAction(actionData)
