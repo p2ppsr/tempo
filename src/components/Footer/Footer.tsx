@@ -23,6 +23,7 @@ const Footer = () => {
     playbackSong,
     setPlaybackSong,
     togglePlayNextSong,
+    togglePlayPreviousSong,
     songList
   ] = usePlaybackStore((state: any) => [
     state.isPlaying,
@@ -32,11 +33,15 @@ const Footer = () => {
     state.playbackSong,
     state.setPlaybackSong,
     state.togglePlayNextSong,
+    state.togglePlayPreviousSong,
     state.songList
   ])
 
   const [footerAudioURL, setFooterAudioURL] = useState<string | undefined>(undefined)
   const audioPlayerRef = useRef<AudioPlayer>(null)
+
+  // State to store current playback time
+  const [currentTime, setCurrentTime] = useState<number>(0)
 
   // Lifecycle ===================================================
 
@@ -95,7 +100,7 @@ const Footer = () => {
     return () => {
       playButton?.removeEventListener('click', handlePlayButtonClick)
     }
-  }, [playbackSong, songList, setPlaybackSong, setIsPlaying]) // Make sure to include dependencies
+  }, [playbackSong, songList, setPlaybackSong, setIsPlaying])
 
   // Render ======================================================
 
@@ -141,6 +146,17 @@ const Footer = () => {
           setIsPlaying(false)
         }}
         onEnded={() => togglePlayNextSong()}
+        onClickPrevious={() => {
+          togglePlayPreviousSong()
+        }}
+        onClickNext={() => {
+          togglePlayNextSong()
+        }}
+        onListen={event => {
+          const target = event.target as HTMLAudioElement
+          setCurrentTime(target.currentTime)
+        }}
+        listenInterval={1000}
       />
     </div>
   )

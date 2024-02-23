@@ -57,14 +57,20 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     playbackSong,
     setPlaybackSong,
     playNextSong,
-    setSongList
+    setSongList,
+    playPreviousSong,
+    togglePlayNextSong,
+    togglePlayPreviousSong
   ] = usePlaybackStore((state: any) => [
     state.isPlaying,
     state.setIsPlaying,
     state.playbackSong,
     state.setPlaybackSong,
     state.playNextSong,
-    state.setSongList
+    state.setSongList,
+    state.playPreviousSong,
+    state.togglePlayNextSong,
+    state.togglePlayPreviousSong
   ])
 
   // Autoplay after song end =================================================
@@ -72,24 +78,34 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
   // First load check to prevent playing first song on component mount
   const [firstLoad, setFirstLoad] = useState(true)
   useEffect(() => {
-    // If first load, toggle the state and break out
-    if (firstLoad) {
-      setFirstLoad(false)
-      return
+    if (playPreviousSong && songs.length > 0) {
+      const currentIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
+      if (currentIndex !== -1) {
+        const previousIndex = (currentIndex - 1 + songs.length) % songs.length
+        const previousSong = songs[previousIndex]
+        setPlaybackSong(previousSong)
+        setIsPlaying(true)
+        // Reset the toggle to prevent re-triggering
+        togglePlayPreviousSong(false)
+      }
     }
+    // Ensure dependencies list is correct to avoid missing updates or unnecessary effect calls
+  }, [playPreviousSong, songs, playbackSong, setPlaybackSong, setIsPlaying, togglePlayPreviousSong])
 
-    // Get the index of the current playing song and set the playback to the next song
-    const currentSongIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
-    const nextSongIndex = (currentSongIndex + 1) % songs.length // Loop back to the first song if at the end
-    const nextSong = songs[nextSongIndex]
-    setPlaybackSong({
-      title: nextSong.title,
-      artist: nextSong.artist,
-      audioURL: nextSong.audioURL,
-      artworkURL: nextSong.artworkURL
-    })
-    setIsPlaying(true)
-  }, [playNextSong]) // Footer toggles this global state when the song ends
+  useEffect(() => {
+    if (playNextSong && songs.length > 0) {
+      const currentIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
+      if (currentIndex !== -1) {
+        const nextIndex = (currentIndex + 1) % songs.length
+        const nextSong = songs[nextIndex]
+        setPlaybackSong(nextSong)
+        setIsPlaying(true)
+        // Reset the toggle to prevent re-triggering
+        togglePlayNextSong(false)
+      }
+    }
+    // Ensure dependencies list is correct to avoid missing updates or unnecessary effect calls
+  }, [playNextSong, songs, playbackSong, setPlaybackSong, setIsPlaying, togglePlayNextSong])
 
   // Update global song list state when changed ===============
 
