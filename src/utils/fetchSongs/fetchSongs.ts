@@ -1,6 +1,6 @@
 import PacketPay from '@packetpay/js'
-import constants from './constants'
-import { Song, Token } from '../types/interfaces'
+import constants from '../constants'
+import { Song, Token } from '../../types/interfaces'
 import pushdrop from 'pushdrop'
 
 const fetchSongs = async (searchFilter: object) => {

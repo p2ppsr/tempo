@@ -11,7 +11,7 @@ import { Song } from '../../types/interfaces'
 import constants from '../../utils/constants'
 import decryptSong from '../../utils/decryptSong'
 import deleteSong from '../../utils/deleteSong'
-import fetchSongs from '../../utils/fetchSongs'
+import fetchSongs from '../../utils/fetchSongs/fetchSongs'
 import './SongsViewer.scss'
 
 interface MsgProps {

@@ -56,13 +56,15 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     setIsPlaying,
     playbackSong,
     setPlaybackSong,
-    playNextSong
+    playNextSong,
+    setSongList
   ] = usePlaybackStore((state: any) => [
     state.isPlaying,
     state.setIsPlaying,
     state.playbackSong,
     state.setPlaybackSong,
-    state.playNextSong
+    state.playNextSong,
+    state.setSongList
   ])
 
   // Autoplay after song end =================================================
@@ -88,6 +90,12 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     })
     setIsPlaying(true)
   }, [playNextSong]) // Footer toggles this global state when the song ends
+
+  // Update global song list state when changed ===============
+
+  useEffect(() => {
+    setSongList(songs)
+  }, [songs])
 
   // Handlers ==================================================
 

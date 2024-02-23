@@ -10,7 +10,7 @@ import { Img } from 'uhrp-react'
 import useAsyncEffect from 'use-async-effect'
 import { usePlaybackStore } from '../../stores/stores'
 import { SearchFilter, Song } from '../../types/interfaces'
-import fetchSongs from '../../utils/fetchSongs'
+import fetchSongs from '../../utils/fetchSongs/fetchSongs'
 import SongList from '../SongList/SongList'
 import placeholderImage from '../../assets/Images/placeholder-image.png'
 
@@ -62,7 +62,7 @@ const NewReleases = ({ className }: NewReleasesProps) => {
     <div className={`container ${className}`}>
       <h1 className="whiteText">New Releases</h1>
       {songs.length === 0 ? (
-        <CircularProgress style={{marginTop:'1rem'}}/>
+        <CircularProgress style={{ marginTop: '1rem' }} />
       ) : (
         <>
           <div className="horizontalArtworkScroller" ref={ref} {...bind()}>
