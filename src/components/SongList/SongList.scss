@@ -126,16 +126,16 @@
   background: rgba(0, 0, 0, 0.9);
   width: 50vw;
   min-width: 20rem;
+  max-width: 30rem;
   padding: 1rem;
   &:focus {
     outline: none;
   }
 
   .modalCloseIcon {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: bolder;
-    align-self: center;
-    margin-right: 2.5%;
+    align-self: flex-start;
     cursor: pointer;
 
     &:hover {
@@ -169,16 +169,32 @@
     border-radius: $borderRadius;
     cursor: pointer;
     &:hover {
-
     }
   }
 
   .deleteButton {
     margin-right: 2rem;
     background: tomato;
+    height: 2.5rem;
+
+    &:disabled {
+      filter: saturate(0);
+      cursor: progress;
+    }
   }
 
   .cancelButton {
     background: gray;
+    height: 2.5rem;
+
+    &:disabled {
+      filter: saturate(0);
+      cursor: progress;
+    }
   }
+}
+
+.buttonLoadingSpinner {
+  padding: none;
+  margin: none;
 }

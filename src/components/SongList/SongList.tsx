@@ -13,7 +13,7 @@ import { IoIosCloseCircleOutline } from 'react-icons/io'
 import { Img } from 'uhrp-react'
 import { usePlaybackStore } from '../../stores/stores'
 import { Playlist, Song } from '../../types/interfaces'
-import { Modal } from '@mui/material'
+import { CircularProgress, Modal } from '@mui/material'
 import { toast } from 'react-toastify'
 
 import constants from '../../utils/constants'
@@ -29,7 +29,6 @@ interface SongListProps {
 }
 
 const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongListProps) => {
-
   // Determine whether component is being used in the playlists component
   const location = useLocation()
   const isInPlaylistsPage = location.pathname.includes('Playlists')
@@ -114,6 +113,20 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
       artworkURL: song.artworkURL
     })
     setIsPlaying(true) // Start playback immediately
+  }
+
+  const [isDeletingSong, setIsDeletingSong] = useState(false)
+  const handleDeleteSong = async () => {
+    setIsDeletingSong(true)
+    try {
+      selectedSong ? await deleteSong({ song: selectedSong }) : null
+      toast.success('Succesfully deleted song')
+    } catch (e) {
+      toast.error(`Error deleting song: ${e}`)
+    } finally {
+      setIsDeletingSong(false)
+      setIsConfirmDeleteModalOpen(false)
+    }
   }
 
   // Add to playlist modal ==================================================
@@ -327,14 +340,25 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
           <div className="flex">
             <button
               className="button deleteButton"
-              onClick={() => {
-                selectedSong ? deleteSong({ song: selectedSong }) : null
-              }}
+              onClick={handleDeleteSong}
+              disabled={isDeletingSong}
             >
-              Delete
+              {isDeletingSong ? (
+                <CircularProgress color="inherit" className="buttonLoadingSpinner" size={20} />
+              ) : (
+                'Delete'
+              )}
             </button>
-            <button className="button cancelButton" onClick={closeConfirmDeleteModal}>
-              Cancel
+            <button
+              className="button cancelButton"
+              onClick={closeConfirmDeleteModal}
+              disabled={isDeletingSong}
+            >
+              {isDeletingSong ? (
+                <CircularProgress color="inherit" className="buttonLoadingSpinner" size={20} />
+              ) : (
+                'Cancel'
+              )}
             </button>
           </div>
         </div>
