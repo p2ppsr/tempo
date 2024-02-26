@@ -23,6 +23,8 @@ const Footer = () => {
     playbackSong,
     setPlaybackSong,
     togglePlayNextSong,
+    togglePlayPreviousSong,
+    songList
   ] = usePlaybackStore((state: any) => [
     state.isPlaying,
     state.isLoading,
@@ -30,15 +32,16 @@ const Footer = () => {
     state.setIsPlaying,
     state.playbackSong,
     state.setPlaybackSong,
-    state.togglePlayNextSong
+    state.togglePlayNextSong,
+    state.togglePlayPreviousSong,
+    state.songList
   ])
 
   const [footerAudioURL, setFooterAudioURL] = useState<string | undefined>(undefined)
   const audioPlayerRef = useRef<AudioPlayer>(null)
 
-  // Handlers ====================================================
-
-  
+  // State to store current playback time
+  const [currentTime, setCurrentTime] = useState<number>(0)
 
   // Lifecycle ===================================================
 
@@ -69,6 +72,35 @@ const Footer = () => {
       }
     }
   }, [footerAudioURL])
+
+  // Effect hook for handling play button click to load and play the first song if no song is loaded
+  useEffect(() => {
+    // Define a function to handle play button click
+    const handlePlayButtonClick = () => {
+      // Check if no song is loaded
+      if (!playbackSong || !playbackSong.audioURL) {
+        // Load and play the first song from songList if it exists
+        if (songList.length > 0) {
+          const firstSong = songList[0]
+          setPlaybackSong(firstSong)
+          setIsPlaying(true) // This should trigger the audio player to play the song
+        }
+      }
+    }
+
+    // Get the play button element from the AudioPlayer component
+    const playButton = audioPlayerRef?.current?.audio?.current?.parentNode?.querySelector(
+      '.rhap_play-pause-button'
+    )
+
+    // Add event listener to the play button
+    playButton?.addEventListener('click', handlePlayButtonClick)
+
+    // Clean up function to remove event listener
+    return () => {
+      playButton?.removeEventListener('click', handlePlayButtonClick)
+    }
+  }, [playbackSong, songList, setPlaybackSong, setIsPlaying])
 
   // Render ======================================================
 
@@ -103,11 +135,28 @@ const Footer = () => {
       <AudioPlayer
         ref={audioPlayerRef}
         src={footerAudioURL}
-        autoPlayAfterSrcChange={true}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-        onEnded={() => togglePlayNextSong()}
+        autoPlayAfterSrcChange
         progressUpdateInterval={10}
+        showSkipControls
+        showJumpControls={false}
+        onPlay={() => {
+          setIsPlaying(true)
+        }}
+        onPause={() => {
+          setIsPlaying(false)
+        }}
+        onEnded={() => togglePlayNextSong()}
+        onClickPrevious={() => {
+          togglePlayPreviousSong()
+        }}
+        onClickNext={() => {
+          togglePlayNextSong()
+        }}
+        onListen={event => {
+          const target = event.target as HTMLAudioElement
+          setCurrentTime(target.currentTime)
+        }}
+        listenInterval={1000}
       />
     </div>
   )

@@ -13,27 +13,27 @@ import { IoIosCloseCircleOutline } from 'react-icons/io'
 import { Img } from 'uhrp-react'
 import { usePlaybackStore } from '../../stores/stores'
 import { Playlist, Song } from '../../types/interfaces'
-import { Modal } from '@mui/material'
+import { CircularProgress, Modal } from '@mui/material'
 import { toast } from 'react-toastify'
 
 import constants from '../../utils/constants'
 import placeholderImage from '../../assets/Images/placeholder-image.png'
 import './SongList.scss'
+import deleteSong from '../../utils/deleteSong'
 
 interface SongListProps {
   songs: Song[]
   style?: Object
-  onSongDelete?: (songId: string) => void
+  onRemoveFromPlaylist?: (songId: string) => void
+  isMySongsOnly?: boolean
 }
 
-const SongList = ({ songs, style, onSongDelete }: SongListProps) => {
+const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongListProps) => {
   // Determine whether component is being used in the playlists component
   const location = useLocation()
   const isInPlaylistsPage = location.pathname.includes('Playlists')
 
-  const { id: playlistID } = useParams()
-
-  // Liked songs ==================================================
+  // Liked songs ==============================================================
 
   const [likedSongs, setLikedSongs] = useState<string[]>([])
   useEffect(() => {
@@ -41,50 +41,77 @@ const SongList = ({ songs, style, onSongDelete }: SongListProps) => {
     setLikedSongs(storedLikes ? storedLikes.split(',') : [])
   }, [])
 
-  // Selected song ===============================================
+  // Selected song ============================================================
 
+  // Index of selected song
   const [selectedSongIndex, setSelectedSongIndex] = useState<string | null>(null)
 
-  // Global state for audio playback =============================
+  // Selected Song object
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null)
+
+  // Global state for audio playback ===========================================
 
   const [
     isPlaying,
     setIsPlaying,
     playbackSong,
     setPlaybackSong,
-    playNextSong
+    playNextSong,
+    setSongList,
+    playPreviousSong,
+    togglePlayNextSong,
+    togglePlayPreviousSong
   ] = usePlaybackStore((state: any) => [
     state.isPlaying,
     state.setIsPlaying,
     state.playbackSong,
     state.setPlaybackSong,
-    state.playNextSong
+    state.playNextSong,
+    state.setSongList,
+    state.playPreviousSong,
+    state.togglePlayNextSong,
+    state.togglePlayPreviousSong
   ])
 
   // Autoplay after song end =================================================
 
   // First load check to prevent playing first song on component mount
   const [firstLoad, setFirstLoad] = useState(true)
+  useEffect(() => {
+    if (playPreviousSong && songs.length > 0) {
+      const currentIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
+      if (currentIndex !== -1) {
+        const previousIndex = (currentIndex - 1 + songs.length) % songs.length
+        const previousSong = songs[previousIndex]
+        setPlaybackSong(previousSong)
+        setIsPlaying(true)
+        // Reset the toggle to prevent re-triggering
+        togglePlayPreviousSong(false)
+      }
+    }
+    // Ensure dependencies list is correct to avoid missing updates or unnecessary effect calls
+  }, [playPreviousSong, songs, playbackSong, setPlaybackSong, setIsPlaying, togglePlayPreviousSong])
 
   useEffect(() => {
-    // If the first load, toggle the state and return early
-    if (firstLoad) {
-      setFirstLoad(false)
-      return
+    if (playNextSong && songs.length > 0) {
+      const currentIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
+      if (currentIndex !== -1) {
+        const nextIndex = (currentIndex + 1) % songs.length
+        const nextSong = songs[nextIndex]
+        setPlaybackSong(nextSong)
+        setIsPlaying(true)
+        // Reset the toggle to prevent re-triggering
+        togglePlayNextSong(false)
+      }
     }
+    // Ensure dependencies list is correct to avoid missing updates or unnecessary effect calls
+  }, [playNextSong, songs, playbackSong, setPlaybackSong, setIsPlaying, togglePlayNextSong])
 
-    // Get the index of the current playing song and set the playback to the next song
-    const currentSongIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
-    const nextSongIndex = (currentSongIndex + 1) % songs.length // Loop back to the first song if at the end
-    const nextSong = songs[nextSongIndex]
-    setPlaybackSong({
-      title: nextSong.title,
-      artist: nextSong.artist,
-      audioURL: nextSong.audioURL,
-      artworkURL: nextSong.artworkURL
-    })
-    setIsPlaying(true)
-  }, [playNextSong]) // Footer toggles this global state when the song ends
+  // Update global song list state when changed ===============
+
+  useEffect(() => {
+    setSongList(songs)
+  }, [songs])
 
   // Handlers ==================================================
 
@@ -112,16 +139,37 @@ const SongList = ({ songs, style, onSongDelete }: SongListProps) => {
     setIsPlaying(true) // Start playback immediately
   }
 
-  // Modal =========================================================
-
-  const [openAddToPlaylistModal, setOpenAddToPlaylistModal] = useState(false)
-  const handleOpen = (song: Song) => {
-    setOpenAddToPlaylistModal(true)
-    setSelectedSong(song) // Assuming you have access to the song object here
+  const [isDeletingSong, setIsDeletingSong] = useState(false)
+  const handleDeleteSong = async () => {
+    setIsDeletingSong(true)
+    try {
+      selectedSong ? await deleteSong({ song: selectedSong }) : null
+      toast.success('Succesfully deleted song')
+    } catch (e) {
+      toast.error(`Error deleting song: ${e}`)
+    } finally {
+      setIsDeletingSong(false)
+      setIsConfirmDeleteModalOpen(false)
+    }
   }
-  const handleCloseAddToPlaylistModal = () => setOpenAddToPlaylistModal(false)
 
-  const [selectedSong, setSelectedSong] = useState<Song | null>(null)
+  // Add to playlist modal ==================================================
+
+  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false)
+  const openAddToPlaylistModal = (song: Song) => {
+    setIsAddToPlaylistModalOpen(true)
+    setSelectedSong(song)
+  }
+  const closeAddToPlaylistModal = () => setIsAddToPlaylistModalOpen(false)
+
+  // Confirm delete modal ===================================================
+
+  const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false)
+  const openConfirmDeleteModal = (song: Song) => {
+    setIsConfirmDeleteModalOpen(true)
+    setSelectedSong(song)
+  }
+  const closeConfirmDeleteModal = () => setIsConfirmDeleteModalOpen(false)
 
   // Table ==================================================================
 
@@ -197,7 +245,7 @@ const SongList = ({ songs, style, onSongDelete }: SongListProps) => {
               color="white"
               onClick={() => {
                 const song = info.row.original
-                handleOpen(song)
+                openAddToPlaylistModal(song)
               }}
             />
 
@@ -209,6 +257,19 @@ const SongList = ({ songs, style, onSongDelete }: SongListProps) => {
                   // Prevent event propagation to avoid triggering row selection or other actions
                   event.stopPropagation()
                   handleRemoveSongFromPlaylist(info.row.original)
+                }}
+              />
+            )}
+
+            {isMySongsOnly && (
+              <FaTrash
+                className="deleteFromPlaylistIcon"
+                color="white"
+                onClick={event => {
+                  // Prevent event propagation to avoid triggering row selection or other actions
+                  event.stopPropagation()
+                  openConfirmDeleteModal(info.row.original)
+                  // deleteSong({ song: info.row.original })
                 }}
               />
             )}
@@ -254,22 +315,25 @@ const SongList = ({ songs, style, onSongDelete }: SongListProps) => {
   // Adjust the deletion function to call onSongDelete
   const handleRemoveSongFromPlaylist = (song: Song) => {
     // Invoke the callback with the song's unique identifier
-    if (onSongDelete) {
-      onSongDelete(song.audioURL)
+    if (onRemoveFromPlaylist) {
+      onRemoveFromPlaylist(song.audioURL)
+    } else {
+      toast.error('Erorr removing from playlist. Function onRemovePlaylist was not found.')
     }
   }
 
   // Render ========================================================
   return (
     <>
-      <Modal open={openAddToPlaylistModal} onClose={handleCloseAddToPlaylistModal}>
+      {/* Add to playlist modal */}
+      <Modal open={isAddToPlaylistModalOpen} onClose={closeAddToPlaylistModal}>
         <div className="addToPlayListModal">
           <div className="flex" style={{ marginBottom: '1rem' }}>
             <h1>Add to playlist</h1>
             <div className="flexSpacer" />
             <IoIosCloseCircleOutline
               color="white"
-              onClick={handleCloseAddToPlaylistModal}
+              onClick={closeAddToPlaylistModal}
               className="modalCloseIcon"
             />
           </div>
@@ -282,6 +346,45 @@ const SongList = ({ songs, style, onSongDelete }: SongListProps) => {
               <h2 className="playlistName">{playlist.name}</h2>
             </div>
           ))}
+        </div>
+      </Modal>
+
+      {/* Confirm delete song modal (MySongs only) */}
+      <Modal open={isConfirmDeleteModalOpen} onClose={closeConfirmDeleteModal}>
+        <div className="confirmDeleteModal">
+          <div className="flex" style={{ marginBottom: '1rem' }}>
+            <h1>Are you sure you want to delete this song?</h1>
+            <div className="flexSpacer" />
+            <IoIosCloseCircleOutline
+              color="white"
+              onClick={closeConfirmDeleteModal}
+              className="modalCloseIcon"
+            />
+          </div>
+          <div className="flex">
+            <button
+              className="button deleteButton"
+              onClick={handleDeleteSong}
+              disabled={isDeletingSong}
+            >
+              {isDeletingSong ? (
+                <CircularProgress color="inherit" className="buttonLoadingSpinner" size={20} />
+              ) : (
+                'Delete'
+              )}
+            </button>
+            <button
+              className="button cancelButton"
+              onClick={closeConfirmDeleteModal}
+              disabled={isDeletingSong}
+            >
+              {isDeletingSong ? (
+                <CircularProgress color="inherit" className="buttonLoadingSpinner" size={20} />
+              ) : (
+                'Cancel'
+              )}
+            </button>
+          </div>
         </div>
       </Modal>
 

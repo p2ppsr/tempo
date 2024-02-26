@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { Song } from '../types/interfaces'
 
 export const useAuthStore = create(set => ({
   // TODO: These will be dynamic
@@ -36,9 +37,15 @@ export const usePlaybackStore = create(set => ({
 
   playNextSong: false,
   togglePlayNextSong: () => set((state: any) => ({ playNextSong: !state.playNextSong })),
+
+  playPreviousSong: false,
+  togglePlayPreviousSong: () => set((state: any) => ({ playPreviousSong: !state.playPreviousSong })),
+
+  songList: [] as Song[],
+  setSongList: (newState: Song[]) => set(() => ({ songList: newState }))
 }))
 
 export const usePlaylistStore = create(set => ({
   viewingPlaylist: null,
-  setViewingPlaylist: (newState: string) => set(() => ({ viewingPlaylist: newState })),
+  setViewingPlaylist: (newState: string) => set(() => ({ viewingPlaylist: newState }))
 }))

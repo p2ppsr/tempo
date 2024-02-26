@@ -2,6 +2,17 @@
 
 import { BitcoinOutputScript, PublicKey } from '@babbage/sdk'
 
+export interface Token {
+  inputs: string | object
+  mapiResponses: string | object
+  outputScript: string | BitcoinOutputScript
+  proof: string | object
+  rawTX: string
+  satoshis: number
+  txid: string
+  vout: number
+}
+
 export interface Song {
   // Necessary
   title: string
@@ -11,8 +22,7 @@ export interface Song {
   artworkURL: string
   description: string
   duration: number
-  token: { outputIndex: number; txid: string; lockingScript: string }
-  outputScript: BitcoinOutputScript
+  token: Token
 
   // Optional
   selectedMusic?: File
@@ -29,6 +39,6 @@ export interface SearchFilter {
 
 export interface Playlist {
   id: string
-  name:string
+  name: string
   songs: Song[]
 }

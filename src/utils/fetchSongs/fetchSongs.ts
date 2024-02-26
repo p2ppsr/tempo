@@ -1,6 +1,6 @@
 import PacketPay from '@packetpay/js'
-import constants from './constants'
-import { Song } from '../types/interfaces'
+import constants from '../constants'
+import { Song, Token } from '../../types/interfaces'
 import pushdrop from 'pushdrop'
 
 const fetchSongs = async (searchFilter: object) => {
@@ -11,7 +11,7 @@ const fetchSongs = async (searchFilter: object) => {
       body: {
         provider: 'TSP',
         query: {
-          ...searchFilter 
+          ...searchFilter
         }
       }
     })
@@ -21,11 +21,14 @@ const fetchSongs = async (searchFilter: object) => {
 
   const lookupResult = JSON.parse(Buffer.from(response?.body).toString('utf8'))
 
-  let parsedSongs = lookupResult.map((song: Song) => {
+  let parsedSongs = lookupResult.map((songToken: Token) => {
+    console.log('satoshis: ', songToken.satoshis)
+
     const decodedSong = pushdrop.decode({
-      script: song.outputScript,
+      script: songToken.outputScript,
       fieldFormat: 'utf8'
     })
+
     const formattedSong = {
       topic: decodedSong.fields[0],
       protocolID: decodedSong.fields[1],
@@ -35,7 +38,9 @@ const fetchSongs = async (searchFilter: object) => {
       length: decodedSong.fields[5],
       audioURL: decodedSong.fields[6],
       artworkURL: decodedSong.fields[7],
-      artistIdentityKey: decodedSong.lockingPublicKey
+      artistIdentityKey: decodedSong.lockingPublicKey,
+      token: songToken,
+      sats: songToken.satoshis // ?
     }
     return formattedSong
   })

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import SongList from '../../../components/SongList/SongList'
 import useAsyncEffect from 'use-async-effect'
-import fetchSongs from '../../../utils/fetchSongs'
+import fetchSongs from '../../../utils/fetchSongs/fetchSongs'
 import { SearchFilter, Song } from '../../../types/interfaces'
 import { CircularProgress } from '@mui/material'
 
@@ -41,21 +41,23 @@ const Likes = () => {
     <>
       <div className="container">
         <h1>Likes</h1>
-        {(songs.length === 0 && !isLoaded) && (
+        {songs.length === 0 && !isLoaded && (
           <>
             <CircularProgress style={{ marginTop: '1rem' }} />
           </>
         )}
-        {(songs.length !== 0 && isLoaded) && (
+        {songs.length !== 0 && isLoaded && (
           <>
             <div style={{ marginTop: '1rem' }}>
               <SongList songs={songs} />
             </div>
           </>
         )}
-        {(songs.length === 0 && isLoaded) && (
+        {songs.length === 0 && isLoaded && (
           <>
-            <p className="whiteText" style={{marginTop:'1rem'}}>No songs have been liked yet.</p>
+            <p className="whiteText" style={{ marginTop: '1rem' }}>
+              No songs have been liked yet.
+            </p>
           </>
         )}
       </div>

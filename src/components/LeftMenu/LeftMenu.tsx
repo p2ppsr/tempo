@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from "react"
-import { FaCaretDown, FaCaretUp } from "react-icons/fa"
-import { NavLink, useLocation } from "react-router-dom"
-import "./LeftMenu.scss"
+import React, { useEffect, useState } from 'react'
+import { FaCaretDown, FaCaretUp } from 'react-icons/fa'
+import { NavLink, useLocation } from 'react-router-dom'
+import './LeftMenu.scss'
 
 // @ts-ignore
 import tempoLogo from '../../assets/Images/tempoLogo.png'
+import fetchUserSongs from '../../utils/fetchSongs/fetchUserSongs'
+import useAsyncEffect from 'use-async-effect'
 
 const LeftMenu = () => {
   // State for whether library accordion is open or closed
   const [libraryOpen, setLibraryOpen] = useState(false)
+  const [showMySongsTab, setShowMySongsTab] = useState(false)
 
   // Close library accordion on page change
   let location = useLocation()
@@ -16,11 +19,18 @@ const LeftMenu = () => {
     setLibraryOpen(false)
   }, [location])
 
+  useAsyncEffect(async () => {
+    const userSongs = await fetchUserSongs()
+    if (userSongs.length > 0) {
+      setShowMySongsTab(true)
+    }
+  }, [])
+
   return (
     <div>
       <div className="leftMenu">
         <div className="logoContainer">
-          <img className='menuLogo' src={tempoLogo} />
+          <img className="menuLogo" src={tempoLogo} />
         </div>
         <ul>
           <NavLink to="/">
@@ -30,15 +40,15 @@ const LeftMenu = () => {
           <div
             className="link"
             onClick={() => setLibraryOpen(!libraryOpen)}
-            style={libraryOpen ? { margin: "0" } : {}}
+            style={libraryOpen ? { margin: '0' } : {}}
           >
             <div className="flex">
               Library
               <div className="flexSpacer" />
               {libraryOpen ? (
-                <FaCaretUp color="white" style={{ marginRight: "10%" }} />
+                <FaCaretUp color="white" style={{ marginRight: '10%' }} />
               ) : (
-                <FaCaretDown color="white" style={{ marginRight: "10%" }} />
+                <FaCaretDown color="white" style={{ marginRight: '10%' }} />
               )}
             </div>
           </div>
@@ -63,9 +73,11 @@ const LeftMenu = () => {
             </>
           )}
 
-          <NavLink to="/MySongs">
-            <li className="link">My Songs</li>
-          </NavLink>
+          {showMySongsTab && (
+            <NavLink to="/MySongs">
+              <li className="link">My Songs</li>
+            </NavLink>
+          )}
 
           <NavLink to="/PublishSong">
             <li className="link">Publish</li>
