@@ -39,7 +39,7 @@ if (
 } else {
   // production
   constants = {
-    confederacyURL: undefined, // TODO: this should not be undefined or default "https://production-confederacy.babbage.systems"
+    confederacyURL: 'https://confederacy.babbage.systems', // TODO: this should not be undefined or default "https://production-confederacy.babbage.systems"
     nanostoreURL: "https://nanostore.babbage.systems",
     tempoTopic: "TSP",
     tspProtocolID: "1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36",
@@ -57,7 +57,7 @@ if (
 //   keyServerURL: 'http://localhost:8080'
 // }
 
-constants.nanostoreURL = "https://staging-nanostore.babbage.systems"
+// constants.nanostoreURL = "https://staging-nanostore.babbage.systems"
 
 // Uploaded songs will be hosted for seven years
 constants.RETENTION_PERIOD = 60 * 24 * 365 * 7
