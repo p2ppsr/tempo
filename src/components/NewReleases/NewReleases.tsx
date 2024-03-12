@@ -60,7 +60,7 @@ const NewReleases = ({ className }: NewReleasesProps) => {
 
   return (
     <div className={`container ${className}`}>
-      <h1 className="whiteText">New Releases</h1>
+      <h1>New Releases</h1>
       {songs.length === 0 ? (
         <CircularProgress style={{ marginTop: '1rem' }} />
       ) : (

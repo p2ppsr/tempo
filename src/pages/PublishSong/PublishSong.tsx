@@ -5,9 +5,8 @@ import { toast } from 'react-toastify'
 import constants from '../../utils/constants'
 import publishSong from '../../utils/publishSong'
 
-import { FileUploader } from 'react-drag-drop-files'
-
 import './PublishSong.scss'
+import { Song } from '../../types/interfaces'
 
 const PublishSong = () => {
   const navigate = useNavigate()
@@ -17,6 +16,7 @@ const PublishSong = () => {
     artist: string
     selectedMusic: File
     selectedArtwork: File
+    verifiedCheckbox: boolean
   }
 
   const form = useForm<FormValues>({
@@ -24,7 +24,8 @@ const PublishSong = () => {
       title: '',
       artist: '',
       selectedMusic: undefined,
-      selectedArtwork: undefined
+      selectedArtwork: undefined,
+      verifiedCheckbox: false
     }
   })
 
@@ -41,20 +42,24 @@ const PublishSong = () => {
   const onSubmit = async () => {
     // TODO: set these params from uploaded file
 
-    const newValues = {
+    const newValues: Song = {
+      title: values.title,
+      artist: values.artist,
       isPublished: false,
-      artworkURL: '',
       audioURL: '',
+      artworkURL: '',
       description: '',
       duration: 0,
-      songID: '',
-      token: { outputIndex: 0, txid: '', lockingScript: '' },
-      outputScript: {
-        fields: [''],
-        protocolID: '',
-        keyID: ''
-      },
-      ...values
+      token: {
+        inputs: {},
+        mapiResponses: {},
+        outputScript: '',
+        proof: {},
+        rawTX: '',
+        satoshis: 0,
+        txid: '',
+        vout: 0
+      }
     }
 
     try {
@@ -86,9 +91,14 @@ const PublishSong = () => {
   return (
     <div className="publishSongContainer container">
       <h1>Publish</h1>
-      {/* <p className="whiteText">
-        Become your own publisher and upload your music for the world to hear!
-      </p> */}
+
+      <div id="piracyBannerContainer">
+        <h2 style={{ marginBottom: '.5rem' }}>Tempo actively fights music piracy.</h2>
+        <p>
+          Uploading copyrighted content by others is forbidden. Infringement will be reported to the
+          rightful owners and you will be permanently removed from the platform.
+        </p>
+      </div>
 
       <form className="formContainer" onSubmit={handleSubmit(onSubmit)}>
         <div className="fieldContainer">
@@ -111,11 +121,26 @@ const PublishSong = () => {
           <input type="file" className="uploadInput" {...register('selectedArtwork')} required />
         </div>
 
-        {/* <div className="fieldContainer" >
-          <FileUploader label='Tap, click, or drop a file to upload' required {...register('selectedMusic')} />
-        </div> */}
+        {values.selectedMusic && (
+          <>
+            <div className="flex" id="piracyCheckboxContainer">
+              <input
+                type="checkbox"
+                id="piracyCheckbox"
+                {...register('verifiedCheckbox')}
+                required
+              />
+              <label>I certify that I am the rightful owner of this content.</label>
+            </div>
+          </>
+        )}
 
-        <button name="submitForm" className="button publishButton" type="submit" style={{ marginTop: '1rem' }}>
+        <button
+          name="submitForm"
+          className="button publishButton"
+          type="submit"
+          style={{ marginTop: '1rem' }}
+        >
           Publish Song
         </button>
       </form>

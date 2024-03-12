@@ -181,7 +181,7 @@ const Playlists = () => {
                     onKeyDown={e => handleKeyDown(e, index)}
                   />
                 ) : (
-                  <p className="whiteText">{playlist.name}</p>
+                  <p>{playlist.name}</p>
                 )}
                 <div className="flexSpacer" />
                 <FaEdit

@@ -24,6 +24,8 @@ yarn-error.log*
 
 .env
 
+.prettierrc
+
 tmp
 dist
 data

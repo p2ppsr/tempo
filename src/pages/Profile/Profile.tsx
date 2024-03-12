@@ -91,7 +91,7 @@ const Profile = () => {
           />
           <div style={{ padding: '1rem' }}>
             <h1>{userName}</h1>
-            <p className="whiteText">
+            <p>
               Listener profile info such as top artists, tracks, followers, following etc. will go
               here.
             </p>

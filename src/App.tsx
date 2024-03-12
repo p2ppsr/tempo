@@ -24,15 +24,9 @@ import TopMenu from './components/TopMenu/TopMenu'
 import Likes from './pages/Library/Likes/Likes'
 
 import backgroundImage from './assets/Images/background.jpg'
-
-import WebFont from 'webfontloader';
-import ViewPlaylist from "./pages/Playlists/ViewPlaylist"
-
+import ViewPlaylist from './pages/Playlists/ViewPlaylist'
 
 const App = () => {
-
-  WebFont.load({ google: { families:['Audiowide','Chakra Petch']} })
-
 
   return (
     <>

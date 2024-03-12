@@ -51,7 +51,7 @@ const ViewPlaylist = () => {
                 <SongList songs={playlist.songs} onRemoveFromPlaylist={handleSongDelete}/>
               </>
             ) : (
-              <p className="whiteText">This playlist doesn't contain any songs...yet!</p>
+              <p>This playlist doesn't contain any songs...yet!</p>
             )}
           </div>
         </div>
