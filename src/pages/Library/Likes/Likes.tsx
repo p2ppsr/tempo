@@ -55,7 +55,7 @@ const Likes = () => {
         )}
         {songs.length === 0 && isLoaded && (
           <>
-            <p className="whiteText" style={{ marginTop: '1rem' }}>
+            <p style={{ marginTop: '1rem' }}>
               No songs have been liked yet.
             </p>
           </>
