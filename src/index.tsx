@@ -6,7 +6,7 @@ import BabbagePrompt from '@babbage/react-prompt'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BabbagePrompt
+    {/* <BabbagePrompt
       customPrompt
       appName="Tempo"
       author="Project Babbage"
@@ -15,8 +15,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       appIcon="/tempoIcon.png"
       // appImages={['/tempoBG.png']}
       supportedMetaNet={'universal'}
-    >
+    > */}
       <App />
-    </BabbagePrompt>
+    {/* </BabbagePrompt> */}
   </React.StrictMode>
 )

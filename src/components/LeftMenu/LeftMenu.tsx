@@ -7,11 +7,25 @@ import './LeftMenu.scss'
 import tempoLogo from '../../assets/Images/tempoLogo.png'
 import fetchUserSongs from '../../utils/fetchSongs/fetchUserSongs'
 import useAsyncEffect from 'use-async-effect'
+import { useAuthStore, useInvitationModalStore } from '../../stores/stores'
 
 const LeftMenu = () => {
-  // State for whether library accordion is open or closed
+  // Component state ========================================================================
   const [libraryOpen, setLibraryOpen] = useState(false)
   const [showMySongsTab, setShowMySongsTab] = useState(false)
+
+  // Global state ===========================================================================
+  const [userHasMetanetClient] = useAuthStore((state: any) => [state.userHasMetanetClient])
+
+  const [
+    invitationModalOpen,
+    setInvitationModalOpen,
+    setInvitationModalContent
+  ] = useInvitationModalStore((state: any) => [
+    state.invitationModalOpen,
+    state.setInvitationModalOpen,
+    state.setInvitationModalContent
+  ])
 
   // Close library accordion on page change
   let location = useLocation()
@@ -20,11 +34,21 @@ const LeftMenu = () => {
   }, [location])
 
   useAsyncEffect(async () => {
+    if (!userHasMetanetClient) return
+
     const userSongs = await fetchUserSongs()
     if (userSongs.length > 0) {
       setShowMySongsTab(true)
     }
-  }, [])
+  }, [userHasMetanetClient])
+
+  const handleMncCheck = (e: React.MouseEvent, source: string) => {
+    if (!userHasMetanetClient) {
+      e.preventDefault()
+      setInvitationModalContent(source)
+      setInvitationModalOpen(true)
+    }
+  }
 
   return (
     <div>
@@ -55,11 +79,23 @@ const LeftMenu = () => {
 
           {libraryOpen && (
             <>
-              <NavLink to="/Likes" className="menuAccordionLink">
+              <NavLink
+                to="/Likes"
+                className="menuAccordionLink"
+                onClick={e => {
+                  handleMncCheck(e, 'library')
+                }}
+              >
                 Likes
               </NavLink>
               <div className="menuAccordionDivider" />
-              <NavLink to="/Playlists" className="menuAccordionLink">
+              <NavLink
+                to="/Playlists"
+                className="menuAccordionLink"
+                onClick={e => {
+                  handleMncCheck(e, 'library')
+                }}
+              >
                 Playlists
               </NavLink>
               {/* <div className="menuAccordionDivider" /> */}
@@ -79,7 +115,12 @@ const LeftMenu = () => {
             </NavLink>
           )}
 
-          <NavLink to="/PublishSong">
+          <NavLink
+            to="/PublishSong"
+            onClick={e => {
+              handleMncCheck(e, 'publish')
+            }}
+          >
             <li className="link">Publish</li>
           </NavLink>
         </ul>
