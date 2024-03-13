@@ -45,7 +45,7 @@ const NoMncPreview = () => {
       <div className="container">
         <div id="previewBanner">
           <h3>
-            To get started, please launch the Metanet Client. If you don't have it
+            To get the full experience, please launch the Metanet Client. If you don't have it
             yet, it's available for{' '}
             <a href="https://projectbabbage.com/desktop/res/MetaNet%20Client.exe" target="_blank">
               Windows

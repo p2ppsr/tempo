@@ -42,6 +42,14 @@ const LeftMenu = () => {
     }
   }, [userHasMetanetClient])
 
+  const handleMncCheck = (e: React.MouseEvent, source: string) => {
+    if (!userHasMetanetClient) {
+      e.preventDefault()
+      setInvitationModalContent(source)
+      setInvitationModalOpen(true)
+    }
+  }
+
   return (
     <div>
       <div className="leftMenu">
@@ -53,43 +61,51 @@ const LeftMenu = () => {
             <li className="link">Home</li>
           </NavLink>
 
-          {userHasMetanetClient && (
-            <>
-              <div
-                className="link"
-                onClick={() => setLibraryOpen(!libraryOpen)}
-                style={libraryOpen ? { margin: '0' } : {}}
-              >
-                <div className="flex">
-                  Library
-                  <div className="flexSpacer" />
-                  {libraryOpen ? (
-                    <FaCaretUp color="white" style={{ marginRight: '10%' }} />
-                  ) : (
-                    <FaCaretDown color="white" style={{ marginRight: '10%' }} />
-                  )}
-                </div>
-              </div>
+          <div
+            className="link"
+            onClick={() => setLibraryOpen(!libraryOpen)}
+            style={libraryOpen ? { margin: '0' } : {}}
+          >
+            <div className="flex">
+              Library
+              <div className="flexSpacer" />
+              {libraryOpen ? (
+                <FaCaretUp color="white" style={{ marginRight: '10%' }} />
+              ) : (
+                <FaCaretDown color="white" style={{ marginRight: '10%' }} />
+              )}
+            </div>
+          </div>
 
-              {libraryOpen && (
-                <>
-                  <NavLink to="/Likes" className="menuAccordionLink">
-                    Likes
-                  </NavLink>
-                  <div className="menuAccordionDivider" />
-                  <NavLink to="/Playlists" className="menuAccordionLink">
-                    Playlists
-                  </NavLink>
-                  {/* <div className="menuAccordionDivider" /> */}
-                  {/* <NavLink to="/Artists" className="menuAccordionLink">
+          {libraryOpen && (
+            <>
+              <NavLink
+                to="/Likes"
+                className="menuAccordionLink"
+                onClick={e => {
+                  handleMncCheck(e, 'library')
+                }}
+              >
+                Likes
+              </NavLink>
+              <div className="menuAccordionDivider" />
+              <NavLink
+                to="/Playlists"
+                className="menuAccordionLink"
+                onClick={e => {
+                  handleMncCheck(e, 'library')
+                }}
+              >
+                Playlists
+              </NavLink>
+              {/* <div className="menuAccordionDivider" /> */}
+              {/* <NavLink to="/Artists" className="menuAccordionLink">
                 Artists
               </NavLink>
               <div className="menuAccordionDivider" />
               <NavLink to="/Podcasts" className="menuAccordionLink">
                 Podcasts
               </NavLink> */}
-                </>
-              )}
             </>
           )}
 
@@ -102,11 +118,7 @@ const LeftMenu = () => {
           <NavLink
             to="/PublishSong"
             onClick={e => {
-              if (!userHasMetanetClient) {
-                e.preventDefault()
-                setInvitationModalContent('publishInvitation')
-                setInvitationModalOpen(true)
-              }
+              handleMncCheck(e, 'publish')
             }}
           >
             <li className="link">Publish</li>
