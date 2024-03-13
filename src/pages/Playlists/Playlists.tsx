@@ -144,18 +144,6 @@ const Playlists = () => {
 
   return (
     <>
-      {/* <Button onClick={handleOpen}>Open modal</Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <div className="">
-          <h1>Delete Modal</h1>
-        </div>
-      </Modal> */}
-
       <div className="container">
         <div className="flex" style={{ alignItems: 'center' }}>
           <h1>Playlists</h1>

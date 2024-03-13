@@ -1,19 +1,18 @@
-import { download } from 'nanoseek'
+import { CircularProgress } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
-import useAsyncEffect from 'use-async-effect'
 import AudioPlayer from 'react-h5-audio-player'
 import { Img } from 'uhrp-react'
-import { usePlaybackStore } from '../../stores/stores'
-import { CircularProgress } from '@mui/material'
+import useAsyncEffect from 'use-async-effect'
+import placeholderImage from '../../assets/Images/placeholder-image.png'
+import { useAuthStore, usePlaybackStore, useInvitationModalStore } from '../../stores/stores'
 import constants from '../../utils/constants'
 import decryptSong from '../../utils/decryptSong'
-import placeholderImage from '../../assets/Images/placeholder-image.png'
 
 import 'react-h5-audio-player/lib/styles.css'
 import './Footer.scss'
 
 const Footer = () => {
-  // State ========================================================
+  // Global State ========================================================
 
   const [
     isPlaying,
@@ -37,10 +36,23 @@ const Footer = () => {
     state.songList
   ])
 
+  const [userHasMetanetClient, setUserHasMetanetClient] = useAuthStore((state: any) => [
+    state.userHasMetanetClient,
+    state.setUserHasMetanetClient
+  ])
+
+  const [invitationModalOpen, setInvitationModalOpen, setInvitationModalContent] = useInvitationModalStore((state: any) => [
+    state.invitationModalOpen,
+    state.setInvitationModalOpen,
+    state.setInvitationModalContent
+  ])
+
+  // Component state ========================================================
+
   const [footerAudioURL, setFooterAudioURL] = useState<string | undefined>(undefined)
   const audioPlayerRef = useRef<AudioPlayer>(null)
 
-  // State to store current playback time
+  // Tracks current playback time
   const [currentTime, setCurrentTime] = useState<number>(0)
 
   // Lifecycle ===================================================
@@ -50,11 +62,13 @@ const Footer = () => {
       setIsLoading(true)
       try {
         const decryptedAudio = await decryptSong(playbackSong)
-        setIsLoading(false)
         setFooterAudioURL(decryptedAudio) // Load and set new song URL
         setIsPlaying(true)
       } catch (e) {
         console.error(e)
+        setFooterAudioURL(playbackSong.audioURL) // TODO: Handle previews more elegantly? See pages/NoMncPreview.tsx
+      } finally {
+        setIsLoading(false)
       }
     }
   }, [playbackSong])
@@ -145,7 +159,15 @@ const Footer = () => {
         onPause={() => {
           setIsPlaying(false)
         }}
-        onEnded={() => togglePlayNextSong()}
+        onEnded={() => {
+          // If user is logged into Metanet Client, play next song. If not, open the invitation modal
+          if (userHasMetanetClient) {
+            togglePlayNextSong()
+          } else {
+            setInvitationModalOpen(true)
+            setInvitationModalContent('songEnd')
+          }
+        }}
         onClickPrevious={() => {
           togglePlayPreviousSong()
         }}

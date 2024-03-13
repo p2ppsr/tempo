@@ -1,0 +1,36 @@
+@import '../../styles/styleVariables.scss';
+
+.invitationModal{
+  border:1px solid rgba(255, 255, 255, 0.5);
+  display: block;
+  margin: auto;
+  width:53vw;
+  min-width:20rem;
+  margin-top:20vh;
+  padding:1rem;
+  border-radius: $borderRadius;
+  background: black;
+  position:relative;
+
+  #invitationModalCloseButton {
+    position:absolute;
+    top:0;
+    right:0;
+    border-radius: $borderRadius;
+    padding:.5rem;
+    height:2rem;
+    width:2rem;
+    background: tomato;
+    color:white;
+    cursor: pointer;
+    border: none;
+    margin:.5rem;
+    transition:.1s;
+
+    &:hover {
+      filter:brightness(1.1);
+      transform:scale(1.1)
+    
+    }
+  }
+}

@@ -229,7 +229,6 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
           <div className="actionsContainer flex">
             <div
               onClick={() => {
-                console.log(localStorage.getItem('likedSongs'))
                 toggleSongLike(info.row.original.audioURL)
               }}
               style={{ width: 'fit-content' }}
