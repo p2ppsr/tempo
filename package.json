@@ -1,6 +1,6 @@
 {
   "name": "tempo",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "private": true,
   "dependencies": {
     "@babbage/react-prompt": "^0.2.15",
