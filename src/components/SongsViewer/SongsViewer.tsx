@@ -1,4 +1,4 @@
-import { getPublicKey } from '@babbage/sdk'
+import { getPublicKey } from '@babbage/sdk-ts'
 import { List, ListItem, ListItemText } from '@mui/material'
 import { PublicKey } from 'babbage-bsv'
 import React, { useState } from 'react'

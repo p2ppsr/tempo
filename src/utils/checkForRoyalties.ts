@@ -1,4 +1,4 @@
-import { submitDirectTransaction } from "@babbage/sdk"
+import { submitDirectTransaction } from "@babbage/sdk-ts"
 import { Authrite } from "authrite-js"
 import constants from "./constants"
 

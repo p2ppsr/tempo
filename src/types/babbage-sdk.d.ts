@@ -1,4 +1,4 @@
-declare module "@babbage/sdk" {
+declare module "@babbage/sdk-ts" {
   // Common Types
   type BufferType = Buffer | string // hex string
   type ProtocolID = [number, string] | string

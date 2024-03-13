@@ -1,6 +1,6 @@
 import constants from "./constants"
 import pushdrop from "pushdrop"
-import { createAction } from "@babbage/sdk"
+import { createAction } from "@babbage/sdk-ts"
 import { Song } from "../types/interfaces"
 import { Authrite } from 'authrite-js'
 
