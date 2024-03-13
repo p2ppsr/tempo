@@ -24,11 +24,25 @@ import './styles/typography.scss'
 import './styles/utils.scss'
 
 import backgroundImage from './assets/Images/background.jpg'
-import ViewPlaylist from './pages/Playlists/ViewPlaylist'
-import { useInvitationModalStore } from './stores/stores'
 import InvitationModal from "./components/InvitationModal/InvitationModal"
+import ViewPlaylist from './pages/Playlists/ViewPlaylist'
+import { useAuthStore } from "./stores/stores"
+import useAsyncEffect from "use-async-effect"
+import checkForMetaNetClient from "./utils/checkForMetaNetClient"
+import ViewSong from "./pages/ViewSong/ViewSong"
 
 const App = () => {
+
+  const [userHasMetanetClient, setUserHasMetanetClient] = useAuthStore((state: any) => [
+    state.userHasMetanetClient,
+    state.setUserHasMetanetClient
+  ])
+
+  useAsyncEffect(async ()=>{
+    // Check if user is logged into MNC and set global state
+    const userHasMnC = await checkForMetaNetClient() // returns 1 if mainline, -1 if stageline, 0 if neither
+    setUserHasMetanetClient(userHasMnC !== 0)
+  },[])
 
   return (
     <>
@@ -36,6 +50,7 @@ const App = () => {
 
       <img src={backgroundImage} className="backgroundImage" />
 
+      {/* Invitation Modal for a non-MNC user */}
       <InvitationModal/>
 
       <Router>
@@ -58,9 +73,8 @@ const App = () => {
               <Route path="/EditSong" element={<EditSong />} />
               <Route path="/PublishSong" element={<PublishSong />} />
               <Route path="/PublishSong/Success" element={<SuccessPage />} />
-
-              {/* TODO: Might be a subpath eventually under /library/* */}
               <Route path="/Likes" element={<Likes />} />
+              <Route path="/Song/:audioURL" element={<ViewSong />} />
             </Routes>
           </div>
 

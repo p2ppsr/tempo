@@ -1,25 +1,32 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
-
+// Dependencies
+import React, { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import { CircularProgress, Modal } from '@mui/material'
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { FaPlay, FaHeart, FaRegHeart, FaListUl, FaTrash } from 'react-icons/fa'
-import { IoIosCloseCircleOutline } from 'react-icons/io'
-
-import { Img } from 'uhrp-react'
-import { usePlaybackStore } from '../../stores/stores'
-import { Playlist, Song } from '../../types/interfaces'
-import { CircularProgress, Modal } from '@mui/material'
 import { toast } from 'react-toastify'
-
+import { Img } from 'uhrp-react'
 import constants from '../../utils/constants'
-import placeholderImage from '../../assets/Images/placeholder-image.png'
-import './SongList.scss'
 import deleteSong from '../../utils/deleteSong'
+import { usePlaybackStore } from '../../stores/stores'
+
+// Assets
+import { FaPlay } from 'react-icons/fa'
+import { HiOutlineDotsVertical } from 'react-icons/hi'
+import { HiDotsVertical } from 'react-icons/hi'
+import { IoIosCloseCircleOutline } from 'react-icons/io'
+import placeholderImage from '../../assets/Images/placeholder-image.png'
+
+// Types
+import { Playlist, Song } from '../../types/interfaces'
+
+// Styles
+import './SongList.scss'
+import useOutsideClick from "../../hooks/useOutsideClick"
 
 interface SongListProps {
   songs: Song[]
@@ -29,6 +36,29 @@ interface SongListProps {
 }
 
 const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongListProps) => {
+  // State for tracking actions dropdown visibility
+  const [dropdownVisible, setDropdownVisible] = useState<string | null>(null)
+
+  // Ref for the dropdown menu
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Effect to add event listener for clicks outside the dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownVisible(null) // Close the dropdown if click is outside
+      }
+    }
+
+    // Always attach the event listener to document, but only take action if dropdownVisible is not null
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [dropdownVisible])
+
+  //
+
   // Determine whether component is being used in the playlists component
   const location = useLocation()
   const isInPlaylistsPage = location.pathname.includes('Playlists')
@@ -75,8 +105,6 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
 
   // Autoplay after song end =================================================
 
-  // First load check to prevent playing first song on component mount
-  const [firstLoad, setFirstLoad] = useState(true)
   useEffect(() => {
     if (playPreviousSong && songs.length > 0) {
       const currentIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
@@ -143,7 +171,7 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
   const handleDeleteSong = async () => {
     setIsDeletingSong(true)
     try {
-      selectedSong ? await deleteSong({ song: selectedSong }) : null
+      selectedSong ? await deleteSong(selectedSong) : null
       toast.success('Succesfully deleted song')
     } catch (e) {
       toast.error(`Error deleting song: ${e}`)
@@ -227,50 +255,46 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
         const isLiked = likedSongs.includes(info.row.original.audioURL)
         return (
           <div className="actionsContainer flex">
-            <div
-              onClick={() => {
-                toggleSongLike(info.row.original.audioURL)
+            <button
+              className="dropdownToggle"
+              onClick={event => {
+                event.stopPropagation() // Prevent triggering row selection
+                setDropdownVisible(dropdownVisible === info.row.id ? null : info.row.id)
               }}
-              style={{ width: 'fit-content' }}
             >
-              {isLiked ? (
-                <FaHeart className={`likedIcon ${isLiked ? 'alwaysVisible' : ''}`} />
-              ) : (
-                <FaRegHeart className="likedIcon" />
-              )}
-            </div>
-            <FaListUl
-              className="addToPlaylistIcon"
-              color="white"
-              onClick={() => {
-                const song = info.row.original
-                openAddToPlaylistModal(song)
-              }}
-            />
-
-            {isInPlaylistsPage && (
-              <FaTrash
-                className="deleteFromPlaylistIcon"
-                color="white"
-                onClick={event => {
-                  // Prevent event propagation to avoid triggering row selection or other actions
-                  event.stopPropagation()
-                  handleRemoveSongFromPlaylist(info.row.original)
-                }}
-              />
-            )}
-
-            {isMySongsOnly && (
-              <FaTrash
-                className="deleteFromPlaylistIcon"
-                color="white"
-                onClick={event => {
-                  // Prevent event propagation to avoid triggering row selection or other actions
-                  event.stopPropagation()
-                  openConfirmDeleteModal(info.row.original)
-                  // deleteSong({ song: info.row.original })
-                }}
-              />
+              <HiOutlineDotsVertical />
+            </button>
+            {dropdownVisible === info.row.id && (
+              <div className="dropdownMenu" ref={dropdownRef}>
+                <div
+                  onClick={() => {
+                    toggleSongLike(info.row.original.audioURL)
+                    setDropdownVisible(null) // Close the dropdown
+                  }}
+                >
+                  {isLiked ? 'Unlike' : 'Like'}
+                </div>
+                <div
+                  onClick={() => {
+                    const song = info.row.original
+                    openAddToPlaylistModal(song)
+                    setDropdownVisible(null) // Close the dropdown
+                  }}
+                >
+                  Add to Playlist
+                </div>
+                {(isInPlaylistsPage || isMySongsOnly) && (
+                  <div
+                    onClick={event => {
+                      event.stopPropagation() // Prevent triggering row selection
+                      openConfirmDeleteModal(info.row.original)
+                      setDropdownVisible(null) // Close the dropdown
+                    }}
+                  >
+                    Delete
+                  </div>
+                )}
+              </div>
             )}
           </div>
         )
@@ -320,6 +344,8 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
       toast.error('Erorr removing from playlist. Function onRemovePlaylist was not found.')
     }
   }
+
+  useOutsideClick(dropdownRef, () => setDropdownVisible(null))
 
   // Render ========================================================
   return (

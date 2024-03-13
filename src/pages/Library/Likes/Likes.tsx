@@ -13,6 +13,8 @@ const Likes = () => {
     const likedSongs = localStorage.getItem('likedSongs')
     let likedSongsArray = likedSongs?.split(',')
 
+    console.log(likedSongsArray)
+
     const searchFilter = {
       findAll: true,
       artistIdentityKey: '',

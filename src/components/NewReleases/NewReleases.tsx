@@ -1,18 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useScroll } from 'react-use-gesture'
-import './NewReleases.scss'
-import useSwipeScroll from './useSwipeScroll'
-// import SongsViewer from '../SongsViewer/SongsViewer'
 import { motion } from 'framer-motion'
+import { useScroll } from 'react-use-gesture'
+import useSwipeScroll from './useSwipeScroll'
 
 import { CircularProgress } from '@mui/material'
 import { Img } from 'uhrp-react'
 import useAsyncEffect from 'use-async-effect'
+import placeholderImage from '../../assets/Images/placeholder-image.png'
 import { usePlaybackStore } from '../../stores/stores'
 import { SearchFilter, Song } from '../../types/interfaces'
 import fetchSongs from '../../utils/fetchSongs/fetchSongs'
 import SongList from '../SongList/SongList'
-import placeholderImage from '../../assets/Images/placeholder-image.png'
+import './NewReleases.scss'
 
 const clamp = (value: number, clampAt: number = 60) => Math.min(clampAt, Math.max(-clampAt, value))
 
@@ -51,6 +50,8 @@ const NewReleases = ({ className }: NewReleasesProps) => {
     try {
       // Get a list of song objects
       const res = await fetchSongs(searchFilter)
+
+      console.log(res)
 
       setSongs(res.reverse()) // Newest songs on top (note performance with large results)
     } catch (e) {

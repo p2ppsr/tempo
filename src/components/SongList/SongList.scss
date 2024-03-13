@@ -198,3 +198,32 @@
   padding: none;
   margin: none;
 }
+
+.actionsContainer {
+  position: relative;
+
+  .dropdownToggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: white; // Adjust color as needed
+  }
+
+  .dropdownMenu {
+    position: absolute;
+    right: 0;
+    background-color: #333; // Adjust background color as needed
+    border-radius: 4px;
+    padding: 5px 0;
+    z-index: 100;
+    min-width: 120px; // Adjust width as needed
+
+    div {
+      padding: 8px 12px;
+      cursor: pointer;
+      &:hover {
+        background-color: #444; // Adjust hover background color as needed
+      }
+    }
+  }
+}
