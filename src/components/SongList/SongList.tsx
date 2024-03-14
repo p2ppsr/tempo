@@ -209,7 +209,6 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
       id: 'actions',
       header: '',
       cell: info => {
-        console.log(typeof openAddToPlaylistModal)
         return (
           <ActionsDropdown
             info={info}

@@ -1,16 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
 import useOutsideClick from '../../hooks/useOutsideClick'
 import { Song } from '../../types/interfaces'
-import { Cell, CellContext } from '@tanstack/react-table'
+import { Cell } from '@tanstack/react-table'
 import { toast } from 'react-toastify'
 import { HiOutlineDotsHorizontal } from 'react-icons/hi'
+import { useLikesStore } from "../../stores/stores"
 
 interface ActionsDropdownProps {
-  info: CellContext<Song, any>; // Adjusted to expect CellContext
-  openAddToPlaylistModal: (song: Song) => void;
-  onRemoveFromPlaylist?: (songId: string) => void;
-  isMySongsOnly?: boolean;
-  openConfirmDeleteModal: (song: Song) => void;
+  info: any
+  openAddToPlaylistModal: (song: Song) => void
+  onRemoveFromPlaylist?: (songId: string) => void
+  isMySongsOnly?: boolean
+  openConfirmDeleteModal: (song: Song) => void
 }
 
 const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
@@ -29,9 +30,8 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
     const storedLikes = localStorage.getItem('likedSongs')
     setLikedSongs(storedLikes ? storedLikes.split(',') : [])
   }, [])
-
-  // Selected Song object
-  const [selectedSong, setSelectedSong] = useState<Song | null>(null)
+  
+  const [likesHasChanged, setLikesHasChanged] = useLikesStore((state:any)=>[state.likesHasChanged, state.setLikedHasChanged])
 
   // State for tracking actions dropdown visibility
   const [dropdownVisible, setDropdownVisible] = useState<string | null>(null)
@@ -103,6 +103,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
           <div className="dropdownMenu" ref={dropdownRef}>
             <div
               onClick={() => {
+                setLikesHasChanged(!likesHasChanged) // Global toggle to trigger likes component reload
                 toggleSongLike(info.row.original.audioURL)
                 setDropdownVisible(null) // Close the dropdown
               }}

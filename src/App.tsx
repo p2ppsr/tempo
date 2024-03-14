@@ -18,7 +18,7 @@ import SuccessPage from './pages/PublishSong/PublishSuccess/PublishSuccess'
 // Styles
 import './App.scss'
 import TopMenu from './components/TopMenu/TopMenu'
-import Likes from './pages/Library/Likes/Likes'
+import Likes from './pages/Likes/Likes'
 import './styles/forms.scss'
 import './styles/typography.scss'
 import './styles/utils.scss'
