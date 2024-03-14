@@ -17,8 +17,6 @@ const ViewSong = () => {
       })
     })
 
-    console.log('song: ', res)
-
     setSong(res[0])
   }, [])
 
@@ -27,7 +25,7 @@ const ViewSong = () => {
       {song && (
         <>
           <h1>{song.title}</h1>
-          <h2 style={{marginBottom:'1rem'}}>{song.artist}</h2>
+          <h2 style={{ marginBottom: '1rem' }}>{song.artist}</h2>
           <SongList songs={[song]} />
         </>
       )}

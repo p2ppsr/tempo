@@ -47,13 +47,13 @@ const App = () => {
     // Check if user is logged into MNC and set global state, then poll for changes
     await setUserMnCStatus()
 
-    const pollMncClient = setInterval(async () => {
-      await setUserMnCStatus()
-    }, mncPollFrequency)
+    // const pollMncClient = setInterval(async () => {
+    //   await setUserMnCStatus()
+    // }, mncPollFrequency)
 
-    return () => {
-      clearInterval(pollMncClient)
-    }
+    // return () => {
+    //   clearInterval(pollMncClient)
+    // }
   }, [])
 
   return (
