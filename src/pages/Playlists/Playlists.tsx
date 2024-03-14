@@ -10,34 +10,6 @@ import { Playlist } from '../../types/interfaces'
 const Playlists = () => {
   const navigate = useNavigate()
 
-  // const playlistsStorage = localStorage.getItem('playlists')
-
-  // const testSongs: Song[] = [
-  //   {
-  //     title: 'Here Comes the Sun',
-  //     artist: 'The Beatles',
-  //     isPublished: true,
-  //     audioURL: hereComesTheSun,
-  //     artworkURL: testArtwork,
-  //     description: 'A test song',
-  //     duration: 180,
-  //     token: { outputIndex: 0, txid: '12345', lockingScript: 'asdf' },
-  //     outputScript: { fields: [''], protocolID: 'asdf', keyID: 'asdf' }
-  //   },
-  //   {
-  //     title: 'Zodiac Girls',
-  //     artist: 'Black Moth Super Rainbow',
-  //     isPublished: true,
-  //     audioURL: zodiacGirls,
-  //     artworkURL:
-  //       'https://i.discogs.com/qRvndWXrCEXL6qXvEAqdr3juNgOxJOgg58mwu85PR1w/rs:fit/g:sm/q:90/h:599/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEyNzg4/MzAtMTIxMDczNzcw/Mi5qcGVn.jpeg',
-  //     description: 'A test song',
-  //     duration: 180,
-  //     token: { outputIndex: 0, txid: '12345', lockingScript: 'asdf' },
-  //     outputScript: { fields: [''], protocolID: 'asdf', keyID: 'asdf' }
-  //   }
-  // ]
-
   const [playlists, setPlaylists] = useState(() => {
     const storagePlaylists = localStorage.getItem('playlists')
     return storagePlaylists ? JSON.parse(storagePlaylists) : []
@@ -48,12 +20,6 @@ const Playlists = () => {
   }, [playlists])
 
   const [editingPlaylist, setEditingPlaylist] = useState({ index: -1, text: '' })
-
-  // Confirm delete modal ========================================================
-
-  const [open, setOpen] = useState(false)
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
 
   // Click Outside PLaylist ====================================================================
 

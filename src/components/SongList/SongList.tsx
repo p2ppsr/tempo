@@ -1,6 +1,4 @@
 // Dependencies
-import React, { useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
 import { CircularProgress, Modal } from '@mui/material'
 import {
   createColumnHelper,
@@ -8,16 +6,17 @@ import {
   getCoreRowModel,
   useReactTable
 } from '@tanstack/react-table'
+import React, { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { Img } from 'uhrp-react'
+import { usePlaybackStore } from '../../stores/stores'
 import constants from '../../utils/constants'
 import deleteSong from '../../utils/deleteSong'
-import { usePlaybackStore } from '../../stores/stores'
 
 // Assets
 import { FaPlay } from 'react-icons/fa'
-import { HiOutlineDotsVertical } from 'react-icons/hi'
-import { HiDotsVertical } from 'react-icons/hi'
+import { HiOutlineDotsHorizontal } from 'react-icons/hi'
 import { IoIosCloseCircleOutline } from 'react-icons/io'
 import placeholderImage from '../../assets/Images/placeholder-image.png'
 
@@ -25,8 +24,8 @@ import placeholderImage from '../../assets/Images/placeholder-image.png'
 import { Playlist, Song } from '../../types/interfaces'
 
 // Styles
+import useOutsideClick from '../../hooks/useOutsideClick'
 import './SongList.scss'
-import useOutsideClick from "../../hooks/useOutsideClick"
 
 interface SongListProps {
   songs: Song[]
@@ -106,34 +105,36 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
   // Autoplay after song end =================================================
 
   useEffect(() => {
-    if (playPreviousSong && songs.length > 0) {
-      const currentIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
-      if (currentIndex !== -1) {
-        const previousIndex = (currentIndex - 1 + songs.length) % songs.length
-        const previousSong = songs[previousIndex]
-        setPlaybackSong(previousSong)
-        setIsPlaying(true)
-        // Reset the toggle to prevent re-triggering
-        togglePlayPreviousSong(false)
-      }
-    }
-    // Ensure dependencies list is correct to avoid missing updates or unnecessary effect calls
-  }, [playPreviousSong, songs, playbackSong, setPlaybackSong, setIsPlaying, togglePlayPreviousSong])
+    let shouldTogglePlay = false
+    let newIndex = -1
 
-  useEffect(() => {
     if (playNextSong && songs.length > 0) {
       const currentIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
-      if (currentIndex !== -1) {
-        const nextIndex = (currentIndex + 1) % songs.length
-        const nextSong = songs[nextIndex]
-        setPlaybackSong(nextSong)
-        setIsPlaying(true)
-        // Reset the toggle to prevent re-triggering
-        togglePlayNextSong(false)
-      }
+      newIndex = (currentIndex + 1) % songs.length
+      shouldTogglePlay = true
+      togglePlayNextSong(false) // Reset the toggle to prevent re-triggering
+    } else if (playPreviousSong && songs.length > 0) {
+      const currentIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
+      newIndex = (currentIndex - 1 + songs.length) % songs.length
+      shouldTogglePlay = true
+      togglePlayPreviousSong(false) // Reset the toggle to prevent re-triggering
     }
-    // Ensure dependencies list is correct to avoid missing updates or unnecessary effect calls
-  }, [playNextSong, songs, playbackSong, setPlaybackSong, setIsPlaying, togglePlayNextSong])
+
+    if (shouldTogglePlay && newIndex !== -1) {
+      const newSong = songs[newIndex]
+      setPlaybackSong(newSong)
+      setIsPlaying(true)
+    }
+  }, [
+    playNextSong,
+    playPreviousSong,
+    songs,
+    playbackSong,
+    setPlaybackSong,
+    setIsPlaying,
+    togglePlayNextSong,
+    togglePlayPreviousSong
+  ])
 
   // Update global song list state when changed ===============
 
@@ -262,7 +263,7 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
                 setDropdownVisible(dropdownVisible === info.row.id ? null : info.row.id)
               }}
             >
-              <HiOutlineDotsVertical />
+              <HiOutlineDotsHorizontal style={{ fontSize: '2rem' }} />
             </button>
             {dropdownVisible === info.row.id && (
               <div className="dropdownMenu" ref={dropdownRef}>
@@ -283,7 +284,18 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
                 >
                   Add to Playlist
                 </div>
-                {(isInPlaylistsPage || isMySongsOnly) && (
+                {isInPlaylistsPage && (
+                  <div
+                    onClick={() => {
+                      // Assuming info.row.original contains the song object
+                      onRemoveFromPlaylist && onRemoveFromPlaylist(info.row.original.audioURL)
+                      setDropdownVisible(null) // Close the dropdown
+                    }}
+                  >
+                    Remove from this playlist
+                  </div>
+                )}
+                {isMySongsOnly && (
                   <div
                     onClick={event => {
                       event.stopPropagation() // Prevent triggering row selection
