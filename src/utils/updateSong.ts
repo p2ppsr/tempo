@@ -1,6 +1,6 @@
 import constants from './constants'
 import pushdrop from 'pushdrop'
-import { createAction } from '@babbage/sdk'
+import { createAction } from '@babbage/sdk-ts'
 import getFileUploadInfo from './getFileUploadInfo'
 import submitPaymentProof from './submitPaymentProof'
 import publishKey from './publishKey'

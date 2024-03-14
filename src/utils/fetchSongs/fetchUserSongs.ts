@@ -1,4 +1,4 @@
-import { getPublicKey } from '@babbage/sdk'
+import { getPublicKey } from '@babbage/sdk-ts'
 import fetchSongs from './fetchSongs'
 import { SearchFilter } from '../../types/interfaces'
 

@@ -1,6 +1,6 @@
 import { Authrite, AuthriteResponse } from 'authrite-js'
 import { decrypt } from 'cwi-crypto'
-import { createAction, getPublicKey } from '@babbage/sdk'
+import { createAction, getPublicKey } from '@babbage/sdk-ts'
 import bsv from 'babbage-bsv'
 import { download } from 'nanoseek'
 import constants from './constants'

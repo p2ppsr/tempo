@@ -1,6 +1,6 @@
 // Interfaces & types used across multiple functions & components
 
-import { BitcoinOutputScript, PublicKey } from '@babbage/sdk'
+import { BitcoinOutputScript, PublicKey } from '@babbage/sdk-ts'
 
 export interface Token {
   inputs: string | object

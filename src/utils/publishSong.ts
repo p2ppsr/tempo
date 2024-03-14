@@ -1,4 +1,4 @@
-import { ActionData, createAction } from '@babbage/sdk'
+import { ActionData, createAction } from '@babbage/sdk-ts'
 import pushdrop from 'pushdrop'
 import constants from './constants'
 import getFileUploadInfo from './getFileUploadInfo'
