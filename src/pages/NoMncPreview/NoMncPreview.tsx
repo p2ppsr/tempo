@@ -1,28 +1,26 @@
 // Dependencies
-import React, { useState } from 'react'
+import React from 'react'
 import SongList from '../../components/SongList/SongList'
 
 // Styles
 import './NoMncPreview.scss'
 
 // Assets
-import HereComesTheSunArtwork from '../../assets/AlbumArtwork/beatles.jpg'
-import HereComesTheSunPreview from '../../assets/Music/Previews/HereComesTheSun15s.mp3'
+import dawnvisionsArtwork from '../../assets/AlbumArtwork/dawnvisions.jpg'
+import dawnvisionsPreview from '../../assets/Music/Previews/Dawnvisions_preview.mp3'
 
 import MurosArtwork from '../../assets/AlbumArtwork/muros.jpg'
-import MurosPreview from '../../assets/Music/Previews/MurosInstrumental15s.mp3'
+import MurosPreview from '../../assets/Music/Previews/MurosInstrumental_preview.mp3'
 
-import { Button, Modal } from '@mui/material'
-import ZodiacGirlsArtwork from '../../assets/AlbumArtwork/zodiacGirls.jpg'
-import ZodiacGirlsPreview from '../../assets/Music/Previews/ZodiacGirls15s.mp3'
-import { useInvitationModalStore } from '../../stores/stores'
+import starfallArtwork from '../../assets/AlbumArtwork/starfall.jpg'
+import starfallPreview from '../../assets/Music/Previews/Starfall_preview.mp3'
 
 const previewSongs = [
   {
-    title: 'Here Comes The Sun',
-    artist: 'The Beatles',
-    audioURL: HereComesTheSunPreview,
-    artworkURL: HereComesTheSunArtwork
+    title: 'Dawnvisions',
+    artist: 'Dooblr',
+    audioURL: dawnvisionsPreview,
+    artworkURL: dawnvisionsArtwork
   },
   {
     title: 'Muros Instrumental',
@@ -31,10 +29,10 @@ const previewSongs = [
     artworkURL: MurosArtwork
   },
   {
-    title: 'Zodiac Girls',
-    artist: 'Black Moth Super Rainbow',
-    audioURL: ZodiacGirlsPreview,
-    artworkURL: ZodiacGirlsArtwork
+    title: 'Starfall',
+    artist: 'Dooblr',
+    audioURL: starfallPreview,
+    artworkURL: starfallArtwork
   }
 ] as any
 

@@ -18,17 +18,43 @@ import SuccessPage from './pages/PublishSong/PublishSuccess/PublishSuccess'
 // Styles
 import './App.scss'
 import TopMenu from './components/TopMenu/TopMenu'
-import Likes from './pages/Library/Likes/Likes'
+import Likes from './pages/Likes/Likes'
 import './styles/forms.scss'
 import './styles/typography.scss'
 import './styles/utils.scss'
 
 import backgroundImage from './assets/Images/background.jpg'
+import InvitationModal from './components/InvitationModal/InvitationModal'
 import ViewPlaylist from './pages/Playlists/ViewPlaylist'
-import { useInvitationModalStore } from './stores/stores'
-import InvitationModal from "./components/InvitationModal/InvitationModal"
+import { useAuthStore } from './stores/stores'
+import useAsyncEffect from 'use-async-effect'
+import checkForMetaNetClient from './utils/checkForMetaNetClient'
+import ViewSong from './pages/ViewSong/ViewSong'
 
 const App = () => {
+  const [userHasMetanetClient, setUserHasMetanetClient] = useAuthStore((state: any) => [
+    state.userHasMetanetClient,
+    state.setUserHasMetanetClient
+  ])
+
+  const setUserMnCStatus = async () => {
+    const userHasMnC = await checkForMetaNetClient() // returns 1 if mainline, -1 if stageline, 0 if neither
+    setUserHasMetanetClient(userHasMnC !== 0)
+  }
+
+  const mncPollFrequency = 3000 // milliseconds
+  useAsyncEffect(async () => {
+    // Check if user is logged into MNC and set global state, then poll for changes
+    await setUserMnCStatus()
+
+    // const pollMncClient = setInterval(async () => {
+    //   await setUserMnCStatus()
+    // }, mncPollFrequency)
+
+    // return () => {
+    //   clearInterval(pollMncClient)
+    // }
+  }, [])
 
   return (
     <>
@@ -36,7 +62,8 @@ const App = () => {
 
       <img src={backgroundImage} className="backgroundImage" />
 
-      <InvitationModal/>
+      {/* Invitation Modal for a non-MNC user */}
+      <InvitationModal />
 
       <Router>
         <div className="appLayout">
@@ -58,9 +85,8 @@ const App = () => {
               <Route path="/EditSong" element={<EditSong />} />
               <Route path="/PublishSong" element={<PublishSong />} />
               <Route path="/PublishSong/Success" element={<SuccessPage />} />
-
-              {/* TODO: Might be a subpath eventually under /library/* */}
               <Route path="/Likes" element={<Likes />} />
+              <Route path="/Song/:audioURL" element={<ViewSong />} />
             </Routes>
           </div>
 

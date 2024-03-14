@@ -107,7 +107,6 @@ declare module '@packetpay/js' {
       clientPrivateKey?: string
       description?: string
     }
-    
   ): Promise<PacketPayResponse>
 
   export default PacketPay

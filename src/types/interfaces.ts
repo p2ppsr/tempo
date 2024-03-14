@@ -34,7 +34,8 @@ export interface Song {
 
 export interface SearchFilter {
   findAll: boolean
-  artistIdentityKey: PublicKey
+  artistIdentityKey: PublicKey,
+  songIDs: any
 }
 
 export interface Playlist {

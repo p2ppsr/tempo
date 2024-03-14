@@ -1,25 +1,32 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
-
+// Dependencies
+import { CircularProgress, Modal } from '@mui/material'
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { FaPlay, FaHeart, FaRegHeart, FaListUl, FaTrash } from 'react-icons/fa'
-import { IoIosCloseCircleOutline } from 'react-icons/io'
-
+import React, { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { Img } from 'uhrp-react'
 import { usePlaybackStore } from '../../stores/stores'
-import { Playlist, Song } from '../../types/interfaces'
-import { CircularProgress, Modal } from '@mui/material'
-import { toast } from 'react-toastify'
-
 import constants from '../../utils/constants'
-import placeholderImage from '../../assets/Images/placeholder-image.png'
-import './SongList.scss'
 import deleteSong from '../../utils/deleteSong'
+
+// Assets
+import { FaPlay } from 'react-icons/fa'
+import { HiOutlineDotsHorizontal } from 'react-icons/hi'
+import { IoIosCloseCircleOutline } from 'react-icons/io'
+import placeholderImage from '../../assets/Images/placeholder-image.png'
+
+// Types
+import { Playlist, Song } from '../../types/interfaces'
+
+// Styles
+import useOutsideClick from '../../hooks/useOutsideClick'
+import './SongList.scss'
+import ActionsDropdown from './ActionsDropdown'
 
 interface SongListProps {
   songs: Song[]
@@ -31,15 +38,6 @@ interface SongListProps {
 const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongListProps) => {
   // Determine whether component is being used in the playlists component
   const location = useLocation()
-  const isInPlaylistsPage = location.pathname.includes('Playlists')
-
-  // Liked songs ==============================================================
-
-  const [likedSongs, setLikedSongs] = useState<string[]>([])
-  useEffect(() => {
-    const storedLikes = localStorage.getItem('likedSongs')
-    setLikedSongs(storedLikes ? storedLikes.split(',') : [])
-  }, [])
 
   // Selected song ============================================================
 
@@ -75,37 +73,37 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
 
   // Autoplay after song end =================================================
 
-  // First load check to prevent playing first song on component mount
-  const [firstLoad, setFirstLoad] = useState(true)
   useEffect(() => {
-    if (playPreviousSong && songs.length > 0) {
-      const currentIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
-      if (currentIndex !== -1) {
-        const previousIndex = (currentIndex - 1 + songs.length) % songs.length
-        const previousSong = songs[previousIndex]
-        setPlaybackSong(previousSong)
-        setIsPlaying(true)
-        // Reset the toggle to prevent re-triggering
-        togglePlayPreviousSong(false)
-      }
-    }
-    // Ensure dependencies list is correct to avoid missing updates or unnecessary effect calls
-  }, [playPreviousSong, songs, playbackSong, setPlaybackSong, setIsPlaying, togglePlayPreviousSong])
+    let shouldTogglePlay = false
+    let newIndex = -1
 
-  useEffect(() => {
     if (playNextSong && songs.length > 0) {
       const currentIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
-      if (currentIndex !== -1) {
-        const nextIndex = (currentIndex + 1) % songs.length
-        const nextSong = songs[nextIndex]
-        setPlaybackSong(nextSong)
-        setIsPlaying(true)
-        // Reset the toggle to prevent re-triggering
-        togglePlayNextSong(false)
-      }
+      newIndex = (currentIndex + 1) % songs.length
+      shouldTogglePlay = true
+      togglePlayNextSong(false) // Reset the toggle to prevent re-triggering
+    } else if (playPreviousSong && songs.length > 0) {
+      const currentIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
+      newIndex = (currentIndex - 1 + songs.length) % songs.length
+      shouldTogglePlay = true
+      togglePlayPreviousSong(false) // Reset the toggle to prevent re-triggering
     }
-    // Ensure dependencies list is correct to avoid missing updates or unnecessary effect calls
-  }, [playNextSong, songs, playbackSong, setPlaybackSong, setIsPlaying, togglePlayNextSong])
+
+    if (shouldTogglePlay && newIndex !== -1) {
+      const newSong = songs[newIndex]
+      setPlaybackSong(newSong)
+      setIsPlaying(true)
+    }
+  }, [
+    playNextSong,
+    playPreviousSong,
+    songs,
+    playbackSong,
+    setPlaybackSong,
+    setIsPlaying,
+    togglePlayNextSong,
+    togglePlayPreviousSong
+  ])
 
   // Update global song list state when changed ===============
 
@@ -114,20 +112,6 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
   }, [songs])
 
   // Handlers ==================================================
-
-  const toggleSongLike = (audioURL: string) => {
-    let updatedLikedSongs
-    if (likedSongs.includes(audioURL)) {
-      // Remove the song from likedSongs if it's already liked
-      updatedLikedSongs = likedSongs.filter(song => song !== audioURL)
-    } else {
-      // Add the song to likedSongs if it's not already liked
-      updatedLikedSongs = [...likedSongs, audioURL]
-    }
-    // Update state and localStorage with the new list of liked songs
-    setLikedSongs(updatedLikedSongs)
-    localStorage.setItem('likedSongs', updatedLikedSongs.join(','))
-  }
 
   const handleDoubleClick = (song: Song) => {
     setPlaybackSong({
@@ -140,10 +124,11 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
   }
 
   const [isDeletingSong, setIsDeletingSong] = useState(false)
+
   const handleDeleteSong = async () => {
     setIsDeletingSong(true)
     try {
-      selectedSong ? await deleteSong({ song: selectedSong }) : null
+      selectedSong ? await deleteSong(selectedSong) : null
       toast.success('Succesfully deleted song')
     } catch (e) {
       toast.error(`Error deleting song: ${e}`)
@@ -224,55 +209,14 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
       id: 'actions',
       header: '',
       cell: info => {
-        const isLiked = likedSongs.includes(info.row.original.audioURL)
         return (
-          <div className="actionsContainer flex">
-            <div
-              onClick={() => {
-                toggleSongLike(info.row.original.audioURL)
-              }}
-              style={{ width: 'fit-content' }}
-            >
-              {isLiked ? (
-                <FaHeart className={`likedIcon ${isLiked ? 'alwaysVisible' : ''}`} />
-              ) : (
-                <FaRegHeart className="likedIcon" />
-              )}
-            </div>
-            <FaListUl
-              className="addToPlaylistIcon"
-              color="white"
-              onClick={() => {
-                const song = info.row.original
-                openAddToPlaylistModal(song)
-              }}
-            />
-
-            {isInPlaylistsPage && (
-              <FaTrash
-                className="deleteFromPlaylistIcon"
-                color="white"
-                onClick={event => {
-                  // Prevent event propagation to avoid triggering row selection or other actions
-                  event.stopPropagation()
-                  handleRemoveSongFromPlaylist(info.row.original)
-                }}
-              />
-            )}
-
-            {isMySongsOnly && (
-              <FaTrash
-                className="deleteFromPlaylistIcon"
-                color="white"
-                onClick={event => {
-                  // Prevent event propagation to avoid triggering row selection or other actions
-                  event.stopPropagation()
-                  openConfirmDeleteModal(info.row.original)
-                  // deleteSong({ song: info.row.original })
-                }}
-              />
-            )}
-          </div>
+          <ActionsDropdown
+            info={info}
+            openAddToPlaylistModal={openAddToPlaylistModal}
+            openConfirmDeleteModal={openConfirmDeleteModal}
+            onRemoveFromPlaylist={onRemoveFromPlaylist}
+            isMySongsOnly={isMySongsOnly}
+          />
         )
       }
     })

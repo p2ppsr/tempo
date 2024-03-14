@@ -22,7 +22,6 @@ const fetchSongs = async (searchFilter: object) => {
   const lookupResult = JSON.parse(Buffer.from(response?.body).toString('utf8'))
 
   let parsedSongs = lookupResult.map((songToken: Token) => {
-    console.log('satoshis: ', songToken.satoshis)
 
     const decodedSong = pushdrop.decode({
       script: songToken.outputScript,
@@ -40,7 +39,7 @@ const fetchSongs = async (searchFilter: object) => {
       artworkURL: decodedSong.fields[7],
       artistIdentityKey: decodedSong.lockingPublicKey,
       token: songToken,
-      sats: songToken.satoshis // ?
+      sats: songToken.satoshis
     }
     return formattedSong
   })

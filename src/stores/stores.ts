@@ -2,14 +2,6 @@ import { create } from 'zustand'
 import { Song } from '../types/interfaces'
 
 export const useAuthStore = create(set => ({
-  // TODO: These will be dynamic
-  userName: 'John Doe',
-  setUserName: (newState: string) => set(() => ({ username: newState })),
-
-  profilePictureUrl:
-    'https://media.istockphoto.com/id/1320436824/photo/beautiful-funny-and-happy-red-shiba-inu-dog-sitting-in-the-green-grass-in-summer-cute.jpg?s=612x612&w=0&k=20&c=VHadPg0DjfwXajuzVp9AyPQiCLy6HVxDAjQV0EVnUMY=',
-  setProfilePictureUrl: (newState: string) => set(() => ({ profilePictureUrl: newState })),
-
   userHasMetanetClient: false,
   setUserHasMetanetClient: (newState: boolean) => set(() => ({ userHasMetanetClient: newState }))
 }))
@@ -52,6 +44,11 @@ export const usePlaybackStore = create(set => ({
 export const usePlaylistStore = create(set => ({
   viewingPlaylist: null,
   setViewingPlaylist: (newState: string) => set(() => ({ viewingPlaylist: newState }))
+}))
+
+export const useLikesStore = create(set => ({
+  likesHasChanged: false,
+  setLikesHasChanges: (newState: boolean) => set(() => ({ isPlaying: newState })),
 }))
 
 // Displaying the invitational modal dialogue and what content to display

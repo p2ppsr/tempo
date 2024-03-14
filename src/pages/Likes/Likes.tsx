@@ -1,25 +1,31 @@
 import React, { useState } from 'react'
-import SongList from '../../../components/SongList/SongList'
+import SongList from '../../components/SongList/SongList'
 import useAsyncEffect from 'use-async-effect'
-import fetchSongs from '../../../utils/fetchSongs/fetchSongs'
-import { SearchFilter, Song } from '../../../types/interfaces'
+import fetchSongs from '../../utils/fetchSongs/fetchSongs'
+import { SearchFilter, Song } from '../../types/interfaces'
 import { CircularProgress } from '@mui/material'
+import { useLikesStore } from "../../stores/stores"
 
 const Likes = () => {
   const [songs, setSongs] = useState<Song[]>([])
   const [isLoaded, setIsLoaded] = useState(false)
 
+  const [likesHasChanged, setLikesHasChanges] = useLikesStore((state: any) => [
+    state.likesHasChanged,
+    state.setLikesHasChanges
+  ])
+
   useAsyncEffect(async () => {
     const likedSongs = localStorage.getItem('likedSongs')
     let likedSongsArray = likedSongs?.split(',')
 
-    const searchFilter = {
+    const searchFilter: SearchFilter = {
       findAll: true,
       artistIdentityKey: '',
-      songIDs: likedSongsArray?.map((likedSong: string) => {
-        return Buffer.from(likedSong).toString('base64')
-      })
-    } as SearchFilter
+      songIDs: likedSongsArray?.map((likedSong: string) =>
+        Buffer.from(likedSong).toString('base64')
+      )
+    }
 
     try {
       // Get a list of song objects
@@ -35,7 +41,7 @@ const Likes = () => {
         console.log('An unexpected error occurred:', e)
       }
     }
-  }, [])
+  }, [likesHasChanged])
 
   return (
     <>
@@ -55,9 +61,7 @@ const Likes = () => {
         )}
         {songs.length === 0 && isLoaded && (
           <>
-            <p style={{ marginTop: '1rem' }}>
-              No songs have been liked yet.
-            </p>
+            <p style={{ marginTop: '1rem' }}>No songs have been liked yet.</p>
           </>
         )}
       </div>
