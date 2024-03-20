@@ -59,6 +59,7 @@ const Footer = () => {
 
   useAsyncEffect(async () => {
     if (playbackSong) {
+      console.log(playbackSong)
       setIsLoading(true)
       try {
         const decryptedAudio = await decryptSong(playbackSong)
