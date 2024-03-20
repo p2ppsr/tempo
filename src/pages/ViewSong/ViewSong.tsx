@@ -1,23 +1,21 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router'
-import fetchSongs from '../../utils/fetchSongs/fetchSongs'
 import useAsyncEffect from 'use-async-effect'
 import SongList from '../../components/SongList/SongList'
+import { getSongDataFromHash } from '../../utils/getSongDataFromHash'
 
 const ViewSong = () => {
   const { audioURL } = useParams()
 
-  const [song, setSong] = useState() as any
+  const [song, setSong] = useState() as any // TODO: Set this type
 
+  // Use the audioURL param to fetch the song data to display
   useAsyncEffect(async () => {
-    const res = await fetchSongs({
-      findAll: true,
-      songIDs: [audioURL as string].map((song: string) => {
-        return Buffer.from(song).toString('base64')
-      })
-    })
-
-    setSong(res[0])
+    if (!audioURL) {
+      throw new Error('Error: no audioURL was provided')
+    }
+    const songData = await getSongDataFromHash(audioURL)
+    setSong(songData)
   }, [])
 
   return (

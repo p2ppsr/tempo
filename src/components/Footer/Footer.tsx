@@ -4,7 +4,7 @@ import AudioPlayer from 'react-h5-audio-player'
 import { Img } from 'uhrp-react'
 import useAsyncEffect from 'use-async-effect'
 import placeholderImage from '../../assets/Images/placeholder-image.png'
-import { useAuthStore, usePlaybackStore, useInvitationModalStore } from '../../stores/stores'
+import { useAuthStore, usePlaybackStore, useModals } from '../../stores/stores'
 import constants from '../../utils/constants'
 import decryptSong from '../../utils/decryptSong'
 
@@ -41,7 +41,7 @@ const Footer = () => {
     state.setUserHasMetanetClient
   ])
 
-  const [invitationModalOpen, setInvitationModalOpen, setInvitationModalContent] = useInvitationModalStore((state: any) => [
+  const [invitationModalOpen, setInvitationModalOpen, setInvitationModalContent] = useModals((state: any) => [
     state.invitationModalOpen,
     state.setInvitationModalOpen,
     state.setInvitationModalContent

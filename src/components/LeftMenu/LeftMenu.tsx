@@ -7,7 +7,7 @@ import './LeftMenu.scss'
 import tempoLogo from '../../assets/Images/tempoLogo.png'
 import fetchUserSongs from '../../utils/fetchSongs/fetchUserSongs'
 import useAsyncEffect from 'use-async-effect'
-import { useAuthStore, useInvitationModalStore } from '../../stores/stores'
+import { useAuthStore, useModals } from '../../stores/stores'
 
 const LeftMenu = () => {
   // Component state ========================================================================
@@ -21,7 +21,7 @@ const LeftMenu = () => {
     invitationModalOpen,
     setInvitationModalOpen,
     setInvitationModalContent
-  ] = useInvitationModalStore((state: any) => [
+  ] = useModals((state: any) => [
     state.invitationModalOpen,
     state.setInvitationModalOpen,
     state.setInvitationModalContent
@@ -34,7 +34,7 @@ const LeftMenu = () => {
   }, [location])
 
   useAsyncEffect(async () => {
-    if (!userHasMetanetClient) return
+    if (!userHasMetanetClient) return // break out if user is not running MNC
 
     const userSongs = await fetchUserSongs()
     if (userSongs.length > 0) {

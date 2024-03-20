@@ -53,11 +53,17 @@ export const useLikesStore = create(set => ({
 
 // Displaying the invitational modal dialogue and what content to display
 export type InvitationContent = 'songEnd' | 'publish' | 'library'
-export const useInvitationModalStore = create(set => ({
+export const useModals = create(set => ({
   invitationModalOpen: false,
   setInvitationModalOpen: (newState: string) => set(() => ({ invitationModalOpen: newState })),
 
   invitationModalContent: 'songEnd', // invitation modal content differs based on 'preview' or 'songEnd'
   setInvitationModalContent: (newState: InvitationContent) =>
-    set(() => ({ invitationModalContent: newState }))
+    set(() => ({ invitationModalContent: newState })),
+
+  socialShareModalOpen: false,
+  setSocialShareModalOpen: (newState: boolean) => set(() => ({ socialShareModalOpen: newState })),
+  
+  socialShareLink:null,
+  setSocialShareLink: (newState: string) => set(() => ({ socialShareLink: newState })),
 }))

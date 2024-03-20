@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react'
-import { InvitationContent, useInvitationModalStore } from '../../stores/stores'
+import { InvitationContent, useModals } from '../../stores/stores'
 import { Modal } from '@mui/material'
-
-import './InvitationModal.scss'
 
 // This is a modal component called when a non-MNC user finishes a preview or clicks on the Publish tab in LeftMenu.
 const InvitationModal = () => {
@@ -10,7 +8,7 @@ const InvitationModal = () => {
     invitationModalOpen,
     setInvitationModalOpen,
     invitationModalContent
-  ] = useInvitationModalStore((state: any) => [
+  ] = useModals((state: any) => [
     state.invitationModalOpen,
     state.setInvitationModalOpen,
     state.invitationModalContent
@@ -29,12 +27,12 @@ const InvitationModal = () => {
       <Modal open={invitationModalOpen} onClose={() => setInvitationModalOpen(false)}>
         {invitationModalOpen ? (
           <>
-            <div className="invitationModal">
+            <div className="modal">
               <h1 style={{ marginBottom: '1rem', maxWidth: '90%' }}>
                 {getInvitationText(invitationModalContent)[0]}
               </h1>
               <button
-                id="invitationModalCloseButton"
+                className="modalCloseButton"
                 onClick={() => {
                   setInvitationModalOpen(false)
                 }}
