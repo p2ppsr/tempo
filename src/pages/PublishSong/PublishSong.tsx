@@ -59,7 +59,9 @@ const PublishSong = () => {
         satoshis: 0,
         txid: '',
         vout: 0
-      }
+      },
+      selectedArtwork: values.selectedArtwork,
+      selectedMusic: values.selectedMusic
     }
 
     try {
