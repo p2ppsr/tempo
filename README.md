@@ -5,7 +5,7 @@
 
 ## Overview
 
-This is a react app that demonstrates the capabilities of [Babbage](https://projectbabbage.com) technologies, and provides a BSV powered solution for streaming and sharing music.
+Tempo is a React application that demonstrates the capabilities of [Babbage](https://projectbabbage.com) technologies, and provides a BSV powered solution for streaming and sharing music.
 
 ## Getting started
 
