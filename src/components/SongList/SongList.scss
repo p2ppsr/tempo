@@ -227,3 +227,12 @@
     }
   }
 }
+
+.artistName {
+  cursor: pointer;
+  transition: text-decoration 0.2s ease-in-out; // Smooth transition for the underline
+
+  &:hover {
+    text-decoration: underline; // Add underline on hover
+  }
+}
