@@ -6,7 +6,7 @@ import {
   getCoreRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { Img } from 'uhrp-react'
@@ -16,7 +16,6 @@ import deleteSong from '../../utils/deleteSong'
 
 // Assets
 import { FaPlay } from 'react-icons/fa'
-import { HiOutlineDotsHorizontal } from 'react-icons/hi'
 import { IoIosCloseCircleOutline } from 'react-icons/io'
 import placeholderImage from '../../assets/Images/placeholder-image.png'
 
@@ -24,9 +23,8 @@ import placeholderImage from '../../assets/Images/placeholder-image.png'
 import { Playlist, Song } from '../../types/interfaces'
 
 // Styles
-import useOutsideClick from '../../hooks/useOutsideClick'
-import './SongList.scss'
 import ActionsDropdown from './ActionsDropdown'
+import './SongList.scss'
 
 interface SongListProps {
   songs: Song[]
