@@ -18,9 +18,6 @@ const fetchUserSongs = async () => {
   } catch (e) {
     if (e instanceof Error) {
       console.log(e.message)
-    } else {
-      // Handle cases where the caught object is not an Error instance
-      console.log('An unexpected error occurred:', e)
     }
   }
 }

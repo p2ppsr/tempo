@@ -46,21 +46,20 @@ const NewReleases = ({ className }: NewReleasesProps) => {
 
   useAsyncEffect(async () => {
     const searchFilter = { findAll: true, artistIdentityKey: '' } as SearchFilter
-
     try {
       // Get a list of song objects
       const res = await fetchSongs(searchFilter)
-
-      console.log(res)
-
       setSongs(res.reverse()) // Newest songs on top (note performance with large results)
     } catch (e) {
       console.log(e)
     }
   }, [])
 
+  const shareUrl = 'http://github.com'
+
   return (
     <div className={`container ${className}`}>
+
       <h1>New Releases</h1>
       {songs.length === 0 ? (
         <CircularProgress style={{ marginTop: '1rem' }} />
