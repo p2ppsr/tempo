@@ -7,7 +7,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { Img } from 'uhrp-react'
 import { usePlaybackStore } from '../../stores/stores'
@@ -34,8 +34,8 @@ interface SongListProps {
 }
 
 const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongListProps) => {
-  // Determine whether component is being used in the playlists component
-  const location = useLocation()
+
+  const navigate = useNavigate()
 
   // Selected song ============================================================
 
@@ -201,7 +201,18 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     }),
     columnHelper.accessor('artist', {
       header: 'Artist',
-      cell: info => info.getValue()
+      cell: info => {
+        return (
+          <span
+            className="artistName"
+            onClick={() => {
+              navigate(`/Artist/${info.row.original.artistIdentityKey}`) // Ensure you're navigating using the artistId or a relevant identifier
+            }}
+          >
+            {info.getValue()}
+          </span>
+        )
+      }
     }),
     columnHelper.accessor('audioURL', {
       id: 'actions',
@@ -236,32 +247,45 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     }
   }, [])
 
+  /**
+   * Adds a song to a specified playlist by its ID, if the song is not already present.
+   * It updates both the state and local storage with the new playlist data.
+   *
+   * @param playlistId The unique ID of the playlist to which the song will be added.
+   * @param song The song object to be added to the playlist.
+   */
   const addSongToPlaylist = (playlistId: string, song: Song) => {
+    // Map over the current playlists to produce a new array of updated playlists.
     const updatedPlaylists = playlists.map(playlist => {
+      // Check if the current playlist is the one to update.
       if (playlist.id === playlistId) {
+        // Check if the song already exists in the playlist to avoid duplicates.
         const songExists = playlist.songs.some(s => s.audioURL === song.audioURL)
         if (!songExists) {
-          // Show a toast message when the song is added
+          // If the song does not exist, show a success message to the user.
           toast.success(`Added ${song.title} by ${song.artist} to playlist: ${playlist.name}`)
+          // Return a new playlist object with the new song added.
           return { ...playlist, songs: [...playlist.songs, song] }
         }
       }
+      // For playlists that are not being updated or if the song exists, return them as is.
       return playlist
     })
 
+    // Update the playlists state with the new list of playlists.
     setPlaylists(updatedPlaylists)
+    // Also update the local storage to persist changes between sessions.
     localStorage.setItem('playlists', JSON.stringify(updatedPlaylists))
   }
 
-  // Adjust the deletion function to call onSongDelete
-  const handleRemoveSongFromPlaylist = (song: Song) => {
-    // Invoke the callback with the song's unique identifier
-    if (onRemoveFromPlaylist) {
-      onRemoveFromPlaylist(song.audioURL)
-    } else {
-      toast.error('Erorr removing from playlist. Function onRemovePlaylist was not found.')
-    }
-  }
+  // const handleRemoveSongFromPlaylist = (song: Song) => {
+  //   // Invoke the callback with the song's unique identifier
+  //   if (onRemoveFromPlaylist) {
+  //     onRemoveFromPlaylist(song.audioURL)
+  //   } else {
+  //     toast.error('Erorr removing from playlist. Function onRemovePlaylist was not found.')
+  //   }
+  // }
 
   // Render ========================================================
   return (
