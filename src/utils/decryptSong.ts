@@ -30,7 +30,7 @@ const decryptSong = async (song: Song) => {
       console.time('Authrite invoice response time')
       const invoiceResponse = await authrite.request(`${constants.keyServerURL}/invoice`, {
         body: {
-          songURL: song.audioURL
+          audioURL: song.audioURL
         },
         method: 'POST',
         headers: {
@@ -85,7 +85,7 @@ const decryptSong = async (song: Song) => {
       const purchasedKey = await authrite.request(`${constants.keyServerURL}/pay`, {
         body: {
           derivationPrefix,
-          songURL: song.audioURL,
+          audioURL: song.audioURL,
           transaction: {
             ...payment,
             outputs: [

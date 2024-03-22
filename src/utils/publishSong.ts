@@ -8,12 +8,17 @@ import { Authrite } from 'authrite-js'
 import { Song } from '../../src/types/interfaces.ts'
 
 const publishSong = async (song: Song, retentionPeriod?: number) => {
+  
+  console.log('Publish: getFileUploadInfo')
+  
   // Update the selected files
   const fileUploadInfo = await getFileUploadInfo({
     selectedArtwork: song.selectedArtwork,
     selectedMusic: song.selectedMusic,
     retentionPeriod: retentionPeriod ?? constants.RETENTION_PERIOD // use default 7 years if prop retentionPeriod is not provided
   })
+
+  console.log('Publish: pushdrop.create')
 
   // Create an action script based on the tsp-protocol
   const bitcoinOutputScript = await pushdrop.create({
@@ -24,7 +29,7 @@ const publishSong = async (song: Song, retentionPeriod?: number) => {
       Buffer.from(song.artist, 'utf8'),
       Buffer.from('Default description', 'utf8'), // TODO: Add to UI
       Buffer.from('' + fileUploadInfo.songDuration, 'utf8'), // Duration
-      Buffer.from(fileUploadInfo.songURL, 'utf8'),
+      Buffer.from(fileUploadInfo.audioURL, 'utf8'),
       Buffer.from(fileUploadInfo.artworkURL, 'utf8'),
       Buffer.from(Buffer.from(require('crypto').randomBytes(32)).toString('hex')) // Generate a unique songID
     ],
@@ -51,10 +56,16 @@ const publishSong = async (song: Song, retentionPeriod?: number) => {
     acceptDelayedBroadcast: false
   }
 
+  console.log('Publish: createAction with data: ', actionData)
+
   const payment = await createAction(actionData)
+
+  console.log('Publish: submit payment proof: ', 'fileUploadInfo: ', fileUploadInfo, 'payment: ', payment)
 
   // Pay and upload the files to nanostore
   await submitPaymentProof({ fileUploadInfo, payment })
+
+  console.log('Publish: Authrite.request: ')
 
   await new Authrite().request(`${constants.confederacyURL}/submit`, {
     method: 'POST',
@@ -66,10 +77,13 @@ const publishSong = async (song: Song, retentionPeriod?: number) => {
 
   // Check if encryptionKey is not undefined before calling publishKey
   if (fileUploadInfo.encryptionKey) {
+    
+    console.log('Publish: publishKey')
+
     // Export encryption key to store on the keyServer
     await publishKey({
       key: fileUploadInfo.encryptionKey,
-      songURL: fileUploadInfo.songURL
+      audioURL: fileUploadInfo.audioURL
     })
   } else {
     // Handle the case when there's no encryptionKey (e.g., log, throw an error, or perform alternative action)

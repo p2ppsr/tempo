@@ -11,6 +11,9 @@ export interface Token {
   satoshis: number
   txid: string
   vout: number
+  // TODO: Set these types
+  outputIndex?: any
+  lockingScript?: any
 }
 
 export interface Song {
@@ -28,7 +31,7 @@ export interface Song {
   selectedMusic?: File
   selectedArtwork?: File
   sats?: number
-  decryptedSongURL?: string
+  decryptedAudioURL?: string
   artistIdentityKey?: string
 }
 

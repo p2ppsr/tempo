@@ -35,8 +35,8 @@ const updateSong = async ({ song, filesToUpdate }: updateSongParams) => {
     selectedMusic: filesToUpdate.selectedMusic
   })
 
-  if (fileUploadInfo.songURL) {
-    song.audioURL = fileUploadInfo.songURL
+  if (fileUploadInfo.audioURL) {
+    song.audioURL = fileUploadInfo.audioURL
   }
   if (fileUploadInfo.artworkURL) {
     song.artworkURL = fileUploadInfo.artworkURL
@@ -88,7 +88,7 @@ const updateSong = async ({ song, filesToUpdate }: updateSongParams) => {
 
   if (fileUploadInfo.encryptionKey) {
     // Export encryption key to store on the keyServer
-    await publishKey({ key: fileUploadInfo.encryptionKey, songURL: fileUploadInfo.songURL })
+    await publishKey({ key: fileUploadInfo.encryptionKey, audioURL: fileUploadInfo.audioURL })
   }
 }
 
