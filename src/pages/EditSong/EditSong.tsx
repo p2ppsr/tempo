@@ -114,13 +114,13 @@ const EditSong = () => {
   // const playSong = async e => {
   // 	toast.promise(
   // 		async () => {
-  // 			const decryptedAudioURL = await decryptSong({
+  // 			const decryptedSongURL = await decryptSong({
   // 				song
   // 			})
 
   // 			// Update the audioPlayer to play the selected song
   // 			const audioPlayer = document.getElementById('audioPlayer')
-  // 			audioPlayer.src = decryptedAudioURL
+  // 			audioPlayer.src = decryptedSongURL
   // 			audioPlayer.autoplay = true
   // 		},
   // 		{

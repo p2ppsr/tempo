@@ -49,7 +49,7 @@ const Footer = () => {
 
   // Component state ========================================================
 
-  const [footerAudioURL, setFooterAudioURL] = useState<string | undefined>(undefined)
+  const [footerSongURL, setFooterSongURL] = useState<string | undefined>(undefined)
   const audioPlayerRef = useRef<AudioPlayer>(null)
 
   // Tracks current playback time
@@ -63,11 +63,11 @@ const Footer = () => {
       setIsLoading(true)
       try {
         const decryptedAudio = await decryptSong(playbackSong)
-        setFooterAudioURL(decryptedAudio) // Load and set new song URL
+        setFooterSongURL(decryptedAudio) // Load and set new song URL
         setIsPlaying(true)
       } catch (e) {
         console.error(e)
-        setFooterAudioURL(playbackSong.audioURL) // TODO: Handle previews more elegantly? See pages/NoMncPreview.tsx
+        setFooterSongURL(playbackSong.songURL) // TODO: Handle previews more elegantly? See pages/NoMncPreview.tsx
       } finally {
         setIsLoading(false)
       }
@@ -76,24 +76,24 @@ const Footer = () => {
 
   useEffect(() => {
     if (isLoading) {
-      setFooterAudioURL('')
+      setFooterSongURL('')
     }
   }, [isLoading])
 
   useEffect(() => {
     return () => {
-      if (footerAudioURL) {
-        URL.revokeObjectURL(footerAudioURL)
+      if (footerSongURL) {
+        URL.revokeObjectURL(footerSongURL)
       }
     }
-  }, [footerAudioURL])
+  }, [footerSongURL])
 
   // Effect hook for handling play button click to load and play the first song if no song is loaded
   useEffect(() => {
     // Define a function to handle play button click
     const handlePlayButtonClick = () => {
       // Check if no song is loaded
-      if (!playbackSong || !playbackSong.audioURL) {
+      if (!playbackSong || !playbackSong.songURL) {
         // Load and play the first song from songList if it exists
         if (songList.length > 0) {
           const firstSong = songList[0]
@@ -149,7 +149,7 @@ const Footer = () => {
       </div>
       <AudioPlayer
         ref={audioPlayerRef}
-        src={footerAudioURL}
+        src={footerSongURL}
         autoPlayAfterSrcChange
         progressUpdateInterval={10}
         showSkipControls

@@ -35,8 +35,8 @@ const updateSong = async ({ song, filesToUpdate }: updateSongParams) => {
     selectedMusic: filesToUpdate.selectedMusic
   })
 
-  if (fileUploadInfo.audioURL) {
-    song.audioURL = fileUploadInfo.audioURL
+  if (fileUploadInfo.songURL) {
+    song.songURL = fileUploadInfo.songURL
   }
   if (fileUploadInfo.artworkURL) {
     song.artworkURL = fileUploadInfo.artworkURL
@@ -53,7 +53,7 @@ const updateSong = async ({ song, filesToUpdate }: updateSongParams) => {
       Buffer.from(song.artist, 'utf8'),
       Buffer.from(song.description, 'utf8'),
       Buffer.from('' + song.duration, 'utf8'), // TODO: is duration a string or number?
-      Buffer.from(song.audioURL, 'utf8'),
+      Buffer.from(song.songURL, 'utf8'),
       Buffer.from(song.artworkURL, 'utf8')
     ],
     protocolID: 'tempo',
@@ -88,7 +88,7 @@ const updateSong = async ({ song, filesToUpdate }: updateSongParams) => {
 
   if (fileUploadInfo.encryptionKey) {
     // Export encryption key to store on the keyServer
-    await publishKey({ key: fileUploadInfo.encryptionKey, audioURL: fileUploadInfo.audioURL })
+    await publishKey({ key: fileUploadInfo.encryptionKey, songURL: fileUploadInfo.songURL })
   }
 }
 

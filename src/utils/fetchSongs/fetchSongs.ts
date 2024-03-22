@@ -35,7 +35,7 @@ const fetchSongs = async (searchFilter: object) => {
       artist: decodedSong.fields[3],
       description: decodedSong.fields[4],
       length: decodedSong.fields[5],
-      audioURL: decodedSong.fields[6],
+      songURL: decodedSong.fields[6],
       artworkURL: decodedSong.fields[7],
       artistIdentityKey: decodedSong.lockingPublicKey,
       token: songToken,

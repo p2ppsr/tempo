@@ -21,7 +21,7 @@ export interface Song {
   title: string
   artist: string
   isPublished: boolean
-  audioURL: string
+  songURL: string
   artworkURL: string
   description: string
   duration: number
@@ -31,7 +31,7 @@ export interface Song {
   selectedMusic?: File
   selectedArtwork?: File
   sats?: number
-  decryptedAudioURL?: string
+  decryptedSongURL?: string
   artistIdentityKey?: string
 }
 

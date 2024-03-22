@@ -76,12 +76,12 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     let newIndex = -1
 
     if (playNextSong && songs.length > 0) {
-      const currentIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
+      const currentIndex = songs.findIndex(song => song.songURL === playbackSong.songURL)
       newIndex = (currentIndex + 1) % songs.length
       shouldTogglePlay = true
       togglePlayNextSong(false) // Reset the toggle to prevent re-triggering
     } else if (playPreviousSong && songs.length > 0) {
-      const currentIndex = songs.findIndex(song => song.audioURL === playbackSong.audioURL)
+      const currentIndex = songs.findIndex(song => song.songURL === playbackSong.songURL)
       newIndex = (currentIndex - 1 + songs.length) % songs.length
       shouldTogglePlay = true
       togglePlayPreviousSong(false) // Reset the toggle to prevent re-triggering
@@ -115,7 +115,7 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     setPlaybackSong({
       title: song.title,
       artist: song.artist,
-      audioURL: song.audioURL,
+      songURL: song.songURL,
       artworkURL: song.artworkURL
     })
     setIsPlaying(true) // Start playback immediately
@@ -160,11 +160,11 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
 
   // Define columns for React Table
   const columns = [
-    columnHelper.accessor('audioURL', {
+    columnHelper.accessor('songURL', {
       header: '',
       cell: info => {
         // Deconstruct song data from the row's object data to provide it to the img element
-        const { title, artist, audioURL, artworkURL } = info.row.original
+        const { title, artist, songURL, artworkURL } = info.row.original
 
         return (
           <div
@@ -173,7 +173,7 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
               setPlaybackSong({
                 title: title,
                 artist: artist,
-                audioURL: audioURL,
+                songURL: songURL,
                 artworkURL: artworkURL
               })
             }}
@@ -214,7 +214,7 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
         )
       }
     }),
-    columnHelper.accessor('audioURL', {
+    columnHelper.accessor('songURL', {
       id: 'actions',
       header: '',
       cell: info => {
@@ -260,7 +260,7 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
       // Check if the current playlist is the one to update.
       if (playlist.id === playlistId) {
         // Check if the song already exists in the playlist to avoid duplicates.
-        const songExists = playlist.songs.some(s => s.audioURL === song.audioURL)
+        const songExists = playlist.songs.some(s => s.songURL === song.songURL)
         if (!songExists) {
           // If the song does not exist, show a success message to the user.
           toast.success(`Added ${song.title} by ${song.artist} to playlist: ${playlist.name}`)
@@ -281,7 +281,7 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
   // const handleRemoveSongFromPlaylist = (song: Song) => {
   //   // Invoke the callback with the song's unique identifier
   //   if (onRemoveFromPlaylist) {
-  //     onRemoveFromPlaylist(song.audioURL)
+  //     onRemoveFromPlaylist(song.songURL)
   //   } else {
   //     toast.error('Erorr removing from playlist. Function onRemovePlaylist was not found.')
   //   }

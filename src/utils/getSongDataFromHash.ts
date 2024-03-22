@@ -1,11 +1,11 @@
 import { Song } from "../types/interfaces"
 import fetchSongs from "./fetchSongs/fetchSongs"
 
-export const getSongDataFromHash = async (audioURL: string): Promise<Song> => {
+export const getSongDataFromHash = async (songURL: string): Promise<Song> => {
 
   const res = await fetchSongs({
     findAll: true,
-    songIDs: [audioURL].map((song: string) => {
+    songIDs: [songURL].map((song: string) => {
       return Buffer.from(song).toString('base64')
     })
   })

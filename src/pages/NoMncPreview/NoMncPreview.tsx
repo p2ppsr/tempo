@@ -19,19 +19,19 @@ const previewSongs = [
   {
     title: 'Dawnvisions',
     artist: 'Dooblr',
-    audioURL: dawnvisionsPreview,
+    songURL: dawnvisionsPreview,
     artworkURL: dawnvisionsArtwork
   },
   {
     title: 'Muros Instrumental',
     artist: 'Muros',
-    audioURL: MurosPreview,
+    songURL: MurosPreview,
     artworkURL: MurosArtwork
   },
   {
     title: 'Starfall',
     artist: 'Dooblr',
-    audioURL: starfallPreview,
+    songURL: starfallPreview,
     artworkURL: starfallArtwork
   }
 ] as any

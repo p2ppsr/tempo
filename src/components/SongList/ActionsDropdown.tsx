@@ -67,16 +67,16 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
   useOutsideClick(dropdownRef, () => setDropdownVisible(false))
 
   // Check if song is liked or not
-  const isLiked = likedSongs.includes(info.row.original.audioURL)
+  const isLiked = likedSongs.includes(info.row.original.songURL)
 
-  const toggleSongLike = (audioURL: string) => {
+  const toggleSongLike = (songURL: string) => {
     let updatedLikedSongs
-    if (likedSongs.includes(audioURL)) {
+    if (likedSongs.includes(songURL)) {
       // Remove the song from likedSongs if it's already liked
-      updatedLikedSongs = likedSongs.filter(song => song !== audioURL)
+      updatedLikedSongs = likedSongs.filter(song => song !== songURL)
     } else {
       // Add the song to likedSongs if it's not already liked
-      updatedLikedSongs = [...likedSongs, audioURL]
+      updatedLikedSongs = [...likedSongs, songURL]
     }
     // Update state and localStorage with the new list of liked songs
     setLikedSongs(updatedLikedSongs)
@@ -100,7 +100,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
             <div
               onClick={() => {
                 setLikesHasChanged(!likesHasChanged) // Global toggle to trigger likes component reload
-                toggleSongLike(info.row.original.audioURL)
+                toggleSongLike(info.row.original.songURL)
                 setDropdownVisible(false)
               }}
             >
@@ -118,7 +118,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
             {isInPlaylistsPage && (
               <div
                 onClick={() => {
-                  onRemoveFromPlaylist && onRemoveFromPlaylist(info.row.original.audioURL)
+                  onRemoveFromPlaylist && onRemoveFromPlaylist(info.row.original.songURL)
                   setDropdownVisible(false)
                 }}
               >
@@ -127,8 +127,8 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
             )}
             <div
               onClick={() => {
-                copyLinkToClipboard(`${window.location.origin}/Song/${info.row.original.audioURL}`)
-                console.log(`${window.location.origin}/Song/${info.row.original.audioURL}`)
+                copyLinkToClipboard(`${window.location.origin}/Song/${info.row.original.songURL}`)
+                console.log(`${window.location.origin}/Song/${info.row.original.songURL}`)
                 setDropdownVisible(false)
               }}
             >
@@ -136,7 +136,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
             </div>
             <div
               onClick={() => {
-                setSocialShareLink(`${window.location.origin}/Song/${info.row.original.audioURL}`)
+                setSocialShareLink(`${window.location.origin}/Song/${info.row.original.songURL}`)
                 setSocialShareModalOpen(true)
                 setDropdownVisible(false)
               }}
