@@ -42,10 +42,10 @@ const PublishSong = () => {
   const onSubmit = async () => {
     // TODO: set these params from uploaded file
 
-    const newValues: Song = {
+    const songValues: Song = {
       title: values.title,
       artist: values.artist,
-      isPublished: false,
+      isPublished: true,
       audioURL: '',
       artworkURL: '',
       description: '',
@@ -59,7 +59,9 @@ const PublishSong = () => {
         satoshis: 0,
         txid: '',
         vout: 0
-      }
+      },
+      selectedArtwork: values.selectedArtwork,
+      selectedMusic: values.selectedMusic
     }
 
     try {
@@ -68,7 +70,7 @@ const PublishSong = () => {
       const pubSong = async () => {
         try {
           // Publish status returns true if success, or false
-          publishStatus = await publishSong(newValues, constants.RETENTION_PERIOD)
+          publishStatus = await publishSong(songValues, constants.RETENTION_PERIOD)
           if (publishStatus) {
             console.log('success')
             navigate('/PublishSong/Success')

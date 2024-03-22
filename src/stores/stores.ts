@@ -17,7 +17,6 @@ export const usePlaybackStore = create(set => ({
     title: '',
     artist: '',
     audioURL: '',
-    audioSrc: null,
     artworkURL: '',
     description: '',
     duration: 0
@@ -48,7 +47,7 @@ export const usePlaylistStore = create(set => ({
 
 export const useLikesStore = create(set => ({
   likesHasChanged: false,
-  setLikesHasChanges: (newState: boolean) => set(() => ({ isPlaying: newState })),
+  setLikesHasChanged: (newState: boolean) => set(() => ({ likesHasChanged: newState })),
 }))
 
 // Displaying the invitational modal dialogue and what content to display
