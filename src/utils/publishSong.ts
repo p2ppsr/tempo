@@ -29,7 +29,7 @@ const publishSong = async (song: Song, retentionPeriod?: number) => {
       Buffer.from(song.artist, 'utf8'),
       Buffer.from('Default description', 'utf8'), // TODO: Add to UI
       Buffer.from('' + fileUploadInfo.songDuration, 'utf8'), // Duration
-      Buffer.from(fileUploadInfo.audioURL, 'utf8'),
+      Buffer.from(fileUploadInfo.songURL, 'utf8'),
       Buffer.from(fileUploadInfo.artworkURL, 'utf8'),
       Buffer.from(Buffer.from(require('crypto').randomBytes(32)).toString('hex')) // Generate a unique songID
     ],
@@ -83,7 +83,7 @@ const publishSong = async (song: Song, retentionPeriod?: number) => {
     // Export encryption key to store on the keyServer
     await publishKey({
       key: fileUploadInfo.encryptionKey,
-      audioURL: fileUploadInfo.audioURL
+      songURL: fileUploadInfo.songURL
     })
   } else {
     // Handle the case when there's no encryptionKey (e.g., log, throw an error, or perform alternative action)

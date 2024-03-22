@@ -46,7 +46,7 @@ const PublishSong = () => {
       title: values.title,
       artist: values.artist,
       isPublished: true,
-      audioURL: '',
+      songURL: '',
       artworkURL: '',
       description: '',
       duration: 0,

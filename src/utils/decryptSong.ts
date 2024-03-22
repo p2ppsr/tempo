@@ -10,7 +10,7 @@ const authrite = new Authrite()
 
 const decryptSong = async (song: Song) => {
 
-  if (!song.audioURL) {
+  if (!song.songURL) {
     return
   }
 
@@ -19,7 +19,7 @@ const decryptSong = async (song: Song) => {
       // could be cached
       console.time('Nanoseek download time')
       const { data: encryptedData } = await download({
-        UHRPUrl: song.audioURL,
+        UHRPUrl: song.songURL,
         confederacyHost: constants.confederacyURL
       })
       console.timeEnd('Nanoseek download time')
@@ -30,7 +30,7 @@ const decryptSong = async (song: Song) => {
       console.time('Authrite invoice response time')
       const invoiceResponse = await authrite.request(`${constants.keyServerURL}/invoice`, {
         body: {
-          audioURL: song.audioURL
+          songURL: song.songURL
         },
         method: 'POST',
         headers: {
@@ -85,7 +85,7 @@ const decryptSong = async (song: Song) => {
       const purchasedKey = await authrite.request(`${constants.keyServerURL}/pay`, {
         body: {
           derivationPrefix,
-          audioURL: song.audioURL,
+          songURL: song.songURL,
           transaction: {
             ...payment,
             outputs: [

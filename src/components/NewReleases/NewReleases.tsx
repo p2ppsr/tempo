@@ -80,7 +80,7 @@ const NewReleases = ({ className }: NewReleasesProps) => {
                     src={newRelease.artworkURL} // placeholderImage
                     //@ts-ignore TODO: update uhrp-react to not throw TS errors for img attributes
                     onClick={() => {
-                      const { title, artist, audioURL, artworkURL } = newRelease
+                      const { title, artist, songURL, artworkURL } = newRelease
                       setPlaybackSong(newRelease)
                     }}
                     // Set the image to a placeholder if an image was not found

@@ -91,7 +91,7 @@ const App = () => {
               <Route path="/PublishSong" element={<PublishSong />} />
               <Route path="/PublishSong/Success" element={<SuccessPage />} />
               <Route path="/Likes" element={<Likes />} />
-              <Route path="/Song/:audioURL" element={<ViewSong />} />
+              <Route path="/Song/:songURL" element={<ViewSong />} />
               <Route path="/Artist/:artistIdentityKey" element={<ArtistSongsPage />} />
             </Routes>
           </div>

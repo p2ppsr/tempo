@@ -20,7 +20,7 @@ const ViewPlaylist = () => {
   const handleSongDelete = (songId: string) => {
     if (!playlist) return
 
-    const updatedSongs = playlist.songs.filter(song => song.audioURL !== songId)
+    const updatedSongs = playlist.songs.filter(song => song.songURL !== songId)
     const updatedPlaylist = { ...playlist, songs: updatedSongs }
 
     // Update the playlist in the component state

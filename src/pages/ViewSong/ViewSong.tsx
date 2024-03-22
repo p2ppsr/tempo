@@ -5,16 +5,16 @@ import SongList from '../../components/SongList/SongList'
 import { getSongDataFromHash } from '../../utils/getSongDataFromHash'
 
 const ViewSong = () => {
-  const { audioURL } = useParams()
+  const { songURL } = useParams()
 
   const [song, setSong] = useState() as any // TODO: Set this type
 
-  // Use the audioURL param to fetch the song data to display
+  // Use the songURL param to fetch the song data to display
   useAsyncEffect(async () => {
-    if (!audioURL) {
-      throw new Error('Error: no audioURL was provided')
+    if (!songURL) {
+      throw new Error('Error: no songURL was provided')
     }
-    const songData = await getSongDataFromHash(audioURL)
+    const songData = await getSongDataFromHash(songURL)
     setSong(songData)
   }, [])
 

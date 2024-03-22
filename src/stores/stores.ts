@@ -16,7 +16,7 @@ export const usePlaybackStore = create(set => ({
   playbackSong: {
     title: '',
     artist: '',
-    audioURL: '',
+    songURL: '',
     artworkURL: '',
     description: '',
     duration: 0
