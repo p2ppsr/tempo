@@ -20,10 +20,9 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
   isMySongsOnly,
   openConfirmDeleteModal
 }) => {
-
   // Dropdown visibility state
-  const [dropdownVisible, setDropdownVisible] = useState<boolean>(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownVisible, setDropdownVisible] = useState<boolean>(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const isInPlaylistsPage = location.pathname.includes('Playlists')
 
@@ -37,7 +36,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
 
   const [likesHasChanged, setLikesHasChanged] = useLikesStore((state: any) => [
     state.likesHasChanged,
-    state.setLikedHasChanged
+    state.setLikesHasChanged
   ])
 
   const [
@@ -129,7 +128,8 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
             <div
               onClick={() => {
                 copyLinkToClipboard(`${window.location.origin}/Song/${info.row.original.audioURL}`)
-                setDropdownVisible(false) // Close the dropdown
+                console.log(`${window.location.origin}/Song/${info.row.original.audioURL}`)
+                setDropdownVisible(false)
               }}
             >
               Copy song link
@@ -161,4 +161,4 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
   )
 }
 
-export default React.memo(ActionsDropdown);
+export default React.memo(ActionsDropdown)

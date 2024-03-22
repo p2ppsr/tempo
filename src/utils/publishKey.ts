@@ -2,8 +2,8 @@ import { Authrite } from 'authrite-js'
 import constants from './constants'
 
 interface PublishKeyParams {
-  key: CryptoKey;
-  songURL: string;
+  key: CryptoKey
+  audioURL: string
 }
 
 // interface PublishKeyResult {
@@ -12,8 +12,9 @@ interface PublishKeyParams {
 //   code?: string;
 // }
 
-const publishKey = async ({ key, songURL }: PublishKeyParams): Promise<void> => {
-// Export encryption key to store on the keyServer
+const publishKey = async ({ key, audioURL }: PublishKeyParams): Promise<void> => {
+  const songURL = audioURL // TODO: change publish schema from songURL to audioURL
+  // Export encryption key to store on the keyServer
   const decryptionKey = await window.crypto.subtle.exportKey('raw', key)
   const response = await new Authrite().request(`${constants.keyServerURL}/publish`, {
     body: {
@@ -25,7 +26,7 @@ const publishKey = async ({ key, songURL }: PublishKeyParams): Promise<void> => 
       'Content-Type': 'application/json'
     }
   })
-  const result = (JSON.parse(Buffer.from(response.body).toString('utf8')))
+  const result = JSON.parse(Buffer.from(response.body).toString('utf8'))
   if (result.status === 'error') {
     const e = new Error(result.description)
     e.name = result.code
