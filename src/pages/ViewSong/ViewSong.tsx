@@ -1,34 +1,38 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useParams } from 'react-router'
 import useAsyncEffect from 'use-async-effect'
 import SongList from '../../components/SongList/SongList'
 import { getSongDataFromHash } from '../../utils/getSongDataFromHash'
+import { Song } from '../../types/interfaces'
 
 const ViewSong = () => {
-  const { songURL } = useParams()
+  const { songURL } = useParams<{ songURL: string }>()
 
-  const [song, setSong] = useState() as any // TODO: Set this type
+  const [song, setSong] = useState<Song | null>(null)
 
-  // Use the songURL param to fetch the song data to display
   useAsyncEffect(async () => {
     if (!songURL) {
       throw new Error('Error: no songURL was provided')
     }
-    const songData = await getSongDataFromHash(songURL)
-    console.log('songData: ', songData)
-    console.log('songData0: ', songData[0])
-    setSong(songData)
+    const songsData = await getSongDataFromHash(songURL)
+    // Assuming songURL should match some property in the songs data to find the specific song
+    const matchingSong = songsData.find(song => song.songURL === songURL)
+    if (matchingSong) {
+      setSong(matchingSong)
+    } else {
+      console.error('No matching song found')
+    }
   }, [songURL])
+
+  if (!song) {
+    return <div>Loading or no song found...</div>
+  }
 
   return (
     <div className="container">
-      {song && (
-        <>
-          <h1>{song.title}</h1>
-          <h2 style={{ marginBottom: '1rem' }}>{song.artist}</h2>
-          <SongList songs={[song]} />
-        </>
-      )}
+      <h1>{song.title}</h1>
+      <h2 style={{ marginBottom: '1rem' }}>{song.artist}</h2>
+      <SongList songs={[song]} />
     </div>
   )
 }

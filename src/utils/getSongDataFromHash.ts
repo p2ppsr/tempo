@@ -1,17 +1,11 @@
 import { Song } from '../types/interfaces'
 import fetchSongs from './fetchSongs/fetchSongs'
 
-export const getSongDataFromHash = async (songURL: string): Promise<Song> => {
-  console.log(`called getSongFromHash with songURL: `, songURL)
-
-  const encodedSongURL = Buffer.from(songURL).toString('base64')
-
-  const response = await fetchSongs({
+export const getSongDataFromHash = async (songURL: string): Promise<Song[]> => {
+  const res = await fetchSongs({
     findAll: true,
-    songIDs: [encodedSongURL]
+    songIDs: [songURL].map((song: string) => Buffer.from(song).toString('base64'))
   })
 
-  console.log('getSongDataFromHash response: ', response)
-
-  return response
+  return res // This is now expected to be an array of Song objects
 }
