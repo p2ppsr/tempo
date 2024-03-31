@@ -7,11 +7,9 @@ import { getSongDataFromHash } from '../../utils/getSongDataFromHash'
 const ViewSong = () => {
   const { songURL } = useParams()
 
-  const [song, setSong] = useState() as any // TODO: Set this type
+  console.log(songURL)
 
-  useEffect(()=>{
-    console.log('song set: ', song)
-  },[song])
+  const [song, setSong] = useState() as any // TODO: Set this type
 
   // Use the songURL param to fetch the song data to display
   useAsyncEffect(async () => {
