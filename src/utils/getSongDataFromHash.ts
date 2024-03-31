@@ -10,5 +10,5 @@ export const getSongDataFromHash = async (songURL: string): Promise<Song> => {
     })
   })
 
-  return res[0]
+  return res
 }
