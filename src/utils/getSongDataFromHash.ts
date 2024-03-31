@@ -11,5 +11,7 @@ export const getSongDataFromHash = async (songURL: string): Promise<Song> => {
     songIDs: [encodedSongURL]
   })
 
-  return response[0]
+  console.log('getSongDataFromHash response: ', response)
+
+  return response
 }

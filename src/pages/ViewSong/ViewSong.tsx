@@ -16,6 +16,7 @@ const ViewSong = () => {
     }
     const songData = await getSongDataFromHash(songURL)
     console.log('songData: ', songData)
+    console.log('songData0: ', songData[0])
     setSong(songData)
   }, [songURL])
 
