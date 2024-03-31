@@ -15,6 +15,7 @@ const ViewSong = () => {
       throw new Error('Error: no songURL was provided')
     }
     const songData = await getSongDataFromHash(songURL)
+    console.log('songData: ', songData)
     setSong(songData)
   }, [songURL])
 
