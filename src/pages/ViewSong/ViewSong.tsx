@@ -7,8 +7,6 @@ import { getSongDataFromHash } from '../../utils/getSongDataFromHash'
 const ViewSong = () => {
   const { songURL } = useParams()
 
-  console.log(songURL)
-
   const [song, setSong] = useState() as any // TODO: Set this type
 
   // Use the songURL param to fetch the song data to display
@@ -17,7 +15,6 @@ const ViewSong = () => {
       throw new Error('Error: no songURL was provided')
     }
     const songData = await getSongDataFromHash(songURL)
-    console.log('song data: ', songData)
     setSong(songData)
   }, [songURL])
 

@@ -5,6 +5,7 @@ import pushdrop from 'pushdrop'
 
 const fetchSongs = async (searchFilter: object) => {
   let response
+  console.log('searchFilter: ', searchFilter)
   try {
     response = await PacketPay(`${constants.confederacyURL}/lookup`, {
       method: 'POST',
@@ -21,12 +22,16 @@ const fetchSongs = async (searchFilter: object) => {
 
   const lookupResult = JSON.parse(Buffer.from(response?.body).toString('utf8'))
 
+  console.log('lookupResult: ', lookupResult)
+
   let parsedSongs = lookupResult.map((songToken: Token) => {
 
     const decodedSong = pushdrop.decode({
       script: songToken.outputScript,
       fieldFormat: 'utf8'
     })
+
+    console.log('decodedSong: ', decodedSong)
 
     const formattedSong = {
       topic: decodedSong.fields[0],
