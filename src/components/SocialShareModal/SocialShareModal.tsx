@@ -77,7 +77,7 @@ const SocialShareModal = () => {
                   }}
                 >
                   <h3>Copy link</h3>
-                  <FaRegCopy />h
+                  <FaRegCopy />
                 </div>
 
                 <div className="socialButtons">
