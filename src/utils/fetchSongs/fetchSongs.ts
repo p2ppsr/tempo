@@ -11,8 +11,10 @@ const fetchSongs = async (searchFilter: object) => {
       method: 'POST',
       body: {
         provider: 'TSP',
+        // query: {
+        //   ...searchFilter
+        // }
         query: {
-          // ...searchFilter
           findAll: true,
           songIDs: ['XUTkC6pJgPghjfTPbsGFpbGNrV1UECCCFDMYmdTnrsi6BxBfbYTF'].map((song: string) => {
             return Buffer.from(song).toString('base64')
