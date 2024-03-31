@@ -35,7 +35,7 @@ import useAsyncEffect from 'use-async-effect'
 import backgroundImage from './assets/Images/background.jpg'
 import { useAuthStore } from './stores/stores'
 import checkForMetaNetClient from './utils/checkForMetaNetClient'
-import ArtistSongsPage from "./pages/ViewArtist/ViewArtist"
+import ViewArtist from "./pages/ViewArtist/ViewArtist"
 
 const App = () => {
   const [userHasMetanetClient, setUserHasMetanetClient] = useAuthStore((state: any) => [
@@ -92,7 +92,7 @@ const App = () => {
               <Route path="/PublishSong/Success" element={<SuccessPage />} />
               <Route path="/Likes" element={<Likes />} />
               <Route path="/Song/:songURL" element={<ViewSong />} />
-              <Route path="/Artist/:artistIdentityKey" element={<ArtistSongsPage />} />
+              <Route path="/Artist/:artistIdentityKey" element={<ViewArtist />} />
             </Routes>
           </div>
 

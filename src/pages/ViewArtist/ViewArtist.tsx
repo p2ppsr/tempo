@@ -6,7 +6,7 @@ import SongList from '../../components/SongList/SongList'
 import useAsyncEffect from 'use-async-effect'
 import { CircularProgress } from "@mui/material"
 
-const ArtistSongsPage: React.FC = () => {
+const ViewArtist: React.FC = () => {
   const { artistIdentityKey } = useParams<{ artistIdentityKey: string }>()
   const [songs, setSongs] = useState<Song[]>([])
   const [artistName, setArtistName] = useState('')
@@ -45,4 +45,4 @@ const ArtistSongsPage: React.FC = () => {
   )
 }
 
-export default ArtistSongsPage
+export default ViewArtist

@@ -3,7 +3,6 @@ import fetchSongs from './fetchSongs/fetchSongs'
 
 export const getSongDataFromHash = async (songURL: string): Promise<Song> => {
   const res = await fetchSongs({
-    true: true,
     findAll: true,
     songIDs: [songURL].map((song: string) => {
       return Buffer.from(song).toString('base64')

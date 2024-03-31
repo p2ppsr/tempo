@@ -12,7 +12,11 @@ const fetchSongs = async (searchFilter: object) => {
       body: {
         provider: 'TSP',
         query: {
-          ...searchFilter
+          // ...searchFilter
+          findAll: true,
+          songIDs: ['XUTkC6pJgPghjfTPbsGFpbGNrV1UECCCFDMYmdTnrsi6BxBfbYTF'].map((song: string) => {
+            return Buffer.from(song).toString('base64')
+          })
         }
       }
     })
@@ -25,7 +29,6 @@ const fetchSongs = async (searchFilter: object) => {
   console.log('lookupResult: ', lookupResult)
 
   let parsedSongs = lookupResult.map((songToken: Token) => {
-
     const decodedSong = pushdrop.decode({
       script: songToken.outputScript,
       fieldFormat: 'utf8'
