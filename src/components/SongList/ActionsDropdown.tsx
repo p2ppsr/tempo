@@ -128,7 +128,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
             <div
               onClick={() => {
                 copyLinkToClipboard(`${window.location.origin}/Song/${info.row.original.songURL}`)
-                console.log(`${window.location.origin}/Song/${info.row.original.songURL}`)
+                console.log('copied song: ', info.row.original, `${window.location.origin}/Song/${info.row.original.songURL}`)
                 setDropdownVisible(false)
               }}
             >
