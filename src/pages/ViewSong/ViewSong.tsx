@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import useAsyncEffect from 'use-async-effect'
 import SongList from '../../components/SongList/SongList'
@@ -9,14 +9,19 @@ const ViewSong = () => {
 
   const [song, setSong] = useState() as any // TODO: Set this type
 
+  useEffect(()=>{
+    console.log('song set: ', song)
+  },[song])
+
   // Use the songURL param to fetch the song data to display
   useAsyncEffect(async () => {
     if (!songURL) {
       throw new Error('Error: no songURL was provided')
     }
     const songData = await getSongDataFromHash(songURL)
+    console.log('song data: ', songData)
     setSong(songData)
-  }, [])
+  }, [songURL])
 
   return (
     <div className="container">
