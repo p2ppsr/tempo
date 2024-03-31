@@ -55,8 +55,6 @@ const NewReleases = ({ className }: NewReleasesProps) => {
     }
   }, [])
 
-  const shareUrl = 'http://github.com'
-
   return (
     <div className={`container ${className}`}>
 
