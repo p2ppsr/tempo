@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { FaEdit, FaPlusCircle, FaTrash } from 'react-icons/fa'
-
 import uuid4 from 'uuid4'
-import './Playlists.scss'
-
-import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 import { Playlist } from '../../types/interfaces'
+import { FaEdit, FaPlusCircle, FaTrash } from 'react-icons/fa'
+import './Playlists.scss'
 
 const Playlists = () => {
   const navigate = useNavigate()
@@ -20,40 +18,29 @@ const Playlists = () => {
   }, [playlists])
 
   const [editingPlaylist, setEditingPlaylist] = useState({ index: -1, text: '' })
+  const editingInputRef = useRef<HTMLInputElement>(null)
 
   // Click Outside PLaylist ====================================================================
 
   const handleClickOutside = (event: MouseEvent) => {
-    // Assert event.target as Node to satisfy the type expected by contains method
-    const target = event.target as Node
-
-    if (editingInputRef.current && !editingInputRef.current.contains(target)) {
-      // If the click is outside the input and the name is empty, remove the playlist
-      if (editingPlaylist.text.trim() === '') {
-        const updatedPlaylists = playlists.filter(
-          (_: any, idx: number) => idx !== editingPlaylist.index
-        )
-        setPlaylists(updatedPlaylists)
-      } else {
-        // If there's text, update the playlist name
+    if (editingInputRef.current && !editingInputRef.current.contains(event.target as Node)) {
+      if (editingPlaylist.text.trim()) {
         updatePlaylistName(editingPlaylist.index, editingPlaylist.text)
+      } else if (editingPlaylist.index > -1) {
+        setPlaylists(playlists.filter((_: any, idx: number) => idx !== editingPlaylist.index))
       }
-      // Reset editing state
       setEditingPlaylist({ index: -1, text: '' })
     }
   }
 
   useEffect(() => {
-    // Only add the listener if we're currently editing a playlist
     if (editingPlaylist.index !== -1) {
       document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
     }
-
-    // Cleanup the event listener
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [editingPlaylist.index])
+  }, [editingPlaylist.index, editingPlaylist.text, playlists])
 
   // Handlers ====================================================================
 
@@ -61,35 +48,23 @@ const Playlists = () => {
     const newPlaylist = {
       id: uuid4(),
       name: '',
-      songs: [] // Assuming songs is an array of song objects
+      songs: []
     }
-    // Add the new playlist
-    const newPlaylists = [...playlists, newPlaylist]
-    setPlaylists(newPlaylists)
-
-    // Set the editing index to the last item in the array (the new playlist)
-    setEditingPlaylist({ index: newPlaylists.length - 1, text: '' })
+    setPlaylists([...playlists, newPlaylist])
+    setEditingPlaylist({ index: playlists.length, text: '' })
   }
 
   const updatePlaylistName = (index: number, newName: string) => {
-    if (newName.trim() === '') {
-      // Remove the playlist if the new name is empty
-      const updatedPlaylists = playlists.filter((_: any, idx: number) => idx !== index)
-      setPlaylists(updatedPlaylists)
-    } else {
-      // Update the playlist name if it's not empty
-      const updatedPlaylists = playlists.map((playlist: Playlist, idx: number) =>
-        idx === index ? { ...playlist, name: newName } : playlist
-      )
-      setPlaylists(updatedPlaylists)
-    }
-    // Reset editing state regardless of whether a playlist was updated or removed
-    setEditingPlaylist({ index: -1, text: '' })
+    const updatedPlaylists = playlists.map((playlist: Playlist, idx: number) =>
+      idx === index ? { ...playlist, name: newName.trim() } : playlist
+    )
+    setPlaylists(updatedPlaylists)
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     if (event.key === 'Enter') {
       updatePlaylistName(index, editingPlaylist.text)
+      setEditingPlaylist({ index: -1, text: '' })
     }
   }
 
@@ -99,10 +74,7 @@ const Playlists = () => {
     setPlaylists(updatedPlaylists)
   }
 
-  const editingInputRef = useRef<HTMLInputElement>(null)
-
   useEffect(() => {
-    // Check if the ref is currently pointing to an input element
     if (editingInputRef.current) {
       editingInputRef.current.focus()
     }
