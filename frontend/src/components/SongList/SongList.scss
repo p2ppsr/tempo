@@ -1,0 +1,238 @@
+@import '../../styles/styleVariables.scss';
+
+.songListTable {
+  color: $textColor;
+  border: 2px solid $transparentBorder;
+  width: 100%;
+  max-width: 60rem;
+  border-radius: $borderRadius;
+  padding: 1rem;
+  margin: auto;
+  margin-bottom: 5rem;
+  background: rgba(14, 39, 60, 0.25);
+
+  thead {
+    text-align: left;
+  }
+
+  th {
+    padding-left: 0.5rem;
+  }
+
+  tbody {
+    tr {
+      margin-bottom: 1rem;
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+
+  td {
+    padding-left: 0.5rem;
+  }
+}
+
+.songListArtworkContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+
+  .songListArtworkThumbnail {
+    width: 3rem;
+    height: 3rem;
+    user-select: none;
+    margin-block: 0.25rem;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+  }
+
+  .artworkThumbnailPlayIcon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    visibility: hidden;
+  }
+  &:hover .artworkThumbnailPlayIcon {
+    visibility: visible; // Show the icon on hover
+  }
+}
+
+// Overrides for audio playback component
+.rhap_container {
+  background: rgba(0, 0, 0, 0.8) !important;
+
+  .rhap_time {
+    color: $textColor;
+  }
+}
+
+.actionsContainer {
+  // border:1px solid red;
+  gap: 0.5rem;
+  justify-content: space-evenly;
+  padding-right: 0.5rem;
+  cursor: pointer;
+  .likedIcon,
+  .addToPlaylistIcon,
+  .deleteFromPlaylistIcon {
+    font-size: 1.5rem;
+    visibility: hidden; // Keep the icon hidden by default
+  }
+
+  .alwaysVisible {
+    visibility: visible !important; // Always show the icon if it's liked
+  }
+}
+
+.songRow {
+  cursor: pointer;
+
+  &:hover .likedIcon,
+  &:hover .addToPlaylistIcon,
+  &:hover .deleteFromPlaylistIcon {
+    /* Ensure this line is correctly specifying hover */
+    visibility: visible; // Show the icons on hover
+  }
+
+  &.selectedRow {
+    background-color: rgba(255, 255, 255, 0.1);
+
+    .likedIcon,
+    .addToPlaylistIcon,
+    .deleteFromPlaylistIcon {
+      visibility: visible; // Ensure icons are always visible for the selected row
+    }
+  }
+
+  td:first-child {
+    padding-left: 0px; // Apply 0px padding-left to the first td of each row
+  }
+}
+
+.songRow.selectedRow {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.addToPlayListModal,
+.confirmDeleteModal {
+  margin: auto;
+  overflow: auto;
+  height: calc(67vh + 100px);
+  margin-top: 5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: $borderRadius;
+  background: rgba(0, 0, 0, 0.9);
+  width: 50vw;
+  min-width: 20rem;
+  max-width: 30rem;
+  padding: 1rem;
+  &:focus {
+    outline: none;
+  }
+
+  .modalCloseIcon {
+    font-size: 2.5rem;
+    font-weight: bolder;
+    align-self: flex-start;
+    cursor: pointer;
+
+    &:hover {
+      fill: tomato;
+    }
+  }
+
+  .playlistName {
+    color: $textColor;
+    margin-block: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 0.5rem;
+    border-radius: $borderRadius;
+    cursor: pointer;
+    &:hover {
+      border: 1px solid $accentColor;
+      color: $accentColor;
+    }
+  }
+}
+
+.confirmDeleteModal {
+  height: fit-content;
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  button {
+    border: none;
+    border-radius: $borderRadius;
+    cursor: pointer;
+    &:hover {
+    }
+  }
+
+  .deleteButton {
+    margin-right: 2rem;
+    background: tomato;
+    height: 2.5rem;
+
+    &:disabled {
+      filter: saturate(0);
+      cursor: progress;
+    }
+  }
+
+  .cancelButton {
+    background: gray;
+    height: 2.5rem;
+
+    &:disabled {
+      filter: saturate(0);
+      cursor: progress;
+    }
+  }
+}
+
+.buttonLoadingSpinner {
+  padding: none;
+  margin: none;
+}
+
+.actionsContainer {
+  position: relative;
+
+  .dropdownToggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: white; // Adjust color as needed
+  }
+
+  .dropdownMenu {
+    position: absolute;
+    right: 0;
+    background-color: #333; // Adjust background color as needed
+    border-radius: 4px;
+    padding: 5px 0;
+    z-index: 100;
+    min-width: 120px; // Adjust width as needed
+
+    div {
+      padding: 8px 12px;
+      cursor: pointer;
+      &:hover {
+        background-color: #444; // Adjust hover background color as needed
+      }
+    }
+  }
+}
+
+.artistName {
+  cursor: pointer;
+  transition: text-decoration 0.2s ease-in-out; // Smooth transition for the underline
+
+  &:hover {
+    text-decoration: underline; // Add underline on hover
+  }
+}

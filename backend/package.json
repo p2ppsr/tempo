@@ -1,0 +1,59 @@
+{
+  "name": "@bsv/tempo-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tempo backend - modernized for LARS/CARS",
+  "main": "dist/esm/mod.js",
+  "types": "dist/types/mod.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "mod.ts",
+    "LICENSE.txt"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/types/mod.d.ts",
+      "import": "./dist/esm/mod.js"
+    },
+    "./*.ts": {
+      "types": "./dist/types/src/*.d.ts",
+      "import": "./dist/esm/src/*.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "prepublish": "npm run build",
+    "test": "npm run build && jest",
+    "test:watch": "npm run build && jest --watch",
+    "test:coverage": "npm run build && jest --coverage",
+    "lint": "ts-standard --fix src/**/*.ts",
+    "compile": "scrypt-cli c",
+    "doc": "ts2md --inputFilename=mod.ts --outputFilename=API.md --filenameSubstring=API --firstHeadingLevel=1"
+  },
+  "author": "BSV Association",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "dependencies": {
+    "@bsv/overlay": "^0.2.2",
+    "@bsv/sdk": "^1.5.3",
+    "express": "^5.1.0",
+    "mongodb": "^6.16.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.2",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.15.29",
+    "@typescript-eslint/eslint-plugin": "^8.33.1",
+    "@typescript-eslint/parser": "^8.33.1",
+    "eslint": "^9.28.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.3.4",
+    "ts-node": "^10.9.2",
+    "ts-standard": "^12.0.2",
+    "ts2md": "^0.2.8",
+    "tsconfig-to-dual-package": "^1.2.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}

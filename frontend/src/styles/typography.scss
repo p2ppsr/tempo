@@ -1,0 +1,21 @@
+@import './styleVariables.scss';
+
+h1 {
+  color: $headerColor;
+  font-size: 40px;
+  font-weight: 750;
+  user-select: none;
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: $headerColor;
+  user-select: none;
+}
+
+p {
+  color: $textColor;
+}

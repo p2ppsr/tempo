@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "ESNext"
+    ],
+    "module": "NodeNext",
+    "target": "esnext",
+    "moduleResolution": "NodeNext",
+    "moduleDetection": "force",
+    "rootDir": "./",
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "strict": true,
+    "isolatedModules": true,
+    "strictNullChecks": true,
+    "downlevelIteration": false,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "typeRoots": ["./node_modules/@types", "src/types"]
+  },
+  "include": [
+    "src",
+    "src/types.d.ts",
+    "jest.config.js",
+    "tsconfig.json"
+, "jest.config.js", "tsconfig.json", "src/types/authrite-express.d.ts"  ],
+  "exclude": [
+    "dist",
+    "*/**/__tests"
+  ]
+}

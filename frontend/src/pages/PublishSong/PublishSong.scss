@@ -1,0 +1,40 @@
+@import '../../styles/styleVariables.scss';
+
+.publishSongContainer {
+  // height: calc(500px);
+  overflow-y: scroll;
+
+  .publishButton {
+    background: rgb(36, 149, 36);
+    border: none;
+    height: 3rem;
+    cursor: pointer;
+
+    &:disabled {
+      background: rgba(255, 255, 255, 0.1);
+      user-select: none;
+      color: black;
+    }
+  }
+
+  #piracyBannerContainer {
+    border: 1px solid rgba(255, 99, 71, 0.67);
+    width: fit-content;
+    // max-width: 25rem;
+    padding: 1rem;
+    border-radius: $borderRadius;
+    margin-block: 1rem;
+  }
+
+  #piracyCheckboxContainer {
+    border: 1px solid rgba(255, 99, 71, 0.67);
+    padding: 1rem;
+    border-radius: $borderRadius;
+    
+    #piracyCheckbox {
+      width: 2rem;
+      height: 2rem;
+      margin-right: 0.5rem;
+    }
+  }
+}

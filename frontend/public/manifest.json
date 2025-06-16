@@ -1,0 +1,19 @@
+{
+  "short_name": "Tempo",
+  "name": "Tempo — Feel the Beat",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "babbage": {
+    "protocolPermissions": {
+       "tempo": "Needs permission to access keys for publishing and updating songs.",
+       "3241645161d8": "Needs permission to derive a public key used in payment for a song."
+    }
+  }
+}

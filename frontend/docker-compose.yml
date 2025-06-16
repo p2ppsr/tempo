@@ -1,0 +1,132 @@
+#####
+### Project Babbage — Services for Local Development
+#####
+version: '3.8'
+networks:
+  babnet:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/23
+
+services:
+
+  ###
+  ## Standard MetaNet Services
+  ###
+
+  # MiniScribe — lightweight local NanoStore
+  miniscribe:
+    image: us.gcr.io/computing-with-integrity/miniscribe:latest
+    ports:
+      - "3104:3104"
+    volumes:
+     - ./data/miniscribe-data:/app/data
+    environment:
+      NODE_ENV: 'development'
+
+  # The Bridgeport Connecticut Proxy
+  connecticut:
+    image: us.gcr.io/computing-with-integrity/connecticut:latest
+    # build: '../connecticut'
+    ports:
+      - "3103:3103"
+      # - 3205:9229
+    # command: node --inspect=0.0.0.0 ./src/index.tsx
+    environment:
+      HTTP_PORT: 3103
+      PORT: 3103
+      PASSTHROUGH_BRIDGES: '["1AJsUZ7MsJGwmkCZSoDpro28R52ptvGma7"]' # nanostore  
+      PASSTHROUGH_URL: "https://staging-bridgeport.babbage.systems"
+      PASSTHROUGH_SYSTEM_BRIDGES: true
+      PASSTHROUGH_LOGGING: true
+      DISABLE_UHRP_MOCKING: true
+
+  # Mongo Express — web-based MongoDB database viewer
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: bridgeport-mongo
+      ME_CONFIG_MONGODB_PORT: 3113
+    depends_on:
+      - bridgeport-mongo
+
+  ## PHPMyAdmin — Web-based SQL database viewer
+  # phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin
+  #   links:
+  #   - dojo-mysql
+  #   environment:
+  #     PMA_HOST: dojo-mysql
+  #     PMA_PORT: 3112
+  #     PMA_ARBITRARY: 1
+  #   restart: always
+  #   ports:
+  #   - 8090:80
+  #   networks:
+  #   - babnet
+
+  ###
+  ## User-defined Bridges and Services — Extend to support your application
+  ###
+
+  # tsp-bridge - Tempo Song Protocol Bridge
+  tsp-reader:
+    hostname: "reader-1lqtkkk7c1tn3ucrfsp8sqgjwtzgskze36"
+    build: '../tsp-bridge/reader'
+    environment:
+      BRIDGE: 'eyJpZCI6IjFMUXRLS0s3YzFUTjNVY1Jmc3A4U3FHald0ekdza3plMzYifQ=='
+      PORT: 80
+      MONGODB_READ_CREDS: 'bW9uZ29kYjovL2JyaWRnZXBvcnQtbW9uZ286MzExMy9icmlkZ2VfMUxRdEtLSzdjMVROM1VjUmZzcDhTcUdqV3R6R3NremUzNg=='
+      MONGODB_DATABASE: 'bridge_1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
+  tsp-transformer:
+    hostname: "transformer-1lqtkkk7c1tn3ucrfsp8sqgjwtzgskze36"
+    build: '../tsp-bridge/transformer'
+    # command: node --inspect=0.0.0.0 ./server.js
+    # ports:
+    #   - 9229:9229
+    environment:
+      PORT: 80
+      MONGODB_WRITE_CREDS: 'mongodb://bridgeport-mongo:3113/bridge_1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
+      MONGODB_DATABASE: 'bridge_1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
+
+  # tempo-key-server
+  tempo-key-server:
+      platform: linux/x86_64
+      hostname: 'tempo-key-server'
+      build: '../tempo-key-server'
+      restart: always
+      volumes:
+      - './data/tempo-key-server-mysql-data:/var/lib/mysql'
+      command: node --inspect=0.0.0.0 ./src/index.tsx
+      ports:
+        - 8080:8080
+        - 3205:9229
+      environment:
+        NODE_ENV: staging
+        HTTP_PORT: 8080
+        KNEX_DB_CONNECTION: '{"port":"3002","host":"tempo-key-server-mysql","database":"tempo-key-server","user":"root","password":"test"}'
+        KNEX_DB_CLIENT: mysql
+        MIGRATE_KEY: my-grate-key
+        SERVER_PRIVATE_KEY: '6dcc124be5f382be631d49ba12f61adbce33a5ac14f6ddee12de25272f943f8b'
+        HOSTING_DOMAIN: 'http://localhost:8080'
+        DOJO_URL: 'https://staging-dojo.babbage.systems'
+
+  tempo-key-server-mysql:
+    image: "mysql:8.0"
+    platform: linux/x86_64
+    hostname: 'tempo-key-server-mysql'
+    container_name: 'tempo-key-server-mysql'
+    command: '--default-authentication-plugin=mysql_native_password --sync_binlog=0 --innodb_doublewrite=OFF  --innodb-flush-log-at-trx-commit=0 --innodb-flush-method=nosync'
+    restart: always
+    volumes:
+      - './data/tempo-key-server-mysql-data:/var/lib/mysql'
+    environment:
+      MYSQL_HOST: "127.0.0.1"
+      MYSQL_TCP_PORT: 3002
+      MYSQL_ROOT_PASSWORD: "test"
+      MYSQL_DATABASE: "tempo-key-server"
+    ports:
+      - "3002:3002"

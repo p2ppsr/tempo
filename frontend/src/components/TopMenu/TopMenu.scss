@@ -1,0 +1,36 @@
+@import '../../styles/styleVariables.scss';
+
+.topMenuContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 3rem;
+  background-color: $grayBackground;
+
+  .navigationIcon {
+    cursor: pointer;
+
+    &:hover {
+      fill: $accentColor;
+    }
+    &:active {
+      fill: $accentColor;
+      filter: brightness(0.55);
+    }
+  }
+}
+
+.menuProfileContainer {
+  display: flex;
+  align-items: center;
+  color: white;
+  margin-right: 1rem; // Adjust right margin as needed
+
+  &:hover {
+    color: $accentColor;
+  }
+
+  p {
+    margin-right: 0.5rem; // Adjust space between the username and the icon
+  }
+}

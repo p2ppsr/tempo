@@ -1,0 +1,40 @@
+services:
+  tempo-key-server:
+      # hostname: 'tempo-key-server'
+      build: .
+      container_name: "tempo-key-server"
+      depends_on: 
+        - tempo-key-server-mysql
+      restart: always
+      # volumes:
+      #   - "./src:/app/src"
+      ports:
+        - 8080:8080
+      environment:
+        NODE_ENV: staging
+        HTTP_PORT: 8080
+        PORT: 8080
+        KNEX_DB_CONNECTION: '{"port":"3002","host":"tempo-key-server-mysql","database":"tempo-key-server","user":"root","password":"test"}'
+        KNEX_DB_CLIENT: mysql
+        MIGRATE_KEY: my-grate-key
+        SERVER_PRIVATE_KEY: '6dcc124be5f382be631d49ba12f61adbce33a5ac14f6ddee12de25272f943f8b'
+        HOSTING_DOMAIN: 'http://localhost:8080'
+        DOJO_URL: 'https://staging-dojo.babbage.systems'
+  
+  tempo-key-server-mysql:
+    image: "mysql:8.0"
+    platform: linux/x86_64
+    hostname: 'tempo-key-server-mysql'
+    container_name: 'tempo-key-server-mysql'
+    command: '--default-authentication-plugin=mysql_native_password --sync_binlog=0 --innodb_doublewrite=OFF  --innodb-flush-log-at-trx-commit=0 --innodb-flush-method=nosync'
+    restart: always
+    volumes:
+      - './data/mysql-data:/var/lib/mysql'
+    environment:
+      # MYSQL_HOST: "127.0.0.1"
+      MYSQL_TCP_PORT: 3002
+      MYSQL_ROOT_PASSWORD: "test"
+      MYSQL_DATABASE: "tempo-key-server"
+    ports:
+      - "3002:3002"
+        

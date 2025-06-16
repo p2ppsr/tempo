@@ -1,0 +1,99 @@
+@import './styles/styleVariables.scss';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+a {
+  text-decoration: none;
+  color:rgb(114, 171, 250);
+}
+
+p {
+  line-height: 1.5rem;
+}
+
+.appLayout {
+  display: grid;
+  grid-template-columns: minmax(10rem, 20%) 1fr;
+  grid-template-rows: 10vh auto;
+  grid-template-areas:
+    'leftmenu topmenu'
+    'leftmenu maincontent';
+}
+
+.leftMenu {
+  grid-area: leftmenu;
+}
+
+.topMenu {
+  grid-area: topmenu;
+}
+
+.mainContent {
+  grid-area: maincontent;
+  overflow-y: auto;
+}
+
+.main {
+  display: flex;
+  flex-direction: row;
+}
+
+.container {
+  padding-inline: 2rem;
+  height: calc(80vh);
+  overflow-y: auto;
+}
+
+.backgroundImage {
+  position: absolute;
+  z-index: -1;
+  filter: blur(0.5rem) brightness(0.8);
+  min-width: 100vw;
+}
+
+.rightContainer {
+  width: 100%;
+}
+
+// Hide scrollbar
+::-webkit-scrollbar {
+  height: 0px;
+  width: 0px;
+}
+
+.button {
+  background-color: $buttonColor;
+  padding: 10px 40px 10px 40px;
+  color: white;
+  font-weight: 600;
+  width: 100%;
+  border: 5px solid $buttonColor;
+}
+
+.toastButton {
+  background-color: #6f44ee;
+  border: 0;
+  padding: 10px 30px 10px 40px;
+  margin: 10px 0px 0px 0px;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  width: 240px;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}

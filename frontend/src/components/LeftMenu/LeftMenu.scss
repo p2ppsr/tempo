@@ -1,0 +1,99 @@
+@import '../../styles/styleVariables.scss';
+
+.leftMenu {
+  min-height: 140vh;
+  min-width: 10rem;
+  // max-width: 15rem;
+  background: linear-gradient($baseColor, black);
+  z-index: 0;
+
+  * {
+    user-select: none;
+  }
+}
+
+.leftMenu .logoContainer {
+  padding: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.menuLogo {
+  max-width: 100%;
+  display: block;
+  margin: auto;
+}
+
+.leftMenu ul {
+  padding-top: 10px;
+  font-size: large;
+}
+
+.link {
+  list-style: none;
+  padding-left: 2rem;
+  padding-block: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  margin-bottom: 0.4rem;
+  color: $navTextColor;
+  cursor: pointer;
+}
+
+.menuAccordionLink {
+  display: block;
+  width:67%;
+  padding: 0.5rem;
+  padding-left:1rem;
+  margin-inline: 10%;
+  margin-block: 5%;
+  user-select: none;
+  font-weight: 700;
+  color: $navTextColor;
+  border-radius: $borderRadius;
+
+  &:hover {
+    color: $accentColor;
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.menuAccordionDivider {
+  height: 1px;
+  width: 67%;
+  background: rgba(255, 255, 255, 0.3);
+  margin-left: 10%;
+}
+
+.leftMenu ul .active {
+  /* color:#DE5F3B; */
+  font-weight: 700;
+}
+
+.childLink:hover,
+.link:hover {
+  background: rgba(195, 195, 195, 0.35);
+  // font-weight: 700;
+}
+
+.topLevel {
+  font-weight: 700;
+  list-style: none;
+  padding: 15px 0px 15px 25px;
+  background: rgba(255, 255, 255, 0.1);
+  margin-bottom: 6px;
+  color: rgb(219, 219, 219);
+}
+
+.childLink {
+  /* background: rgba(34, 34, 34, 0.35); */
+  font-weight: 700;
+  list-style: none;
+  padding: 15px 0px 15px 25px;
+  background: rgba(148, 148, 148, 0.1);
+  margin-bottom: 6px;
+  color: rgb(219, 219, 219);
+}
+
+.logoImage {
+  width: 100px;
+  padding-right: 10px;
+}

@@ -1,0 +1,30 @@
+@import '../../styles/styleVariables.scss';
+
+.socialHeaderContainer {
+  display: flex;
+  margin-block: 1rem;
+  cursor: pointer;
+  h3 {
+    margin-right: 0.5rem;
+  }
+
+  svg {
+    fill: white;
+    align-self: center;
+  }
+
+  &:hover {
+    * {
+      color: $accentColor;
+      fill: $accentColor;
+    }
+  }
+}
+
+.socialButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}

@@ -1,0 +1,30 @@
+// Utility styles common to multiple components across the application
+
+.flex {
+	display: flex;
+}
+
+.flex-wrap {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.flexSpacer {
+	flex-grow: 1;
+}
+
+.italics {
+	font-style: italic;
+}
+
+.centered {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.centerBlock {
+	display: block;
+	margin: auto;
+}

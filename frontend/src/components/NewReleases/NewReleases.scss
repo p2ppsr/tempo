@@ -1,0 +1,33 @@
+.horizontalArtworkScroller {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  width: 80vw;
+  padding-block: 1rem;
+  transform: translateX(-0.5rem) !important;
+}
+
+.newReleaseCardContainer {
+  .newReleaseCard {
+    max-width: 12rem;
+    margin-inline: 1rem;
+    border-radius: 0.5rem;
+    object-fit: cover;
+    aspect-ratio: 1/1;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    cursor: pointer;
+    &:hover {
+      transform: scale(1.1);
+    }
+    &:active {
+      transform: scale(0.9);
+    }
+    transition: 0.2s ease;
+
+    // @media screen and (min-width:1200px){
+    //   margin-inline: 1vw;
+    // }
+  }
+}

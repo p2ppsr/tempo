@@ -1,0 +1,30 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NODE_ENV=development
+
+  key-server:
+    build:
+      context: ./key-server
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./key-server:/app
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

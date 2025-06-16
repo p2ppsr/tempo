@@ -1,0 +1,67 @@
+// Form styles common to multiple components across the application
+
+@import '../styles/styleVariables.scss';
+
+label {
+  color: $textColor;
+}
+
+.formContainer {
+  background: rgb(28 28 28);
+  padding: 2rem;
+  margin-block: 1rem;
+  max-width: 25rem;
+}
+
+.textInput,
+.formContainer select {
+  background-color: rgb(0, 0, 0);
+  border-width: 0px;
+  color: white;
+  padding-left: 10px;
+  font-size: 16px;
+
+  outline-style: none;
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.uploadInput {
+  background-color: $buttonColor;
+  padding: 1rem;
+  color: $textColor;
+}
+
+.dateInput {
+  background-color: rgb(0, 0, 0);
+  border: none;
+  color: $textColor;
+  padding-left: 1rem;
+}
+
+.dateIcon {
+  position: absolute;
+  top: 35%;
+  left: 90%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.formContainer input,
+.formContainer select {
+  height: 50px;
+  margin-bottom: 1rem;
+}
+
+.fieldContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+
+  label {
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+}
