@@ -18,11 +18,16 @@ let storageClientInstance: StorageClient | null = null
 export async function getWallet(): Promise<WalletInterface> {
   if (walletInstance) return walletInstance
 
-  const SERVER_PRIVATE_KEY = process.env.SERVER_PRIVATE_KEY as string
-  const WALLET_STORAGE_URL = process.env.WALLET_STORAGE_URL as string
-  const BSV_NETWORK = process.env.BSV_NETWORK as 'mainnet' | 'testnet'
+  const SERVER_PRIVATE_KEY = process.env.SERVER_PRIVATE_KEY
+  const WALLET_STORAGE_URL = process.env.WALLET_STORAGE_URL
+  const BSV_NETWORK = (process.env.BSV_NETWORK || 'testnet') as 'mainnet' | 'testnet'
+
+  if (!SERVER_PRIVATE_KEY || !WALLET_STORAGE_URL) {
+    throw new Error('Missing SERVER_PRIVATE_KEY or WALLET_STORAGE_URL in environment')
+  }
 
   const chain = BSV_NETWORK === 'mainnet' ? 'main' : 'test'
+
   const keyDeriver = new KeyDeriver(new PrivateKey(SERVER_PRIVATE_KEY, 'hex'))
   const storageManager = new WalletStorageManager(keyDeriver.identityKey)
   const signer = new WalletSigner(chain, keyDeriver, storageManager)

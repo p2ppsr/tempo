@@ -1,15 +1,17 @@
 import { Request, Response } from 'express'
-import knexConfig from '../../knexfile'
+import knexfile from '../../knexfile'
 import knexModule from 'knex'
 import { WalletClient, Hash } from '@bsv/sdk'
 import type { RouteDefinition } from '../types/routes'
+import type { TransactionPayload, PaymentOutput } from '../types/transaction.js'
 
-const knex = knexModule(
-  process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
-    ? knexConfig.production
-    : knexConfig.development
-)
+// 🔧 Resolve environment key for knex config
+const environment =
+  process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production'
+    ? 'staging'
+    : 'development'
 
+const knex = knexModule(knexfile[environment])
 const wallet = new WalletClient()
 
 const payRoute: RouteDefinition = {
@@ -32,9 +34,31 @@ const payRoute: RouteDefinition = {
       const identityKey = (req as any).authrite?.identityKey
       if (!identityKey) throw new Error('Missing identityKey from Authrite')
 
-      // Find decryption key
+      const tx: TransactionPayload = req.body.transaction
+      const { songURL, orderID } = req.body
+
+      if (
+        typeof songURL !== 'string' || songURL.trim() === '' ||
+        typeof orderID !== 'string' || orderID.trim() === '' ||
+        !tx || typeof tx.rawTx !== 'string' ||
+        !Array.isArray(tx.outputs)
+      ) {
+        return res.status(400).json({
+          status: 'error',
+          code: 'ERR_INVALID_INPUT',
+          description: 'Missing or malformed request parameters.'
+        })
+      }
+
+      // Annotate each output with sender's identity
+      tx.outputs = tx.outputs.map((output: PaymentOutput) => ({
+        ...output,
+        senderIdentityKey: identityKey
+      }))
+
+      // Lookup decryption key
       const [key] = await knex('key')
-        .where({ songURL: req.body.songURL })
+        .where({ songURL })
         .select('value', 'keyID', 'artistIdentityKey')
 
       if (!key) {
@@ -45,12 +69,12 @@ const payRoute: RouteDefinition = {
         })
       }
 
-      // Find invoice
+      // Find matching invoice
       const [invoice] = await knex('invoice')
         .where({
           keyID: key.keyID,
           identityKey,
-          orderID: req.body.orderID
+          orderID
         })
 
       if (!invoice) {
@@ -61,57 +85,34 @@ const payRoute: RouteDefinition = {
         })
       }
 
-      // Attach senderIdentityKey to each output
-      req.body.transaction.outputs = req.body.transaction.outputs.map((output: any) => ({
-        ...output,
-        senderIdentityKey: identityKey
-      }))
+      // Generate a reference from rawTx hash
+      const reference = Hash.sha256(tx.rawTx, 'hex')
+        .map(byte => byte.toString(16).padStart(2, '0'))
+        .join('')
 
-      // Placeholder: Verify the transaction manually
-      // Replace this with actual validation logic appropriate to your project
-      const rawTx = req.body.transaction.rawTx
-      if (!rawTx || typeof rawTx !== 'string') {
-        return res.status(400).json({
-          status: 'error',
-          code: 'ERR_PAYMENT_INVALID',
-          description: 'Missing or invalid rawTx.'
-        })
-      }
-
-      // OPTIONAL: You may decode and inspect the rawTx using:
-      // const tx = await wallet.decodeTransaction({ rawTx })
-
-      // Simulate success
-      const processedTransaction = {
-        reference: Hash.sha256(rawTx, 'hex')
-          .map(byte => byte.toString(16).padStart(2, '0'))
-          .join('')
-      }
-
-      // Update invoice
+      // Mark invoice as processed
       await knex('invoice')
         .where({
           keyID: key.keyID,
           identityKey,
-          orderID: req.body.orderID,
+          orderID,
           processed: false
         })
         .update({
-          referenceNumber: processedTransaction.reference,
+          referenceNumber: reference,
           processed: true
         })
 
-      // Record royalty entry
+      // Register royalty payout record
       await knex('royalty').insert({
         created_at: new Date(),
         updated_at: new Date(),
         keyID: key.keyID,
         artistIdentityKey: key.artistIdentityKey,
-        amount: invoice.amount * 0.97,
+        amount: Math.floor(invoice.amount * 0.97),
         paid: false
       })
 
-      // Return decryption key
       return res.status(200).json({
         status: 'Key successfully purchased!',
         result: key.value

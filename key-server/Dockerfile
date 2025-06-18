@@ -1,5 +1,5 @@
 FROM node:16-alpine
-EXPOSE 8080
+EXPOSE 8081
 WORKDIR /app
 COPY package.json .
 RUN npm i

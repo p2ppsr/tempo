@@ -6,11 +6,8 @@ import knexModule from 'knex'
 import { getWallet } from '../utils/walletSingleton'
 import type { RouteDefinition } from '../types/routes'
 
-const knex = knexModule(
-  process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
-    ? knexConfig.production
-    : knexConfig.development
-)
+const env = process.env.NODE_ENV ?? 'development'
+const knex = knexModule(knexConfig[env])
 
 const checkForRoyaltiesRoute: RouteDefinition = {
   type: 'get',
@@ -20,7 +17,6 @@ const checkForRoyaltiesRoute: RouteDefinition = {
   exampleResponse: {
     status: 'Royalty payment sent!',
     transaction: {
-      rawTx: '{valid raw tx}',
       txid: '...',
       mapiResponses: {},
       note: 'The transaction has been processed and broadcast.',
@@ -42,8 +38,7 @@ const checkForRoyaltiesRoute: RouteDefinition = {
         .select('keyID', 'amount', 'paid')
 
       const totalAmount = royalties.reduce((sum, r) => sum + r.amount, 0)
-
-      if (totalAmount === 0) {
+      if (!royalties.length || totalAmount === 0) {
         return res.status(200).json({
           status: 'There are no royalties to be paid. Check back soon!'
         })
@@ -53,7 +48,6 @@ const checkForRoyaltiesRoute: RouteDefinition = {
       const derivationSuffix = randomBytes(10).toString('base64')
 
       const wallet = await getWallet()
-
       const { publicKey: derivedPubKey } = await wallet.getPublicKey({
         protocolID: [2, '3241645161d8'],
         keyID: `${derivationPrefix} ${derivationSuffix}`,
@@ -102,13 +96,19 @@ const checkForRoyaltiesRoute: RouteDefinition = {
           updated_at: new Date()
         })
 
+      const SERVER_PRIVATE_KEY = process.env.SERVER_PRIVATE_KEY
+      if (!SERVER_PRIVATE_KEY) throw new Error('Missing SERVER_PRIVATE_KEY in .env')
+
       return res.status(200).json({
         status: 'Royalty payment sent!',
-        transaction: tx,
+        transaction: {
+          ...tx,
+          note: 'The transaction has been processed and broadcast.'
+        },
         derivationPrefix,
         derivationSuffix,
         amount: totalAmount,
-        senderIdentityKey: PrivateKey.fromHex(process.env.SERVER_PRIVATE_KEY!).toPublicKey().toString()
+        senderIdentityKey: PrivateKey.fromHex(SERVER_PRIVATE_KEY).toPublicKey().toString()
       })
     } catch (e) {
       console.error(e)

@@ -1,10 +1,10 @@
-import express from 'express'
+import { Router } from 'express'
 
-const router = express.Router()
+const router = Router()
 
 // Health check route
 router.get('/health', (req, res) => {
-  res.send('Key server is healthy!')
+  res.status(200).send('Key server is healthy!')
 })
 
 export default router

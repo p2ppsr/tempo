@@ -1,29 +1,53 @@
 import type { Knex } from 'knex'
+import dotenv from 'dotenv'
 
-const knexfile: { [key: string]: Knex.Config } = {
-  development: {
-    client: 'mysql2',
-    connection: {
-      host: '127.0.0.1',
-      port: 3307,
-      user: 'overlayAdmin',
-      password: 'overlay123',
-      database: 'overlay'
-    },
-    pool: {
-      min: 2, // Minimum number of connections in the pool
-      max: 120, // Maximum number of connections in the pool
-      acquireTimeoutMillis: 30000, // Time to wait for a connection before throwing an error
-      createTimeoutMillis: 30000, // Time to wait for a new connection to be created before throwing an error
-      idleTimeoutMillis: 30000, // Time to wait before closing idle connections
-      reapIntervalMillis: 1000, // How often to check for idle connections
-      log: (message) => console.log('Pool log:', message) // Optional logging function
-    },
-    useNullAsDefault: true,
-    migrations: {
-      directory: './src/migrations'
-    }
+dotenv.config()
+
+const sharedConfig: Partial<Knex.Config> = {
+  pool: {
+    min: 2,
+    max: 120,
+    acquireTimeoutMillis: 30000,
+    createTimeoutMillis: 30000,
+    idleTimeoutMillis: 30000,
+    reapIntervalMillis: 1000,
+    log: (message) => console.log('Pool log:', message)
+  },
+  useNullAsDefault: true,
+  migrations: {
+    directory: './src/migrations'
   }
 }
 
+const knexfile: { [key: string]: Knex.Config } = {
+  development: {
+    client: process.env.DB_CLIENT || 'mysql2',
+    connection: {
+      host: process.env.DB_HOST || '127.0.0.1',
+      port: Number(process.env.DB_PORT || 3307),
+      user: process.env.DB_USER || 'overlayAdmin',
+      password: process.env.DB_PASS || 'overlay123',
+      database: process.env.DB_NAME || 'overlay'
+    },
+    ...sharedConfig
+  },
+
+  staging: {
+    client: process.env.DB_CLIENT || 'mysql2',
+    connection: {
+      host: process.env.DB_HOST || 'tempo-key-server-mysql',
+      port: Number(process.env.DB_PORT || 3002),
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASS || 'test',
+      database: process.env.DB_NAME || 'tempo-key-server'
+    },
+    ...sharedConfig
+  }
+}
+
+// Optional: fallback export for safety
+const env = process.env.NODE_ENV || 'development'
+if (!knexfile[env]) {
+  console.warn(`[knexfile] Unknown NODE_ENV "${env}", falling back to development`)
+}
 export default knexfile
