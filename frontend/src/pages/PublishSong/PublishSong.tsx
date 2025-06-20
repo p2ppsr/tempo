@@ -58,20 +58,20 @@ const PublishSong = () => {
     selectedMusic: formData.selectedMusic
   }
 
-  toast.promise(
-    publishSong(songValues, RETENTION_PERIOD).then((publishedSong) => {
-      // This now uses the returned song, which includes `sats` and token metadata
-      if (publishedSong) {
-        // OPTIONAL: store publishedSong in state if you need it elsewhere
-        navigate('/PublishSong/Success')
+  try {
+    await toast.promise(
+      publishSong(songValues, RETENTION_PERIOD).then((publishedSong) => {
+        if (publishedSong) navigate('/PublishSong/Success')
+      }),
+      {
+        pending: 'Publishing song...',
+        success: 'Song published! 👌',
+        error: 'Failed to publish song! 🤯'
       }
-    }),
-    {
-      pending: 'Publishing song...',
-      success: 'Song published! 👌',
-      error: 'Failed to publish song! 🤯'
-    }
-  )
+    )
+  } catch (e) {
+    console.error('Unexpected error during publish:', e)
+  }
 }
 
   return (

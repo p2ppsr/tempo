@@ -40,7 +40,8 @@ const checkForRoyaltiesRoute: RouteDefinition = {
       const totalAmount = royalties.reduce((sum, r) => sum + r.amount, 0)
       if (!royalties.length || totalAmount === 0) {
         return res.status(200).json({
-          status: 'There are no royalties to be paid. Check back soon!'
+          status: 'noUpdates',
+          message: 'There are no royalties to be paid. Check back soon!'
         })
       }
 
@@ -115,7 +116,8 @@ const checkForRoyaltiesRoute: RouteDefinition = {
       return res.status(500).json({
         status: 'error',
         code: 'ERR_INTERNAL',
-        description: 'An internal error has occurred.'
+        description: 'An internal error has occurred.',
+        detail: e instanceof Error ? e.message : String(e)
       })
     }
   }

@@ -59,7 +59,7 @@ const updateSong = async ({ song, filesToUpdate }: updateSongParams) => {
   })
 
   const { sign } = pushdrop.unlock(
-    [2, 'tm_tsp'],
+    [2, 'tm tsp'],
     '1',
     'self',
     'all',
@@ -91,7 +91,7 @@ const updateSong = async ({ song, filesToUpdate }: updateSongParams) => {
       Utils.toArray(song.songURL, 'utf8'),
       Utils.toArray(song.artworkURL, 'utf8')
     ],
-    [2, 'tm_tsp'],
+    [2, 'tmtsp'],
     '1',
     'self'
   )

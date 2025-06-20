@@ -9,16 +9,16 @@ services:
       # volumes:
       #   - "./src:/app/src"
       ports:
-        - 8082:8082
+        - 3000:3000
       environment:
         NODE_ENV: staging
-        HTTP_PORT: 8082
-        PORT: 8082
+        HTTP_PORT: 3000
+        PORT: 3000
         KNEX_DB_CONNECTION: '{"port":"3002","host":"tempo-key-server-mysql","database":"tempo-key-server","user":"root","password":"test"}'
         KNEX_DB_CLIENT: mysql
         MIGRATE_KEY: my-grate-key
         SERVER_PRIVATE_KEY: '6dcc124be5f382be631d49ba12f61adbce33a5ac14f6ddee12de25272f943f8b'
-        HOSTING_DOMAIN: 'http://localhost:8082'
+        HOSTING_DOMAIN: 'http://localhost:3000'
         DOJO_URL: 'https://staging-dojo.babbage.systems'
   
   tempo-key-server-mysql:

@@ -30,12 +30,15 @@ const publishKey = async ({ key, songURL }: PublishKeyParams): Promise<void> => 
 
   const response = await authFetch.fetch(`${constants.keyServerURL}/publish`, {
     method: 'POST',
-    body: {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
       songURL,
       key: base64Key,
       signature: Utils.toHex(signature),
       publicKey
-    }
+    })
   })
 
   const result = await response.json()

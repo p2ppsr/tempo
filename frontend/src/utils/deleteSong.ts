@@ -27,7 +27,7 @@ const deleteSong = async (song: Song): Promise<string> => {
 
     // Step 2: Get unlock script generator
     const { sign } = pushdrop.unlock(
-      [2, 'tm_tsp'],
+      [2, 'tmtsp'],
       '1',
       'self',
       'all',

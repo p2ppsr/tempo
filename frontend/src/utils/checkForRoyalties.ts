@@ -2,37 +2,42 @@ import { WalletClient, AuthFetch } from '@bsv/sdk'
 import constants from './constants'
 
 const checkForRoyalties = async () => {
-  const wallet = new WalletClient('auto', 'localhost')
-  const authFetch = new AuthFetch(wallet)
+  try {
+    const wallet = new WalletClient('auto', 'localhost')
+    const authFetch = new AuthFetch(wallet)
 
-  const response = await authFetch.fetch(`${constants.keyServerURL}/checkForRoyalties`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
+    const response = await authFetch.fetch(`${constants.keyServerURL}/checkForRoyalties`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+
+    if (!response.ok) {
+      console.warn(`Royalties check failed: ${response.status} ${response.statusText}`)
+      return { status: 'noUpdates' }
     }
-  })
 
-  if (!response.ok) {
-    throw new Error(`Network error: ${response.status} ${response.statusText}`)
-  }
+    const result = await response.json()
 
-  const result = await response.json()
+    if (result.status === 'error') {
+      console.warn(`Royalties check error: ${result.description} (code: ${result.code})`)
+      return { status: 'noUpdates' }
+    }
 
-  if (result.status === 'error') {
-    throw new Error(`${result.description} (code: ${result.code})`)
-  }
+    if (result.status === 'noUpdates') {
+      console.log(result.message)
+      return { status: 'noUpdates' }
+    }
 
-  if (result.status === 'There are no royalties to be paid. Check back soon!') {
     return {
-      status: 'noUpdates'
+      status: 'updatesAvailable',
+      result: `${result.amount} satoshis received for song royalties!`,
+      txid: result.transaction?.txid ?? 'unknown'
     }
-  }
-
-  // Server already handled the payment. Just confirm and notify the user.
-  return {
-    status: 'updatesAvailable',
-    result: `${result.amount} satoshis received for song royalties!`,
-    txid: result.transaction?.txid ?? 'unknown'
+  } catch (e) {
+    console.error('checkForRoyalties error:', e)
+    return { status: 'noUpdates' }
   }
 }
 

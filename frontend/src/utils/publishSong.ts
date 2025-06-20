@@ -11,7 +11,7 @@ import getFileUploadInfo from './getFileUploadInfo'
 import publishKey from './publishKey'
 import type { Song } from '../../src/types/interfaces'
 
-const wallet = new WalletClient()
+const wallet = new WalletClient('auto', 'localhost')
 const pushdrop = new PushDrop(wallet)
 
 const broadcaster = new TopicBroadcaster(
@@ -48,9 +48,9 @@ const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> 
       Utils.toArray(fileUploadInfo.artworkURL, 'utf8'),
       Utils.toArray(uniqueID, 'utf8')
     ],
-    [2, 'tm_tsp'],
+    [2, 'tmtsp'],
     '1',
-    'self',
+    'anyone',
     true
   )
 
