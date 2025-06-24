@@ -1,11 +1,5 @@
 import { AdmittanceInstructions, TopicManager } from '@bsv/overlay'
-import {
-  PublicKey,
-  Signature,
-  Transaction,
-  PushDrop,
-  Utils
-} from '@bsv/sdk'
+import { Transaction, PushDrop, Utils } from '@bsv/sdk'
 import docs from './TSPTopicDocs.md.js'
 
 export default class TSPTopicManager implements TopicManager {
@@ -24,27 +18,23 @@ export default class TSPTopicManager implements TopicManager {
           const decoded = PushDrop.decode(output.lockingScript)
           const fields = decoded.fields
 
-          // Check protocol ID
-          const protocolID = Utils.toUTF8(fields[0])
-          if (protocolID !== 'tmtsp') {
-            console.log(`[TSPTopicManager] Output #${index} – Invalid protocol ID: ${protocolID}`)
+          // Check field count
+          if (fields.length !== 10) {
+            console.log(`[TSPTopicManager] Output #${index} – Unexpected field count: ${fields.length}`)
             continue
           }
 
-          // Extract signed fields
-          const signedData = fields.slice(0, 7).flat() // same order as in publishSong.ts
+          // Validate protocol fields
+          const topic = Utils.toUTF8(fields[0])
+          const protocol = Utils.toUTF8(fields[1])
 
-          const sig = Signature.fromDER(fields[7])
-          const pubKeyStr = Utils.toUTF8(fields[8])
-          const pubKey = PublicKey.fromString(pubKeyStr)
-
-          const isValid = pubKey.verify(signedData, sig)
-          if (!isValid) {
-            console.warn(`[TSPTopicManager] Output #${index} – Invalid signature`)
+          if (protocol !== 'tmtsp' || topic !== 'tsp') {
+            console.log(`[TSPTopicManager] Output #${index} – Invalid topic or protocol: ${topic}, ${protocol}`)
             continue
           }
 
-          console.log(`[TSPTopicManager] Output #${index} – Valid TSP song from ${pubKey.toString()}`)
+          // Could add more validation on fields[2] to [8] if needed
+          console.log(`[TSPTopicManager] Output #${index} – Valid TSP song token`)
           admissibleOutputs.push(index)
 
         } catch (err) {
@@ -70,17 +60,11 @@ export default class TSPTopicManager implements TopicManager {
     }
   }
 
-  async getDocumentation(): Promise<string> {
+  async getDocumentation() {
     return docs
   }
 
-  async getMetaData(): Promise<{
-    name: string
-    shortDescription: string
-    iconURL?: string
-    version?: string
-    informationURL?: string
-  }> {
+  async getMetaData() {
     return {
       name: 'tm_tsp',
       shortDescription: 'Tempo Song Protocol Topic Manager',

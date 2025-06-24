@@ -1,15 +1,13 @@
 import { Request, Response } from 'express'
-import knexfile from '../../knexfile'  // ✅ use correct default import
+import knexfile from '../../knexfile'
 import knexModule from 'knex'
 import { isValid } from '../utils/decryptionValidator.js'
 import type { RouteDefinition } from '../types/routes'
 
-// ✅ Determine correct environment key
 const environment = process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production'
   ? 'staging'
   : 'development'
 
-// ✅ Initialize knex using the resolved config
 const knex = knexModule(knexfile[environment])
 
 const publishRoute: RouteDefinition = {
@@ -18,7 +16,7 @@ const publishRoute: RouteDefinition = {
   summary: 'Use this route to publish a song decryption key',
   parameters: {
     songURL: 'abc', // A UHRP url of the song to decrypt
-    key: '' // A 32 byte base64 string.
+    key: '' // A 32-byte base64 string.
   },
   exampleResponse: {
     status: 'Key successfully published!'
@@ -28,7 +26,20 @@ const publishRoute: RouteDefinition = {
       const { songURL, key } = req.body
       const identityKey = (req as any).authrite?.identityKey
 
-      // Validate required input
+      if (!identityKey) {
+        console.warn('[KeyServer] Missing identityKey in authenticated request!')
+        return res.status(403).json({
+          status: 'error',
+          code: 'ERR_MISSING_IDENTITY',
+          description: 'Authenticated identity key is missing from request.'
+        })
+      }
+
+      console.log('[KeyServer] Received /publish request')
+      console.log('  songURL:', songURL)
+      console.log('  key:', key)
+      console.log('  identityKey:', identityKey)
+
       if (
         typeof songURL !== 'string' || songURL.trim() === '' ||
         typeof key !== 'string' || key.trim() === ''
@@ -40,7 +51,6 @@ const publishRoute: RouteDefinition = {
         })
       }
 
-      // Optional: check base64 length (32 bytes = 44 base64 chars)
       if (key.length !== 44) {
         return res.status(400).json({
           status: 'error',
@@ -49,7 +59,6 @@ const publishRoute: RouteDefinition = {
         })
       }
 
-      // Check for duplicate
       const [existing] = await knex('key')
         .where({ songURL })
         .select('value')
@@ -58,32 +67,32 @@ const publishRoute: RouteDefinition = {
         return res.status(400).json({
           status: 'error',
           code: 'ERR_DUPLICATE_DECRYPTION_KEY',
-          description: 'Key already published to key server!'
+          description: 'Key already published to key server.'
         })
       }
 
-      // Validate key works on file
       const valid = await isValid(songURL, key)
       if (!valid) {
         return res.status(400).json({
           status: 'error',
           code: 'ERR_INVALID_DECRYPTION_KEY',
-          description: 'Failed to validate decryption key!'
+          description: 'Failed to validate decryption key.'
         })
       }
 
-      // Insert into database
       await knex('key').insert({
         songURL,
         value: key,
         artistIdentityKey: identityKey
       })
 
+      console.log('[KeyServer] Successfully stored key for song:', songURL)
+
       return res.status(200).json({
         status: 'Key successfully published!'
       })
-    } catch (e) {
-      console.error(e)
+    } catch (err: any) {
+      console.error('[KeyServer] Internal error in /publish:', err?.stack || err?.message || err)
       return res.status(500).json({
         status: 'error',
         code: 'ERR_INTERNAL',
