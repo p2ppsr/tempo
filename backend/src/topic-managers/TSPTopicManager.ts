@@ -1,11 +1,18 @@
 import { AdmittanceInstructions, TopicManager } from '@bsv/overlay'
-import { PublicKey, Signature, Transaction, PushDrop, Utils } from '@bsv/sdk'
+import {
+  PublicKey,
+  Signature,
+  Transaction,
+  PushDrop,
+  Utils
+} from '@bsv/sdk'
 import docs from './TSPTopicDocs.md.js'
 
-const TSP_PROTOCOL_ADDRESS = '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'
-
 export default class TSPTopicManager implements TopicManager {
-  async identifyAdmissibleOutputs(beef: number[], previousCoins: number[]): Promise<AdmittanceInstructions> {
+  async identifyAdmissibleOutputs(
+    beef: number[],
+    previousCoins: number[]
+  ): Promise<AdmittanceInstructions> {
     const admissibleOutputs: number[] = []
 
     try {
@@ -17,24 +24,29 @@ export default class TSPTopicManager implements TopicManager {
           const decoded = PushDrop.decode(output.lockingScript)
           const fields = decoded.fields
 
-          const protocolAddress = Utils.toBase58(fields[0])
-          if (protocolAddress !== TSP_PROTOCOL_ADDRESS) {
-            console.log(`[TSPTopicManager] Output #${index} – Invalid protocol address: ${protocolAddress}`)
+          // Check protocol ID
+          const protocolID = Utils.toUTF8(fields[0])
+          if (protocolID !== 'tmtsp') {
+            console.log(`[TSPTopicManager] Output #${index} – Invalid protocol ID: ${protocolID}`)
             continue
           }
 
-          const dataToVerify = fields.slice(0, 7).flat()
-          const pubKey = decoded.lockingPublicKey
+          // Extract signed fields
+          const signedData = fields.slice(0, 7).flat() // same order as in publishSong.ts
+
           const sig = Signature.fromDER(fields[7])
+          const pubKeyStr = Utils.toUTF8(fields[8])
+          const pubKey = PublicKey.fromString(pubKeyStr)
 
-          const valid = pubKey.verify(dataToVerify, sig)
-          if (!valid) {
-            console.log(`[TSPTopicManager] Output #${index} – Invalid signature`)
+          const isValid = pubKey.verify(signedData, sig)
+          if (!isValid) {
+            console.warn(`[TSPTopicManager] Output #${index} – Invalid signature`)
             continue
           }
 
-          console.log(`[TSPTopicManager] Output #${index} – Valid TSP output by ${pubKey.toString()}`)
+          console.log(`[TSPTopicManager] Output #${index} – Valid TSP song from ${pubKey.toString()}`)
           admissibleOutputs.push(index)
+
         } catch (err) {
           console.log(`[TSPTopicManager] Skipping output #${index}:`, err)
         }
@@ -48,6 +60,7 @@ export default class TSPTopicManager implements TopicManager {
         outputsToAdmit: admissibleOutputs,
         coinsToRetain: previousCoins
       }
+
     } catch (err) {
       console.error('[TSPTopicManager] Failed to parse transaction:', err)
       return {
@@ -75,4 +88,3 @@ export default class TSPTopicManager implements TopicManager {
     }
   }
 }
-

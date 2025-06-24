@@ -7,7 +7,7 @@ interface Constants {
 }
 
 const constants: Constants = {
-  tempoTopic: 'TSP',
+  tempoTopic: 'tsp',
   tspProtocolID: '1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36',
   keyServerURL: import.meta.env.VITE_KEY_SERVER_URL || 'http://localhost:3000',
   uploadURL: import.meta.env.VITE_UPLOAD_URL || 'http://localhost:3301',
