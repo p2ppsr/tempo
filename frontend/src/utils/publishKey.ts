@@ -1,16 +1,18 @@
 import { WalletClient, Utils, Hash, SymmetricKey, AuthFetch } from '@bsv/sdk'
 import constants from './constants'
 
-const wallet = new WalletClient('json-api', 'auto')
-const authFetch = new AuthFetch(wallet)
-
 interface PublishKeyParams {
+  wallet: WalletClient
   key: SymmetricKey
   songURL: string
 }
 
-const publishKey = async ({ key, songURL }: PublishKeyParams): Promise<void> => {
+
+const publishKey = async ({ wallet, key, songURL }: PublishKeyParams): Promise<void> => {
   try {
+    const authFetch = new AuthFetch(wallet)
+
+    // 🔐 Prepare key & signature
     const rawKey = key.toArray('be', 32)
     const base64Key = Utils.toBase64(rawKey)
     const message = JSON.stringify({ songURL, key: base64Key })
@@ -22,6 +24,8 @@ const publishKey = async ({ key, songURL }: PublishKeyParams): Promise<void> => 
       keyID: 'signing-key',
       counterparty: 'self'
     })
+
+    await wallet.getPublicKey({ identityKey: true })
 
     const { publicKey } = await wallet.getPublicKey({
       protocolID: [1, 'tempo'],
@@ -38,19 +42,14 @@ const publishKey = async ({ key, songURL }: PublishKeyParams): Promise<void> => 
 
     console.log('[publishKey] Sending payload to key server:', payload)
 
-    let response
-    try {
-      response = await authFetch.fetch(`${constants.keyServerURL}/publish`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      })
-    } catch (fetchErr) {
-      console.error('[publishKey] Network error while contacting key server:', fetchErr)
-      throw new Error('PublishKeyNetworkError')
-    }
+    // 🌐 Authenticated fetch
+    const response = await authFetch.fetch(`${constants.keyServerURL}/publish`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
 
     if (!response.ok) {
       const errorText = await response.text()
@@ -58,15 +57,7 @@ const publishKey = async ({ key, songURL }: PublishKeyParams): Promise<void> => 
       throw new Error(`PublishKeyServerError: ${response.status}`)
     }
 
-    let result
-    try {
-      result = await response.json()
-    } catch (parseErr) {
-      const errorText = await response.text()
-      console.error('[publishKey] Failed to parse JSON response from server:', errorText)
-      throw new Error('PublishKeyParseError')
-    }
-
+    const result = await response.json()
     if (result.status === 'error') {
       console.error('[publishKey] Server responded with application error:', result)
       const err = new Error(result.description)

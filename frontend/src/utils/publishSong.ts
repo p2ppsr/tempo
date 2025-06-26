@@ -81,6 +81,7 @@ const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> 
   if (fileUploadInfo.encryptionKey) {
     console.log('[Publish] Publishing encryption key...')
     await publishKey({
+      wallet,
       key: fileUploadInfo.encryptionKey,
       songURL: fileUploadInfo.songURL
     })

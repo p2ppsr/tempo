@@ -1,5 +1,5 @@
 import { SymmetricKey, Utils } from '@bsv/sdk'
-import { getStorageClient } from './walletSingleton'
+import { getStorageClient } from './walletSingleton.js'
 
 /**
  * Validates that a song can be successfully decrypted with the given symmetric key.
