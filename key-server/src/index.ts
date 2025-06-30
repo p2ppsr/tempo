@@ -16,7 +16,7 @@ dotenv.config()
 
 declare module 'express-serve-static-core' {
   interface Request {
-    authrite?: {
+    auth?: {
       identityKey: string
     }
   }
@@ -97,7 +97,7 @@ const startServer = async () => {
   app.get('/checkForRoyalties', (req: Request, res: Response, next: NextFunction) => {
     (async () => {
       try {
-        const identityKey = req.authrite?.identityKey
+        const identityKey = req.auth?.identityKey
         if (!identityKey) throw new Error('Missing identityKey')
 
         const unpaidRoyalties = await keyStorage.getUnpaidRoyalties()
@@ -192,7 +192,7 @@ const startServer = async () => {
   app.post('/invoice', (req: Request, res: Response, next: NextFunction) => {
     (async () => {
       try {
-        const identityKey = req.authrite?.identityKey
+        const identityKey = req.auth?.identityKey
         if (!identityKey) {
           return res.status(401).json({
             status: 'error',
@@ -252,7 +252,7 @@ const startServer = async () => {
   app.post('/pay', (req: Request, res: Response, next: NextFunction) => {
     (async () => {
       try {
-        const identityKey = req.authrite?.identityKey
+        const identityKey = req.auth?.identityKey
         if (!identityKey) {
           return res.status(401).json({
             status: 'error',
@@ -331,7 +331,7 @@ const startServer = async () => {
     (async () => {
       try {
         const { songURL, key } = req.body
-        const identityKey = req.authrite?.identityKey
+        const identityKey = req.auth?.identityKey
 
         if (!identityKey) {
           console.warn('[KeyServer] Missing identityKey in authenticated request!')

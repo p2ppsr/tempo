@@ -1,18 +1,7 @@
 import type { Song } from '../../types/interfaces'
-import {
-  LookupResolver,
-  LockingScript,
-  PushDrop,
-  Utils
-} from '@bsv/sdk'
-import type {
-  TSPLookupQuery,
-  FindAllQuery
-} from '../../types/interfaces.js'
-
-function isHexScript(script: string | object): script is string {
-  return typeof script === 'string'
-}
+import { LookupResolver } from '@bsv/sdk'
+import { decodeOutputs } from '../../utils/decodeOutput'
+import type { TSPLookupQuery, FindAllQuery } from '../../types/interfaces.js'
 
 const fetchSongs = async (
   query: TSPLookupQuery = { type: 'findAll' } as FindAllQuery
@@ -38,43 +27,22 @@ const fetchSongs = async (
     lookupResult = response.outputs
     console.log('[fetchSongs] Raw outputs:', lookupResult)
   } catch (e) {
-    console.error('Error fetching song data:', e)
+    console.error('[fetchSongs] Error fetching song data:', e)
     return []
   }
 
-  const parsedSongs: Song[] = lookupResult.map((output: any, i: number) => {
-    try {
-      const lockingScript = isHexScript(output.script)
-        ? LockingScript.fromHex(output.script)
-        : new LockingScript((output.script as any).chunks)
+  // Decode the fetched outputs using your decode utility
+  const parsedSongs = await decodeOutputs(
+    lookupResult.map((o) => ({ beef: o.beef, outputIndex: o.outputIndex }))
+  )
 
-      const decoded = PushDrop.decode(lockingScript)
-
-      const song: Song = {
-        title: Utils.toUTF8(decoded.fields[2]),
-        artist: Utils.toUTF8(decoded.fields[3]),
-        isPublished: true,
-        songURL: Utils.toUTF8(decoded.fields[6]),
-        artworkURL: Utils.toUTF8(decoded.fields[7]),
-        description: Utils.toUTF8(decoded.fields[4]),
-        duration: parseInt(Utils.toUTF8(decoded.fields[5])),
-        sats: output.satoshis,
-        artistIdentityKey: decoded.lockingPublicKey.toString(),
-        token: {
-          outputScript: lockingScript.toHex(),
-          satoshis: output.satoshis,
-          txid: output.txid,
-          vout: output.outputIndex
-        }
-      } as Song
-
-      console.log(`[fetchSongs] Parsed song #${i + 1}:`, song)
-      return song
-    } catch (err) {
-      console.warn(`[fetchSongs] Skipping invalid output #${i + 1}:`, err)
-      return null
-    }
-  }).filter((s): s is Song => s !== null)
+  // Print each song’s URLs so you can copy/paste them directly to test
+  parsedSongs.forEach((song, idx) => {
+    console.log(`[fetchSongs] Song #${idx + 1} URLs:`, {
+      artworkURL: `https://${window.location.hostname === 'localhost' ? 'localhost:3000' : 'YOUR-UHRP-DOMAIN'}/${song.artworkURL}`,
+      songURL: `https://${window.location.hostname === 'localhost' ? 'localhost:3000' : 'YOUR-UHRP-DOMAIN'}/${song.songURL}`
+    })
+  })
 
   console.log('[fetchSongs] Returning parsed songs:', parsedSongs)
   return parsedSongs

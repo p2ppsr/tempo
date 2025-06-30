@@ -31,14 +31,18 @@ export async function getWallet(): Promise<WalletInterface> {
     const signer = new WalletSigner(chain, keyDeriver, storageManager)
     const services = new Services(chain)
     const wallet = new Wallet(signer, services)
-    const client = new StorageClient(wallet, WALLET_STORAGE_URL)
 
+    const client = new StorageClient(wallet, WALLET_STORAGE_URL)
     await client.makeAvailable()
     await storageManager.addWalletStorageProvider(client)
+
+    storageClientInstance = client
     return wallet
   }
-    return walletInstance
+
+  return walletInstance
 }
+
 
 export async function getStorageClient(): Promise<StorageClient> {
   if (!storageClientInstance) await getWallet()
