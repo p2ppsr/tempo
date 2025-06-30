@@ -10,6 +10,7 @@ import fetchSongs from '../../utils/fetchSongs/fetchSongs'
 import SongList from '../SongList/SongList'
 import loadDemoSongs from '../../utils/loadDemoSongs.js'
 import './NewReleases.scss'
+import { Img } from '@bsv/uhrp-react'
 
 const clamp = (value: number, clampAt: number = 60) => Math.min(clampAt, Math.max(-clampAt, value))
 
@@ -80,7 +81,7 @@ const NewReleases: React.FC<NewReleasesProps> = ({ className }) => {
                 animate={{ transform: `perspective(500px) rotateY(${rotation}deg)` }}
                 className="newReleaseCardContainer"
               >
-                <img
+                <Img
                   className="newReleaseCard"
                   src={newRelease.artworkURL || placeholderImage}
                   onClick={() => setPlaybackSong(newRelease)}

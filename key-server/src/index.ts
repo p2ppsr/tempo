@@ -76,17 +76,27 @@ const startServer = async () => {
     wallet,
     allowUnauthenticated: false,
     logger: console,
-    logLevel: 'error'
+    logLevel: undefined
   }))
 
   app.use(createPaymentMiddleware({
     wallet,
     calculateRequestPrice: async (req) => {
       try {
-        const { fileUrl } = req.body as { fileUrl?: string }
-        if (!fileUrl || !req.url.includes('/purchase')) return 0
-        const record = await keyStorage.findKeyByFileUrl(fileUrl)
-        return record?.satoshis || 0
+        if (!req.url.includes('/pay')) return 0
+
+        const { songURL } = req.body as { songURL?: string }
+
+        if (!songURL || typeof songURL !== 'string' || songURL.trim() === '') {
+          console.warn('[Pricing] Invalid or missing songURL in request body')
+          return 0
+        }
+        const record = await keyStorage.findKeyByFileUrl(songURL)
+        if (!record) {
+          console.warn('[Pricing] No record found for songURL:', songURL)
+          return 0
+        }
+        return 1000
       } catch (err) {
         console.warn('[Pricing] Failed to calculate price:', err)
         return 0
@@ -261,12 +271,11 @@ const startServer = async () => {
           })
         }
 
-        const { songURL, orderID, rawTx } = req.body
+
+        const { songURL } = req.body
 
         if (
-          typeof songURL !== 'string' || songURL.trim() === '' ||
-          typeof orderID !== 'string' || orderID.trim() === '' ||
-          typeof rawTx !== 'string' || !/^[0-9a-fA-F]+$/.test(rawTx)
+          typeof songURL !== 'string' || songURL.trim() === ''
         ) {
           return res.status(400).json({
             status: 'error',
@@ -284,30 +293,30 @@ const startServer = async () => {
           })
         }
 
-        const invoice = await keyStorage.findInvoice(identityKey, key.encryptionKey, orderID)
-        if (!invoice) {
-          return res.status(400).json({
-            status: 'error',
-            code: 'ERR_INVOICE_NOT_FOUND',
-            description: 'Invoice not found for specified purchase!'
-          })
-        }
+        // const invoice = await keyStorage.findInvoice(identityKey, key.encryptionKey, orderID)
+        // if (!invoice) {
+        //   return res.status(400).json({
+        //     status: 'error',
+        //     code: 'ERR_INVOICE_NOT_FOUND',
+        //     description: 'Invoice not found for specified purchase!'
+        //   })
+        // }
 
-        const reference = Hash.sha256(rawTx, 'hex')
-          .map(b => b.toString(16).padStart(2, '0'))
-          .join('')
+        // const reference = Hash.sha256(rawTx, 'hex')
+        //   .map(b => b.toString(16).padStart(2, '0'))
+        //   .join('')
 
-        await keyStorage.markInvoiceProcessed({
-          keyID: key.encryptionKey,
-          identityKey,
-          orderID,
-          referenceNumber: reference
-        })
+        // await keyStorage.markInvoiceProcessed({
+        //   keyID: key.encryptionKey,
+        //   identityKey,
+        //   orderID,
+        //   referenceNumber: reference
+        // })
 
         await keyStorage.addRoyaltyRecord({
           keyID: key.encryptionKey,
           artistIdentityKey: key.artistIdentityKey!,
-          amount: Math.floor(invoice.amount * 0.97),
+          amount: 1000,
           paid: false
         })
 

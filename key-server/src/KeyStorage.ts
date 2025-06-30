@@ -169,4 +169,9 @@ export class KeyStorage {
       }
     )
   }
+
+  async findSatsbySongURL(songURL: string): Promise<InvoiceRecord | null> {
+    return await this.invoices.findOne({ fileUrl: songURL })
+  }
+
 }
