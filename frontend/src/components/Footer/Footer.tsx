@@ -4,6 +4,7 @@ import AudioPlayer from 'react-h5-audio-player'
 import placeholderImage from '../../assets/Images/placeholder-image.png'
 import { useAuthStore, usePlaybackStore, useModals } from '../../stores/stores'
 import decryptSong from '../../utils/decryptSong'
+import { Img } from '@bsv/uhrp-react'
 
 import 'react-h5-audio-player/lib/styles.css'
 import './Footer.scss'
@@ -132,7 +133,7 @@ const Footer = () => {
         ) : (
           <>
             {playbackSong.artworkURL && (
-              <img
+              <Img
                 src={artworkError ? placeholderImage : playbackSong.artworkURL}
                 onError={() => setArtworkError(true)}
                 className="playerAlbumArt"

@@ -10,6 +10,7 @@ import {
 } from '@tanstack/react-table'
 import { FaPlay } from 'react-icons/fa'
 import { IoIosCloseCircleOutline } from 'react-icons/io'
+import { Img } from '@bsv/uhrp-react'
 
 import { usePlaybackStore } from '../../stores/stores'
 import deleteSong from '../../utils/deleteSong'
@@ -121,7 +122,7 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
           onClick={() => setPlaybackSong(row.original)}
         >
           <FaPlay className="artworkThumbnailPlayIcon" />
-          <img
+          <Img
             src={row.original.artworkURL || placeholderImage}
             alt={`${row.original.title} artwork`}
             className="songListArtworkThumbnail"
