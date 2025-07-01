@@ -20,7 +20,6 @@ jobs:
 
     env:                      # ── values that depend on the branch
       CURRENT_BRANCH: ${{ github.ref_name == 'production' && 'production' || 'master' }}
-      CWI_NPM_TOKEN: ${{ secrets.CWI_NPM_TOKEN }}
 
     steps:
     # ──────── 1. Sources & toolchain ───────────────────────────────────────
