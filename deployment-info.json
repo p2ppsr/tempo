@@ -1,7 +1,6 @@
 {
   "schema": "bsv-app",
   "schemaVersion": "1.0",
-
   "topicManagers": {
     "tm_tsp": "./backend/src/topic-managers/TSPTopicManager.ts"
   },
@@ -11,12 +10,10 @@
       "hydrateWith": "mongo"
     }
   },
-
   "frontend": {
     "language": "react",
     "sourceDirectory": "./frontend"
   },
-
   "configs": [
     {
       "name": "Local LARS",
@@ -32,7 +29,7 @@
       "provider": "CARS",
       "network": "mainnet",
       "CARSCloudURL": "https://cars.babbage.systems",
-      "projectID": "TO_BE_FILLED_BY_CARS",
+      "projectID": "50247d539b678476a0b00db7bd5584e8",
       "frontendHostingMethod": "HTTPS",
       "deploy": [
         "frontend",

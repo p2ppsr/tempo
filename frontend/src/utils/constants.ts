@@ -9,8 +9,8 @@ interface Constants {
 const constants: Constants = {
   tempoTopic: 'tsp',
   tspProtocolID: 'tmtsp',
-  keyServerURL: import.meta.env.VITE_KEY_SERVER_URL || 'http://localhost:3000',
-  uploadURL: import.meta.env.VITE_UPLOAD_URL || 'http://localhost:3301',
+  keyServerURL: window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://tempo/keyserver.babbage.systems',
+  uploadURL: window.location.hostname === 'localhost' ? 'http://localhost:3301' : 'https://nanostore.babbage.systems',
   RETENTION_PERIOD: 5
 }
 
