@@ -1,13 +1,11 @@
 {
   "compilerOptions": {
     "lib": [
-      "dom",
       "ESNext"
     ],
-    "module": "NodeNext",
-    "target": "esnext",
-    "moduleResolution": "NodeNext",
-    "moduleDetection": "force",
+    "module": "CommonJS",
+    "target": "ES2020",
+    "moduleResolution": "node",
     "rootDir": "./",
     "baseUrl": "./",
     "outDir": "./dist",
@@ -30,7 +28,7 @@
     "src/types.d.ts",
     "jest.config.js",
     "tsconfig.json"
-, "jest.config.js", "tsconfig.json", "src/types/authrite-express.d.ts"  ],
+  ],
   "exclude": [
     "dist",
     "*/**/__tests"

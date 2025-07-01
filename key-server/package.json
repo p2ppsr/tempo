@@ -1,11 +1,11 @@
 {
   "name": "key-server",
   "version": "1.0.0",
-  "type": "module",
-  "main": "index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "tsc -b"
+    "build": "tsc -b",
+    "start": "node dist/src/index.js"
   },
   "keywords": [],
   "author": "",

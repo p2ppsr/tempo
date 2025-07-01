@@ -11,7 +11,8 @@ import { createPaymentMiddleware } from '@bsv/payment-express-middleware'
 import { P2PKH, PublicKey, PrivateKey, Hash } from '@bsv/sdk'
 import { isValid } from './utils/decryptionValidator.js'
 
-(globalThis.self as any) = { crypto }
+// Fix for BSV SDK crypto compatibility
+(globalThis as any).self = { crypto }
 dotenv.config()
 
 declare module 'express-serve-static-core' {
