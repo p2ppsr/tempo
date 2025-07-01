@@ -18,7 +18,7 @@ let storageClientInstance: StorageClient | null = null
 export async function getWallet(): Promise<WalletInterface> {
   if (walletInstance) return walletInstance
 
-  // ✅ Vite-style environment variables
+  // Vite-style environment variables
   const SERVER_PRIVATE_KEY = import.meta.env.VITE_SERVER_PRIVATE_KEY as string
   const WALLET_STORAGE_URL = import.meta.env.VITE_WALLET_STORAGE_URL as string
   const BSV_NETWORK = import.meta.env.VITE_BSV_NETWORK as 'mainnet' | 'testnet'
@@ -26,12 +26,11 @@ export async function getWallet(): Promise<WalletInterface> {
   const chain = BSV_NETWORK === 'mainnet' ? 'main' : 'test'
   const keyDeriver = new KeyDeriver(new PrivateKey(SERVER_PRIVATE_KEY, 'hex'))
   const storageManager = new WalletStorageManager(keyDeriver.identityKey)
-  const signer = new WalletSigner(chain, keyDeriver, storageManager)
+  const signer = new WalletSigner(chain, keyDeriver as any, storageManager)
   const services = new Services(chain)
   const wallet = new Wallet(signer, services)
   const client = new StorageClient(wallet, WALLET_STORAGE_URL)
 
-  // Monkey patch until `downloadFile` is natively supported
   ;(client as any).downloadFile = async (url: string): Promise<Uint8Array> => {
     const res = await fetch(url)
     if (!res.ok) throw new Error(`Failed to fetch ${url}`)

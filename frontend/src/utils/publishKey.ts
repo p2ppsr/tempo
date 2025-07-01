@@ -12,7 +12,7 @@ const publishKey = async ({ wallet, key, songURL }: PublishKeyParams): Promise<v
   try {
     const authFetch = new AuthFetch(wallet)
 
-    // 🔐 Prepare key & signature
+    // Prepare key & signature
     const rawKey = key.toArray('be', 32)
     const base64Key = Utils.toBase64(rawKey)
     const message = JSON.stringify({ songURL, key: base64Key })
@@ -42,7 +42,7 @@ const publishKey = async ({ wallet, key, songURL }: PublishKeyParams): Promise<v
 
     console.log('[publishKey] Sending payload to key server:', payload)
 
-    // 🌐 Authenticated fetch
+    // Authenticated fetch
     const response = await authFetch.fetch(`${constants.keyServerURL}/publish`, {
       method: 'POST',
       headers: {

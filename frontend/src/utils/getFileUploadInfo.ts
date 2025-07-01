@@ -17,7 +17,6 @@ const getFileUploadInfo = async ({
 }: Partial<GetFileUploadInfoParams> = {}) => {
   const wallet = new WalletClient('auto', 'localhost')
 
-  // ✅ FIX: Use uploader server, not key server
   const storageUploader = new StorageUploader({storageURL, wallet})
 
   const filesToUpload: File[] = []

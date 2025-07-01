@@ -20,8 +20,6 @@ const submitPaymentProof = async ({
   console.log('Payment proof txid:', payment.txid)
   console.log('Song URL:', fileUploadInfo.songURL)
   console.log('Artwork URL:', fileUploadInfo.artworkURL)
-  
-  // Optional: send metadata to your own backend, if needed
 }
 
 export default submitPaymentProof

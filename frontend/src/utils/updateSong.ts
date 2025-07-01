@@ -55,7 +55,7 @@ const updateSong = async ({ song, filesToUpdate }: updateSongParams) => {
 
   tx.addOutput({
     satoshis: song.sats,
-    lockingScript: LockingScript.fromHex('00') // placeholder
+    lockingScript: LockingScript.fromHex('00')
   })
 
   const { sign } = pushdrop.unlock(
@@ -124,6 +124,7 @@ const updateSong = async ({ song, filesToUpdate }: updateSongParams) => {
   // Step 6: Publish updated encryption key
   if (fileUploadInfo.encryptionKey) {
     await publishKey({
+      wallet,
       key: fileUploadInfo.encryptionKey,
       songURL: fileUploadInfo.songURL
     })

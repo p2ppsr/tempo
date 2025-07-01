@@ -73,7 +73,7 @@ const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> 
 
   const transaction = Transaction.fromAtomicBEEF(tx)
   const txid = transaction.id('hex')
-  const outputIndex = 0 // Only one output in this transaction
+  const outputIndex = 0
 
   console.log('[Publish] Broadcasting to overlay...')
   await broadcaster.broadcast(transaction)

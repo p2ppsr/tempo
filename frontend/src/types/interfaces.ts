@@ -34,7 +34,6 @@ export interface Song {
   artistIdentityKey?: string
 }
 
-// Updated to match overlay-style structured query format
 export interface SearchFilter {
   type: 'findAll'
   value?: {

@@ -31,12 +31,11 @@ const fetchSongs = async (
     return []
   }
 
-  // Decode the fetched outputs using your decode utility
+
   const parsedSongs = await decodeOutputs(
     lookupResult.map((o) => ({ beef: o.beef, outputIndex: o.outputIndex }))
   )
 
-  // Print each song’s URLs so you can copy/paste them directly to test
   parsedSongs.forEach((song, idx) => {
     console.log(`[fetchSongs] Song #${idx + 1} URLs:`, {
       artworkURL: `https://${window.location.hostname === 'localhost' ? 'localhost:3000' : 'YOUR-UHRP-DOMAIN'}/${song.artworkURL}`,

@@ -5,7 +5,7 @@ import fetchSongs from '../../utils/fetchSongs/fetchSongs'
 import { useLikesStore } from '../../stores/stores'
 import type { Song } from '../../types/interfaces'
 import { Utils } from '@bsv/sdk'
-import type { FindAllQuery } from '../../types/interfaces.js' // Make sure this is your schema path
+import type { FindAllQuery } from '../../types/interfaces.js'
 
 const Likes = () => {
   const [songs, setSongs] = useState<Song[]>([])

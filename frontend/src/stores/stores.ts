@@ -19,7 +19,7 @@ interface PlaybackStore {
   isLoading: boolean
   setIsLoading: (state: boolean) => void
 
-  playbackSong: Omit<Song, 'token'> // Simplified; modify if token is needed
+  playbackSong: Omit<Song, 'token'>
   setPlaybackSong: (song: Partial<Song>) => void
 
   playNextSong: boolean

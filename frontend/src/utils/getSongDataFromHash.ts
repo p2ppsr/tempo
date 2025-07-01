@@ -15,5 +15,5 @@ export const getSongDataFromHash = async (songURL: string): Promise<Song[]> => {
   }
 
   const res = await fetchSongs(query)
-  return res // Expected to be an array of Song objects
+  return res
 }

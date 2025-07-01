@@ -1,6 +1,6 @@
 import { PublicKey, WalletClient } from '@bsv/sdk'
 import fetchSongs from './fetchSongs'
-import type { TSPLookupQuery } from '../../types/interfaces.js' // adjust import path as needed
+import type { TSPLookupQuery } from '../../types/interfaces.js'
 
 const fetchUserSongs = async () => {
   const wallet = new WalletClient('json-api', 'auto')
