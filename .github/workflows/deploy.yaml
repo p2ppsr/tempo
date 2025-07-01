@@ -41,6 +41,10 @@ jobs:
       with:
         credentials_json: ${{ secrets.DOCKER_REGISTRY_PUSH_KEY }}
 
+    - name: Configure Docker for GCR
+      run: |
+        gcloud --quiet auth configure-docker ${{ env.GCR_HOST }}
+
     # ──────── 3. Build & push image ───────────────────────────────────────
     - name: Build and push Docker image
       id: build
