@@ -1,3 +1,12 @@
+/**
+ * @file KeyStorage.ts
+ * @description
+ * Implements the `KeyStorage` class for interacting with MongoDB collections
+ * used by Tempo. Handles management of encryption key records, user balances,
+ * royalty tracking, outgoing royalty payments, and invoices related to
+ * song purchases and distribution.
+ */
+
 import { Collection, Db, ObjectId } from 'mongodb'
 import dotenv from 'dotenv'
 import {
@@ -16,6 +25,16 @@ const ROYALTY_COLLECTION_NAME = 'royalties'
 const PAYMENT_COLLECTION_NAME = 'outgoingRoyaltyPayments'
 const INVOICE_COLLECTION_NAME = 'invoices'
 
+/**
+ * KeyStorage class
+ *
+ * Provides methods to store, retrieve, and update records in MongoDB for:
+ * - Keys (encryption keys for songs)
+ * - Balances (user/artist balances)
+ * - Royalties (royalty distribution tracking)
+ * - Payments (outgoing royalty payments)
+ * - Invoices (sales and purchase records)
+ */
 export class KeyStorage {
   private readonly records: Collection<KeyRecord>
   private readonly balances: Collection<BalanceRecord>
@@ -34,6 +53,9 @@ export class KeyStorage {
 
   // ========== KEYS ==========
 
+  /**
+   * Stores a new key record in the keys collection.
+   */
   async storeKeyRecord(
     fileUrl: string,
     encryptionKey: string,
@@ -50,20 +72,33 @@ export class KeyStorage {
     })
   }
 
+  /**
+   * Deletes a key record from the keys collection.
+   */
   async deleteKeyRecord(fileUrl: string): Promise<void> {
     await this.records.deleteOne({ fileUrl })
   }
 
+  /**
+   * Finds a key record by its file URL.
+   * Returns null if no record is found.
+   */
   async findKeyByFileUrl(fileUrl: string): Promise<KeyRecord | null> {
     return await this.records.findOne({ fileUrl })
   }
 
+  /**
+   * Finds all key records in the keys collection.
+   */
   async findAllKeys(): Promise<KeyRecord[]> {
     return await this.records.find({}).toArray()
   }
 
   // ========== BALANCES ==========
 
+  /**
+   * Increments the balance for a given public key.
+   */
   async incrementBalance(publicKey: string, amount: number): Promise<void> {
     if (amount <= 0) return
     await this.balances.updateOne(
@@ -73,11 +108,17 @@ export class KeyStorage {
     )
   }
 
+  /**
+   * Retrieves the balance for a given public key.
+   */
   async getBalance(publicKey: string): Promise<number> {
     const result = await this.balances.findOne({ publicKey })
     return result?.balance ?? 0
   }
 
+  /**
+   * Sets the balance for a given public key.
+   */
   async setBalance(publicKey: string, newBalance: number): Promise<void> {
     await this.balances.updateOne(
       { publicKey },
@@ -88,6 +129,9 @@ export class KeyStorage {
 
   // ========== ROYALTIES ==========
 
+  /**
+   * Adds a new royalty record to the royalties collection.
+   */
   async addRoyaltyRecord(record: RoyaltyRecord): Promise<void> {
     await this.royalties.insertOne({
       ...record,
@@ -96,6 +140,9 @@ export class KeyStorage {
     })
   }
 
+  /**
+   * Marks a royalty record as paid.
+   */
   async markRoyaltyPaid(recordId: string, paymentId: string): Promise<void> {
   await this.royalties.updateOne(
     { _id: new ObjectId(recordId) },
@@ -109,12 +156,18 @@ export class KeyStorage {
   )
 }
 
+  /**
+   * Retrieves all unpaid royalty records.
+   */
   async getUnpaidRoyalties(): Promise<RoyaltyRecord[]> {
     return await this.royalties.find({ paid: false }).toArray()
   }
 
   // ========== PAYMENTS ==========
 
+  /**
+   * Logs an outgoing royalty payment record.
+   */
   async logOutgoingPayment(record: OutgoingRoyaltyPayment): Promise<void> {
     await this.payments.insertOne({
       ...record,
@@ -124,11 +177,19 @@ export class KeyStorage {
   }
 
   // ========== INVOICES ==========
+
+  /**
+   * Finds a key record by its song URL.
+   * Returns null if no record is found.
+   */
   async findKeyBySongURL(songURL: string): Promise<{ keyID: string } | null> {
     const record = await this.records.findOne({ fileUrl: songURL })
     return record ? { keyID: record.encryptionKey } : null
     }
 
+    /**
+     * Inserts a new invoice record into the invoices collection.
+     */
     async insertInvoice(invoice: InvoiceRecord): Promise<void> {
         await this.invoices.insertOne({
             ...invoice,
@@ -137,6 +198,9 @@ export class KeyStorage {
         })
     }
 
+  /**
+   * Finds an invoice by its identity key, key ID, and order ID.
+   */
       async findInvoice(identityKey: string, keyID: string, orderID: string): Promise<InvoiceRecord | null> {
     return await this.invoices.findOne({
       identityKey,
@@ -145,6 +209,9 @@ export class KeyStorage {
     })
   }
 
+  /**
+   * Marks an invoice as processed, updating the reference number and processed status.
+   */
   async markInvoiceProcessed(params: {
     keyID: string
     identityKey: string
@@ -170,6 +237,10 @@ export class KeyStorage {
     )
   }
 
+  /**
+   * Finds an invoice by its song URL.
+   * Returns null if no record is found.
+   */
   async findSatsbySongURL(songURL: string): Promise<InvoiceRecord | null> {
     return await this.invoices.findOne({ fileUrl: songURL })
   }

@@ -11,21 +11,10 @@ import type { Song } from '../types/interfaces';
 const wallet = new WalletClient('auto', 'localhost');
 const authFetch = new AuthFetch(wallet);
 
-// function generateBase64RandomBytes(length: number): string {
-//   const array = new Uint8Array(length);
-//   window.crypto.getRandomValues(array);
-//   return btoa(String.fromCharCode(...array));
-// }
-
 type MinimalSong = Pick<Song, 'songURL' | 'title' | 'artist'>;
 
 const decryptSong = async (song: MinimalSong) => {
   if (!song.songURL) return;
-
-  // const derivationPrefix = generateBase64RandomBytes(10);
-  // const derivationSuffix = generateBase64RandomBytes(10);
-
-  // let invoice: any;
 
   // Prepare download + decryption promises
   const encryptedDataPromise = (async () => {
