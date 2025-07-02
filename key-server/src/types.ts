@@ -12,7 +12,6 @@ export interface DecodedSongOutput {
   uuid?: string
 }
 
-// src/types/transaction.ts
 export interface PaymentOutput {
   vout: number
   satoshis: number
@@ -64,7 +63,6 @@ export interface OutgoingRoyaltyPayment {
 
 export interface InvoiceRecord {
   orderID: string
-  keyID: string
   identityKey: string
   amount: number
   processed: boolean

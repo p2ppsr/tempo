@@ -1,10 +1,26 @@
-// utils/decodeOutputs.ts
+/**
+ * @file decodeOutputs.ts
+ * @description
+ * Utility functions for decoding PushDrop outputs in Tempo.
+ * Provides functionality to parse fields like title, artist, fileUrl, etc.
+ * from locking scripts of transaction outputs, and convert them into
+ * structured `DecodedSongOutput` objects.
+ */
 
 import { PushDrop, Transaction, Utils } from '@bsv/sdk'
 import type { DecodedSongOutput } from '../types.js'
 
 type FieldKey = keyof DecodedSongOutput
 
+/**
+ * Decodes a single output from a Bitcoin transaction, extracting
+ * requested fields from the PushDrop-encoded locking script.
+ *
+ * @param beef - The raw transaction in BEEF format (array of bytes).
+ * @param outputIndex - The index of the output to decode.
+ * @param fields - The specific fields to extract (e.g., 'title', 'artist').
+ * @returns A promise resolving to a DecodedSongOutput object containing the txid, outputIndex, and requested fields.
+ */
 export async function decodeOutput(
   beef: number[],
   outputIndex: number,
@@ -53,6 +69,14 @@ export async function decodeOutput(
   return result
 }
 
+/**
+ * Decodes multiple outputs in parallel, using `decodeOutput`
+ * for each provided beef/outputIndex pair.
+ *
+ * @param outputs - An array of objects containing beef (transaction) and outputIndex.
+ * @param fields - The fields to extract for each output.
+ * @returns A promise resolving to an array of DecodedSongOutput objects.
+ */
 export async function decodeOutputs(
   outputs: { beef: number[]; outputIndex: number }[],
   fields: FieldKey[]

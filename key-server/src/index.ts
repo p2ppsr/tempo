@@ -199,66 +199,6 @@ const startServer = async () => {
     })().catch(next)
   })
 
-  app.post('/invoice', (req: Request, res: Response, next: NextFunction) => {
-    (async () => {
-      try {
-        const identityKey = req.auth?.identityKey
-        if (!identityKey) {
-          return res.status(401).json({
-            status: 'error',
-            code: 'ERR_NOT_AUTHENTICATED',
-            description: 'Authentication required.'
-          })
-        }
-
-        const { songURL } = req.body
-        if (typeof songURL !== 'string' || songURL.trim() === '') {
-          return res.status(400).json({
-            status: 'error',
-            code: 'ERR_INVALID_INPUT',
-            description: 'Missing or invalid songURL.'
-          })
-        }
-
-        const key = await keyStorage.findKeyBySongURL(songURL)
-        if (!key) {
-          return res.status(400).json({
-            status: 'error',
-            code: 'ERR_KEY_NOT_FOUND',
-            description: 'Decryption key for specified song not found!'
-          })
-        }
-
-        const orderID = randomBytes(32).toString('base64')
-        const amount = 10000
-
-        await keyStorage.insertInvoice({
-          orderID,
-          keyID: key.keyID,
-          identityKey,
-          amount,
-          processed: false,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        })
-
-        return res.status(200).json({
-          status: 'success',
-          identityKey: SERVER_PUBLIC_KEY,
-          amount,
-          orderID
-        })
-      } catch (e) {
-        console.error('[Invoice Error]', e)
-        return res.status(500).json({
-          status: 'error',
-          code: 'ERR_INTERNAL',
-          description: 'An internal error has occurred.'
-        })
-      }
-    })().catch(next)
-  })
-
   app.post('/pay', (req: Request, res: Response, next: NextFunction) => {
     (async () => {
       try {
@@ -293,25 +233,19 @@ const startServer = async () => {
           })
         }
 
-        // const invoice = await keyStorage.findInvoice(identityKey, key.encryptionKey, orderID)
-        // if (!invoice) {
-        //   return res.status(400).json({
-        //     status: 'error',
-        //     code: 'ERR_INVOICE_NOT_FOUND',
-        //     description: 'Invoice not found for specified purchase!'
-        //   })
-        // }
+        const orderID = randomBytes(32).toString('base64')
+        const amount = 10000 // replace with dynamic pricing if needed later
 
-        // const reference = Hash.sha256(rawTx, 'hex')
-        //   .map(b => b.toString(16).padStart(2, '0'))
-        //   .join('')
+        await keyStorage.insertInvoice({
+          orderID,
+          identityKey,
+          amount,
+          processed: false,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
 
-        // await keyStorage.markInvoiceProcessed({
-        //   keyID: key.encryptionKey,
-        //   identityKey,
-        //   orderID,
-        //   referenceNumber: reference
-        // })
+        console.log(`[Pay] Invoice created: orderID=${orderID}, amount=${amount}`)
 
         await keyStorage.addRoyaltyRecord({
           keyID: key.encryptionKey,

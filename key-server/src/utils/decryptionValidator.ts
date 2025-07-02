@@ -1,5 +1,24 @@
+/**
+ * @file validateDecryption.ts
+ * @description
+ * Provides a utility function `isValid` to verify whether a given symmetric key
+ * correctly decrypts the encrypted file retrieved from a UHRP storage URL.
+ * Attempts resolution and decryption up to 5 times with retries.
+ */
+
 import { SymmetricKey, Utils, StorageDownloader } from '@bsv/sdk'
 
+/**
+ * Checks if the provided symmetric key can successfully decrypt the file
+ * at the specified songURL. This is used to validate that the buyer has
+ * the correct key to access the purchased song.
+ *
+ * Retries up to 5 times to handle temporary network or resolution errors.
+ *
+ * @param songURL - The UHRP URL of the encrypted file to validate.
+ * @param key - The symmetric key in base64 encoding to attempt decryption with.
+ * @returns A promise resolving to true if decryption yields non-empty content, or false otherwise.
+ */
 export async function isValid(songURL: string, key: string): Promise<boolean> {
   if (!songURL || !key) return false
 
