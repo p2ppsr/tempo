@@ -91,7 +91,7 @@ export class TSPLookupService implements LookupService {
     await this.storage.deleteRecord(txid, outputIndex)
   }
 
-  async lookup(question: LookupQuestion): Promise<LookupAnswer | LookupFormula> {
+  async lookup(question: LookupQuestion): Promise<LookupFormula> {
     console.log('[TSPLookupService] Lookup called with:', question)
 
     if (!question.query) {

@@ -11,8 +11,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@bsv/sdk": "^1.6.8",
-    "@bsv/uhrp-react": "^1.0.1",
+    "@bsv/sdk": "^1.6.10",
+    "@bsv/uhrp-react": "^1.0.3",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.1.0",
