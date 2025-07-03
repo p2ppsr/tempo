@@ -25,7 +25,7 @@ export class TSPLookupService implements LookupService {
   readonly admissionMode: AdmissionMode = 'locking-script'
   readonly spendNotificationMode: SpendNotificationMode = 'none'
 
-  constructor(public storage: TSPStorage) {}
+  constructor(public storage: TSPStorage) { }
 
   async outputAdmittedByTopic(payload: OutputAdmittedByTopic): Promise<void> {
     if (payload.mode !== 'locking-script') throw new Error('Invalid mode')
@@ -37,7 +37,7 @@ export class TSPLookupService implements LookupService {
 
     if (topic !== 'tm_tsp') {
       console.warn(`[TSPLookupService] Ignoring unknown topic: "${topic}"`)
-      throw new Error(`Invalid topic "${topic}" for this service.`)
+      return
     }
 
     try {
