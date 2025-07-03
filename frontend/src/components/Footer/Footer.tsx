@@ -1,3 +1,12 @@
+/**
+ * @file Footer.tsx
+ * @description
+ * React component providing the audio playback controls and song info display
+ * for the Tempo app’s footer. Integrates with global playback state, handles
+ * decryption of songs, album art display, and user interactions like next/prev
+ * or automatic progression when songs end.
+ */
+
 import { CircularProgress } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
 import AudioPlayer from 'react-h5-audio-player'
@@ -9,8 +18,17 @@ import { Img } from '@bsv/uhrp-react'
 import 'react-h5-audio-player/lib/styles.css'
 import './Footer.scss'
 
+/**
+ * Footer Component
+ *
+ * Displays an audio player with playback controls, artwork, and song metadata.
+ * - Uses global playback store (`usePlaybackStore`) to synchronize playing state.
+ * - Handles song decryption and URL management.
+ * - Integrates invitation modal if playback advances when user lacks Metanet client.
+ * - Manages album artwork display, fallback image on error, and object URL revocation.
+ */
 const Footer = () => {
-  // Global State
+  // ========== GLOBAL STATE ==========
   const [
     _isPlaying,
     isLoading,
@@ -43,15 +61,19 @@ const Footer = () => {
     state.setInvitationModalContent
   ])
 
-  // Component State
+  // ========== COMPONENT STATE ==========
   const [footerSongURL, setFooterSongURL] = useState<string | undefined>(undefined)
   const [artworkError, setArtworkError] = useState(false)
   const audioPlayerRef = useRef<AudioPlayer>(null)
 
+  /**
+   * Type guard to check whether a song object includes a valid token.
+   */
   function hasToken(song: any): song is { token: { txid: string } } {
     return song && typeof song === 'object' && 'token' in song && typeof song.token?.txid === 'string'
   }
 
+  // ========== EFFECTS ==========
   // Load and decrypt song on playback change
   useEffect(() => {
     const decryptAndSet = async () => {
@@ -125,6 +147,7 @@ const Footer = () => {
     }
   }, [playbackSong, songList, setPlaybackSong, setIsPlaying])
 
+  // ========== RENDER ==========
   return (
     <div className="footerContainer">
       <div className="playbackInfoContainer">
