@@ -1,3 +1,12 @@
+/**
+ * @file NewReleases.tsx
+ * @description
+ * React component that fetches and displays new song releases in Tempo.
+ * Includes a horizontally scrollable artwork scroller (with swipe/scroll support)
+ * and a SongList of the releases below. Falls back to demo songs if no data is
+ * found on the overlay.
+ */
+
 import React, { useRef, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useScroll } from '@use-gesture/react'
@@ -12,12 +21,27 @@ import loadDemoSongs from '../../utils/loadDemoSongs.js'
 import './NewReleases.scss'
 import { Img } from '@bsv/uhrp-react'
 
+/**
+ * Clamps a value between -clampAt and +clampAt.
+ */
 const clamp = (value: number, clampAt: number = 60) => Math.min(clampAt, Math.max(-clampAt, value))
 
+/**
+ * Props for the NewReleases component.
+ */
 interface NewReleasesProps {
   className?: string
 }
 
+/**
+ * NewReleases Component
+ *
+ * Fetches latest songs from the overlay and displays them in an interactive,
+ * horizontally scrollable artwork carousel. Displays a song list below the carousel.
+ * - Uses framer-motion for card rotation effects.
+ * - Uses react-use-gesture for horizontal scroll/swipe support.
+ * - Falls back to demo songs if no real songs are available.
+ */
 const NewReleases: React.FC<NewReleasesProps> = ({ className }) => {
   const [
     _isPlaying,
@@ -42,6 +66,7 @@ const NewReleases: React.FC<NewReleasesProps> = ({ className }) => {
     setRotation(scrolling ? clamp(delta[0] * rotationFactor) : 0)
   })
 
+  // Fetch songs or fallback to demo songs
   useEffect(() => {
     (async () => {
       try {
@@ -67,6 +92,7 @@ const NewReleases: React.FC<NewReleasesProps> = ({ className }) => {
     })()
   }, [])
 
+  // ========== RENDER ==========
   return (
     <div className={`container ${className}`}>
       <h1>New Releases</h1>

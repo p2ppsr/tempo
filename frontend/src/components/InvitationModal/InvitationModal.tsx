@@ -1,7 +1,25 @@
+/**
+ * @file InvitationModal.tsx
+ * @description
+ * React component for displaying invitation modals in Tempo. Shows a modal prompt
+ * inviting users to download the Metanet Client when they attempt to access features
+ * requiring it (e.g., playing past the first song, publishing, accessing the library).
+ * 
+ * Fetches its open state and content type from the global modal store.
+ */
+
 import type { InvitationContent } from '../../stores/stores'
 import { useModals } from '../../stores/stores'
 import { Modal } from '@mui/material'
 
+/**
+ * InvitationModal Component
+ *
+ * Renders a modal with dynamic invitation messages and download links for
+ * the Metanet Client (Windows, macOS, Linux). 
+ * - Uses `useModals` store to determine modal open state and current invitation context.
+ * - Supports different invitation scenarios via `InvitationContent` type.
+ */
 const InvitationModal = () => {
   const [
     invitationModalOpen,
@@ -19,6 +37,9 @@ const InvitationModal = () => {
     library: ["Want to access all of Tempo's features?", 'Download the Metanet Client on ']
   }
 
+  /**
+   * Returns the invitation text array for a given invitation context.
+   */
   const getInvitationText = (content: InvitationContent) => invitationTexts[content] || []
 
   return (

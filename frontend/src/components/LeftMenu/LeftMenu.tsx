@@ -1,19 +1,40 @@
+/**
+ * @file LeftMenu.tsx
+ * @description
+ * React component providing the left-side navigation menu for Tempo.
+ * Includes links for Home, Library (with expandable accordion), My Songs,
+ * and Publish Song. Integrates Metanet Client detection to gate access to
+ * certain features and prompts the InvitationModal when necessary.
+ */
+
 import React, { useEffect, useState } from 'react'
 import { FaCaretDown, FaCaretUp } from 'react-icons/fa'
 import { NavLink, useLocation } from 'react-router-dom'
 import './LeftMenu.scss'
 
-// @ts-ignore
+// @ts-ignore: Static asset import
 import tempoLogo from '../../assets/Images/tempoLogo.png'
 import fetchUserSongs from '../../utils/fetchSongs/fetchUserSongs'
 import { useAuthStore, useModals } from '../../stores/stores'
 
+/**
+ * LeftMenu Component
+ *
+ * Renders Tempo’s primary sidebar navigation, including:
+ * - Static links: Home, Publish
+ * - Expandable Library accordion with Likes & Playlists
+ * - Conditionally displayed My Songs tab (based on user song ownership)
+ *
+ * Automatically closes the library accordion on page changes, checks
+ * Metanet Client presence before allowing access to certain routes,
+ * and opens the invitation modal if needed.
+ */
 const LeftMenu = () => {
-  // Component state ========================================================================
+  // ========== COMPONENT STATE ==========
   const [libraryOpen, setLibraryOpen] = useState(false)
   const [showMySongsTab, setShowMySongsTab] = useState(false)
 
-  // Global state ===========================================================================
+  // ========== GLOBAL STATE ==========
   const [userHasMetanetClient] = useAuthStore((state: any) => [state.userHasMetanetClient])
 
   const [
@@ -25,6 +46,8 @@ const LeftMenu = () => {
     state.setInvitationModalOpen,
     state.setInvitationModalContent
   ])
+
+  // ========== EFFECTS ==========
 
   // Close library accordion on page change
   let location = useLocation()
@@ -47,6 +70,10 @@ const LeftMenu = () => {
   })()
 }, [userHasMetanetClient])
 
+  /**
+   * Prevents navigation if Metanet Client is not installed,
+   * opens the invitation modal instead.
+   */
   const handleMncCheck = (e: React.MouseEvent, source: string) => {
     if (!userHasMetanetClient) {
       e.preventDefault()
@@ -55,6 +82,7 @@ const LeftMenu = () => {
     }
   }
 
+  // ========== RENDER ==========
   return (
     <div>
       <div className="leftMenu">
