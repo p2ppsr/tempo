@@ -16,7 +16,7 @@
     "@bsv/payment-express-middleware": "^1.2.1",
     "@bsv/sdk": "^1.6.8",
     "@bsv/wallet-toolbox": "^1.5.6",
-    "@bsv/wallet-toolbox-client": "^1.4.3",
+    "@bsv/wallet-toolbox-client": "^1.5.6",
     "axios": "^1.9.0",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
