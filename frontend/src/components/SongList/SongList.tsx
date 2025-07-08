@@ -1,3 +1,11 @@
+/**
+ * @file SongList.tsx
+ * @description
+ * React component for displaying a list of songs in a table format for Tempo.
+ * Provides playback, playlist management, and song-specific actions like delete or share.
+ * Includes modals for adding songs to playlists and confirming deletion.
+ */
+
 import React, { useEffect, useState } from 'react'
 import { Modal, CircularProgress } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
@@ -21,6 +29,9 @@ import type { Playlist, Song } from '../../types/interfaces'
 
 import './SongList.scss'
 
+/**
+ * Props for the SongList component.
+ */
 interface SongListProps {
   songs: Song[]
   style?: React.CSSProperties
@@ -28,6 +39,27 @@ interface SongListProps {
   isMySongsOnly?: boolean
 }
 
+/**
+ * SongList Component
+ *
+ * Renders a table of songs with artwork, titles, artists, and action buttons.
+ * - Supports playback control (double-click to play).
+ * - Integrates with playback state via Zustand.
+ * - Provides add-to-playlist and delete modals.
+ * - Uses TanStack React Table for flexible rendering of columns and rows.
+ *
+ * Columns:
+ * - Artwork + Play button
+ * - Song title
+ * - Artist name (links to artist profile)
+ * - Actions dropdown
+ *
+ * Features:
+ * - Double-click to start playback.
+ * - Navigate to artist page on click.
+ * - Local playlist management using localStorage.
+ * - Modals for adding to playlists and confirming deletion.
+ */
 const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongListProps) => {
   const navigate = useNavigate()
 
@@ -82,11 +114,17 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     if (local) setPlaylists(JSON.parse(local))
   }, [])
 
+  /**
+   * Handle double-clicking a song row to start playback.
+   */
   const handleDoubleClick = (song: Song) => {
     setPlaybackSong(song)
     setIsPlaying(true)
   }
 
+  /**
+   * Confirm and delete the selected song, updating UI state and notifying the user.
+   */
   const handleDeleteSong = async () => {
     if (!selectedSong) return
     setIsDeletingSong(true)
@@ -101,6 +139,9 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     }
   }
 
+  /**
+   * Add the selected song to the chosen playlist, updating local state and localStorage.
+   */
   const addSongToPlaylist = (playlistId: string, song: Song) => {
     const updated = playlists.map(p => {
       if (p.id === playlistId && !p.songs.some(s => s.songURL === song.songURL)) {

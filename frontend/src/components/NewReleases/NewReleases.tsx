@@ -110,7 +110,17 @@ const NewReleases: React.FC<NewReleasesProps> = ({ className }) => {
                 <Img
                   className="newReleaseCard"
                   src={newRelease.artworkURL || placeholderImage}
-                  onClick={() => setPlaybackSong(newRelease)}
+                  onClick={() => {
+                    const songToPlay = { ...newRelease }
+
+                    // If no full decrypted song is available, use the preview
+                    if (!songToPlay.decryptedSongURL && songToPlay.previewURL) {
+                      songToPlay.decryptedSongURL = songToPlay.previewURL
+                    }
+
+                    setPlaybackSong(songToPlay)
+                  }}
+
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = placeholderImage
                   }}

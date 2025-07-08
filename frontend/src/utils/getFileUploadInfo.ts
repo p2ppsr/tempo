@@ -7,12 +7,14 @@ const storageURL = 'https://nanostore.babbage.systems'
 interface GetFileUploadInfoParams {
   selectedArtwork: File | FileList | null
   selectedMusic: File | FileList | null
+  selectedPreview?: File | FileList | null
   retentionPeriod?: number
 }
 
 const getFileUploadInfo = async ({
   selectedArtwork = null,
   selectedMusic = null,
+  selectedPreview = null,
   retentionPeriod = RETENTION_PERIOD
 }: Partial<GetFileUploadInfoParams> = {}) => {
   const wallet = new WalletClient('auto', 'localhost')
@@ -22,6 +24,7 @@ const getFileUploadInfo = async ({
   const filesToUpload: File[] = []
   let songURL = ''
   let artworkURL = ''
+  let previewURL = ''
   let songDuration = 0
   let encryptionKey: SymmetricKey | undefined
 
@@ -45,6 +48,29 @@ const getFileUploadInfo = async ({
     } catch (err) {
       console.error('[Upload Artwork Error]', err)
       throw new Error('Failed to upload artwork.')
+    }
+  }
+
+  // Upload preview (unencrypted)
+  if (selectedPreview) {
+    try {
+      const previewFile =
+        selectedPreview instanceof FileList ? selectedPreview[0] : selectedPreview
+      const previewBuffer = new Uint8Array(await previewFile.arrayBuffer())
+
+      const uploadedPreview = await storageUploader.publishFile({
+        file: {
+          data: Array.from(previewBuffer),
+          type: previewFile.type
+        },
+        retentionPeriod
+      })
+
+      previewURL = uploadedPreview.uhrpURL
+      filesToUpload.push(previewFile)
+    } catch (err) {
+      console.error('[Upload Preview Error]', err)
+      throw new Error('Failed to upload preview.')
     }
   }
 
@@ -92,6 +118,7 @@ const getFileUploadInfo = async ({
   return {
     songURL,
     artworkURL,
+    previewURL,
     filesToUpload,
     encryptionKey,
     songDuration

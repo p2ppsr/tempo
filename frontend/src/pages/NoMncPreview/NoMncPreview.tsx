@@ -1,4 +1,12 @@
-// Dependencies
+/**
+ * @file NoMncPreview.tsx
+ * @description
+ * React component that renders a fallback preview page when the Metanet Client
+ * is not detected. Displays a message with download links for MetaNet Client
+ * across platforms and a list of preview songs that can be listened to without
+ * MetaNet integration.
+ */
+
 import SongList from '../../components/SongList/SongList'
 
 // Styles
@@ -14,6 +22,10 @@ import MurosPreview from '../../assets/Music/Previews/MurosInstrumental_preview.
 import starfallArtwork from '../../assets/AlbumArtwork/starfall.jpg'
 import starfallPreview from '../../assets/Music/Previews/Starfall_preview.mp3'
 
+/**
+ * Hardcoded array of preview songs available when MetaNet Client is not detected.
+ * Each object contains song metadata like title, artist, songURL, and artworkURL.
+ */
 const previewSongs = [
   {
     title: 'Dawnvisions',
@@ -35,6 +47,15 @@ const previewSongs = [
   }
 ] as any
 
+/**
+ * NoMncPreview Component
+ *
+ * Displays:
+ * - A banner prompting the user to download and install the MetaNet Client
+ *   (with download links for Windows, macOS, and Linux).
+ * - A list of preview songs users can play to get a taste of the Tempo platform
+ *   without needing the MetaNet Client installed.
+ */
 const NoMncPreview = () => {
 
   return (

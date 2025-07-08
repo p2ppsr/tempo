@@ -29,6 +29,8 @@ export interface Song {
   // Optional
   selectedMusic?: File
   selectedArtwork?: File
+  selectedPreview?: File
+  previewURL?: string
   sats?: number
   decryptedSongURL?: string
   artistIdentityKey?: string

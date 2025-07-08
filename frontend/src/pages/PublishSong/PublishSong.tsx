@@ -1,20 +1,43 @@
+/**
+ * @file PublishSong.tsx
+ * @description
+ * React component for publishing a new song on Tempo.
+ * Collects title, artist, music, and artwork inputs, verifies ownership,
+ * and publishes the song to the blockchain and overlay network.
+ */
+
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import publishSong from '../../utils/publishSong'
-
 import './PublishSong.scss'
 import type { Song } from '../../types/interfaces'
 
+/**
+ * Retention period constant
+ * Represents the duration the uploaded song file will be retained (7 years, in minutes).
+ */
 const RETENTION_PERIOD = 60 * 24 * 365 * 7 // Seven years in minutes
 
+/**
+ * PublishSong Component
+ *
+ * - Renders a form allowing users to upload a new song with title, artist, music, and artwork.
+ * - Includes a piracy warning and certification checkbox to ensure rightful ownership.
+ * - Submits data to the publishing endpoint and redirects on success.
+ */
 const PublishSong = () => {
   const navigate = useNavigate()
 
+  /**
+   * FormValues interface
+   * Defines the structure of the form data used in the PublishSong component.
+   */
   interface FormValues {
     title: string
     artist: string
     selectedMusic: File
+    selectedPreview?: File
     selectedArtwork: File
     verifiedCheckbox: boolean
   }
@@ -28,6 +51,7 @@ const PublishSong = () => {
       title: '',
       artist: '',
       selectedMusic: undefined,
+      selectedPreview: undefined,
       selectedArtwork: undefined,
       verifiedCheckbox: false
     }
@@ -35,6 +59,11 @@ const PublishSong = () => {
 
   const values = watch()
 
+  /**
+   * onSubmit
+   * Handles form submission, creates a Song object, and calls publishSong.
+   * Displays toast notifications on publishing progress or errors.
+   */
   const onSubmit = async (formData: FormValues) => {
   const songValues: Song = {
     title: formData.title,
@@ -55,7 +84,8 @@ const PublishSong = () => {
       vout: 0
     },
     selectedArtwork: formData.selectedArtwork,
-    selectedMusic: formData.selectedMusic
+    selectedMusic: formData.selectedMusic,
+    selectedPreview: formData.selectedPreview
   }
 
   try {
@@ -105,6 +135,11 @@ const PublishSong = () => {
         <div className="fieldContainer">
           <label>Artwork</label>
           <input type="file" className="uploadInput" {...register('selectedArtwork')} required />
+        </div>
+
+        <div className="fieldContainer">
+          <label>15-Second Preview (optional)</label>
+          <input type="file" className="uploadInput" {...register('selectedPreview')} />
         </div>
 
         {values.selectedMusic && (

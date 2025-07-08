@@ -27,6 +27,7 @@ const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> 
   const fileUploadInfo = await getFileUploadInfo({
     selectedArtwork: song.selectedArtwork,
     selectedMusic: song.selectedMusic,
+    selectedPreview: song.selectedPreview,
     retentionPeriod: retentionPeriod ?? constants.RETENTION_PERIOD
   })
 
@@ -46,6 +47,7 @@ const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> 
       Utils.toArray(String(fileUploadInfo.songDuration), 'utf8'),
       Utils.toArray(fileUploadInfo.songURL, 'utf8'),
       Utils.toArray(fileUploadInfo.artworkURL, 'utf8'),
+      Utils.toArray(fileUploadInfo.previewURL || '', 'utf8'),
       Utils.toArray(uniqueID, 'utf8')
     ],
     [2, 'tmtsp'],
