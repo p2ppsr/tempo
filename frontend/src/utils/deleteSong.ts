@@ -8,7 +8,7 @@ import {
 import constants from './constants'
 import type { Song } from '../types/interfaces'
 
-const wallet = new WalletClient('json-api', 'auto')
+const wallet = new WalletClient('auto', 'localhost')
 const pushdrop = new PushDrop(wallet)
 
 const deleteSong = async (song: Song): Promise<string> => {

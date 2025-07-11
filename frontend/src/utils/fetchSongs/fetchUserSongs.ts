@@ -3,7 +3,7 @@ import fetchSongs from './fetchSongs'
 import type { TSPLookupQuery } from '../../types/interfaces.js'
 
 const fetchUserSongs = async () => {
-  const wallet = new WalletClient('json-api', 'auto')
+  const wallet = new WalletClient('auto', 'localhost')
 
   const { publicKey: pubKeyString } = await wallet.getPublicKey({
     protocolID: [2, 'Tempo'],

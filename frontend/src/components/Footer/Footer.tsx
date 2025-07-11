@@ -17,6 +17,7 @@ import { Img } from '@bsv/uhrp-react'
 
 import 'react-h5-audio-player/lib/styles.css'
 import './Footer.scss'
+import checkForMetaNetClient from '../../utils/checkForMetaNetClient'
 
 /**
  * Footer Component
@@ -75,54 +76,73 @@ const Footer = () => {
 
   // ========== EFFECTS ==========
   // Load and decrypt song on playback change
-  useEffect(() => {
-    const decryptAndSet = async () => {
-      if (playbackSong) {
-        setIsLoading(true)
-        try {
-          const isDemo = hasToken(playbackSong) && playbackSong.token.txid === 'demo'
-          const decryptedAudio = isDemo
-            ? playbackSong.songURL
-            : await decryptSong(playbackSong)
+  // Load and decrypt song on playback change
+useEffect(() => {
+  const decryptAndSet = async () => {
+    if (playbackSong) {
+      console.log('[Footer] Starting decryptAndSet for:', playbackSong.title)
+      setIsLoading(true)
+      try {
+        const hasMnc = await checkForMetaNetClient()
+        console.log('[Footer] MNC Detected:', hasMnc)
 
-          if (
-            decryptedAudio?.startsWith('blob:') ||
-            decryptedAudio?.startsWith('http')
-          ) {
-            setFooterSongURL(decryptedAudio)
-          } else {
-            console.warn('Invalid footerSongURL', decryptedAudio)
-            setFooterSongURL('')
+        const decryptedAudio = hasMnc
+          ? await decryptSong(playbackSong)
+          : playbackSong.songURL
+
+        console.log('[Footer] decryptedAudio result:', decryptedAudio)
+
+        if (typeof decryptedAudio === 'string') {
+          let normalizedURL = decryptedAudio
+
+          if (decryptedAudio.startsWith('/src/')) {
+            console.warn('[Footer] Patching invalid /src/ URL:', decryptedAudio)
+            normalizedURL = decryptedAudio.replace('/src', '')
           }
 
-          setIsPlaying(true)
-        } catch (e) {
-          console.error(e)
+
+
+          if (/^[A-Za-z0-9-_]{43,}$/.test(normalizedURL)) {
+  console.log('[Footer] Detected UHRP hash, converting to URL:', normalizedURL)
+  normalizedURL = `https://uhrp-lite.babbage.systems/${normalizedURL}`
+}
+
+
+          console.log('[Footer] Normalized URL:', normalizedURL)
+
+          if (
+            normalizedURL.startsWith('blob:') ||
+            normalizedURL.startsWith('http') ||
+            normalizedURL.startsWith('/assets/')
+          ) {
+            console.log('[Footer] Setting footerSongURL to:', normalizedURL)
+            setFooterSongURL(normalizedURL)
+          } else {
+            console.warn('[Footer] Still invalid after patch:', normalizedURL)
+            setFooterSongURL('')
+          }
+        } else {
+          console.warn('[Footer] decryptedAudio is not a string:', decryptedAudio)
           setFooterSongURL('')
-        } finally {
-          setIsLoading(false)
         }
+
+        setIsPlaying(true)
+        console.log('[Footer] Playback triggered')
+      } catch (e) {
+        console.error('[Footer] Error during decryptAndSet:', e)
+        setFooterSongURL('')
+      } finally {
+        console.log('[Footer] Done loading song')
+        setIsLoading(false)
       }
+    } else {
+      console.log('[Footer] No playbackSong set')
     }
+  }
 
-    decryptAndSet()
-  }, [playbackSong])
+  decryptAndSet()
+}, [playbackSong])
 
-  // Reset URL if loading
-  useEffect(() => {
-    if (isLoading) {
-      setFooterSongURL('')
-    }
-  }, [isLoading])
-
-  // Revoke object URL on unmount
-  useEffect(() => {
-    return () => {
-      if (footerSongURL) {
-        URL.revokeObjectURL(footerSongURL)
-      }
-    }
-  }, [footerSongURL])
 
   // Ensure first song plays if play clicked with no current song
   useEffect(() => {
@@ -148,6 +168,8 @@ const Footer = () => {
   }, [playbackSong, songList, setPlaybackSong, setIsPlaying])
 
   // ========== RENDER ==========
+  console.log('[Footer] Final src being passed into AudioPlayer:', footerSongURL)
+
   return (
     <div className="footerContainer">
       <div className="playbackInfoContainer">
@@ -174,10 +196,13 @@ const Footer = () => {
       <AudioPlayer
         ref={audioPlayerRef}
         src={
-          footerSongURL?.startsWith('blob:') || footerSongURL?.startsWith('http')
-            ? footerSongURL
-            : undefined
-        }
+  footerSongURL &&
+  (footerSongURL.startsWith('blob:') ||
+    footerSongURL.startsWith('http') ||
+    footerSongURL.startsWith('/assets/'))
+    ? footerSongURL
+    : undefined
+}
         autoPlayAfterSrcChange
         progressUpdateInterval={10}
         showSkipControls

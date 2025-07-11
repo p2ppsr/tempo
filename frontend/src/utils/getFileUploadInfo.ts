@@ -2,7 +2,7 @@ import { SymmetricKey, StorageUploader, WalletClient } from '@bsv/sdk'
 
 const RETENTION_PERIOD = 5
 
-const storageURL = 'https://nanostore.babbage.systems'
+const storageURL = 'https://uhrp-lite.babbage.systems'
 
 interface GetFileUploadInfoParams {
   selectedArtwork: File | FileList | null

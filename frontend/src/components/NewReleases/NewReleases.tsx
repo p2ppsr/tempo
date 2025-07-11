@@ -101,34 +101,53 @@ const NewReleases: React.FC<NewReleasesProps> = ({ className }) => {
       ) : (
         <>
           <div className="horizontalArtworkScroller" ref={ref} {...bind()}>
-            {songs.map((newRelease, i) => (
-              <motion.div
-                key={i}
-                animate={{ transform: `perspective(500px) rotateY(${rotation}deg)` }}
-                className="newReleaseCardContainer"
-              >
-                <Img
-                  className="newReleaseCard"
-                  src={newRelease.artworkURL || placeholderImage}
-                  onClick={() => {
-                    const songToPlay = { ...newRelease }
+            {songs.map((newRelease, i) => {
+              const isPreviewOnly = !newRelease.decryptedSongURL && !!newRelease.previewURL
 
-                    // If no full decrypted song is available, use the preview
-                    if (!songToPlay.decryptedSongURL && songToPlay.previewURL) {
-                      songToPlay.decryptedSongURL = songToPlay.previewURL
-                    }
+              return (
+                <motion.div
+                  key={i}
+                  animate={{ transform: `perspective(500px) rotateY(${rotation}deg)` }}
+                  className="newReleaseCardContainer"
+                  style={{ position: 'relative' }} // Needed for absolute positioning the label
+                >
+                  <Img
+                    className="newReleaseCard"
+                    src={newRelease.artworkURL || placeholderImage}
+                    onClick={() => {
+                      const songToPlay = { ...newRelease }
 
-                    setPlaybackSong(songToPlay)
-                  }}
+                      if (!songToPlay.decryptedSongURL && songToPlay.previewURL) {
+                        songToPlay.decryptedSongURL = songToPlay.previewURL
+                      }
 
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = placeholderImage
-                  }}
-                />
-              </motion.div>
-            ))}
+                      setPlaybackSong(songToPlay)
+                    }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = placeholderImage
+                    }}
+                  />
+
+                  {isPreviewOnly && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: '6px',
+                        left: '6px',
+                        background: 'rgba(0,0,0,0.6)',
+                        color: '#fff',
+                        fontSize: '0.75rem',
+                        padding: '2px 6px',
+                        borderRadius: '4px'
+                      }}
+                    >
+                      Preview
+                    </div>
+                  )}
+                </motion.div>
+              )
+            })}
           </div>
-
           <SongList songs={songs} />
         </>
       )}

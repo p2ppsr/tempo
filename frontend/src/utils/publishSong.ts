@@ -31,6 +31,12 @@ const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> 
     retentionPeriod: retentionPeriod ?? constants.RETENTION_PERIOD
   })
 
+  console.log('[Publish] Upload Complete')
+  console.log('[Publish] songURL:', fileUploadInfo.songURL)
+  console.log('[Publish] artworkURL:', fileUploadInfo.artworkURL)
+  console.log('[Publish] previewURL:', fileUploadInfo.previewURL)
+  console.log('[Publish] songDuration:', fileUploadInfo.songDuration)
+
   console.log('[Publish] Creating PushDrop token...')
 
   const uniqueID = Utils.toHex(

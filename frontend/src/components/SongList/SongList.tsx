@@ -157,22 +157,49 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
   const columns = [
     createColumnHelper<Song>().accessor('songURL', {
       header: '',
-      cell: ({ row }) => (
-        <div
-          className="songListArtworkContainer"
-          onClick={() => setPlaybackSong(row.original)}
-        >
-          <FaPlay className="artworkThumbnailPlayIcon" />
-          <Img
-            src={row.original.artworkURL || placeholderImage}
-            alt={`${row.original.title} artwork`}
-            className="songListArtworkThumbnail"
-            onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-              (e.target as HTMLImageElement).src = placeholderImage
-            }}
-          />
-        </div>
-      )
+      cell: ({ row }) => {
+        const song = row.original
+        const isPreviewOnly = !song.decryptedSongURL && !!song.previewURL
+
+        const handlePlay = () => {
+          const songToPlay = { ...song }
+          if (isPreviewOnly) {
+            songToPlay.decryptedSongURL = song.previewURL
+          }
+          setPlaybackSong(songToPlay)
+          setIsPlaying(true)
+        }
+
+        return (
+          <div className="songListArtworkContainer" onClick={handlePlay} style={{ position: 'relative' }}>
+            <FaPlay className="artworkThumbnailPlayIcon" />
+            <Img
+              src={song.artworkURL || placeholderImage}
+              alt={`${song.title} artwork`}
+              className="songListArtworkThumbnail"
+              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                (e.target as HTMLImageElement).src = placeholderImage
+              }}
+            />
+            {isPreviewOnly && (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: '4px',
+                  left: '4px',
+                  background: 'rgba(0, 0, 0, 0.6)',
+                  color: '#fff',
+                  fontSize: '0.7rem',
+                  padding: '2px 6px',
+                  borderRadius: '4px'
+                }}
+              >
+                Preview
+              </div>
+            )}
+          </div>
+        )
+      }
     }),
     createColumnHelper<Song>().accessor('title', {
       header: 'Title',
