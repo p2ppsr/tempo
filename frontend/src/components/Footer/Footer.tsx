@@ -68,105 +68,67 @@ const Footer = () => {
   const audioPlayerRef = useRef<AudioPlayer>(null)
   const [isPreviewOnly, setIsPreviewOnly] = useState(false)
 
-  /**
-   * Type guard to check whether a song object includes a valid token.
-   */
-  function hasToken(song: any): song is { token: { txid: string } } {
-    return song && typeof song === 'object' && 'token' in song && typeof song.token?.txid === 'string'
-  }
-
   // ========== EFFECTS ==========
   // Load and decrypt song on playback change
-useEffect(() => {
-  const decryptAndSet = async () => {
-    if (playbackSong) {
-      console.log('[Footer] Starting decryptAndSet for:', playbackSong.title)
-      setIsLoading(true)
+  useEffect(() => {
+    const handlePlaybackChange = async () => {
+      if (playbackSong) {
+        console.log('[Footer] New Playback Song Detected:', playbackSong.title)
+        setIsLoading(true)
+        setFooterSongURL(undefined)
+        setIsPreviewOnly(false)
 
-      // ===== Stop Previous Playback =====
-    if (audioPlayerRef.current?.audio?.current) {
-      audioPlayerRef.current.audio.current.pause()
-      audioPlayerRef.current.audio.current.currentTime = 0
-    }
-    const audioElement = document.getElementById('preview-audio') as HTMLAudioElement | null
-    if (audioElement) {
-      audioElement.pause()
-      audioElement.currentTime = 0
-    }
+        try {
+          const hasMnc = await checkForMetaNetClient()
+          console.log('[Footer] MetaNet Client Present:', hasMnc)
 
-    // ===== Clear old URL to force remount =====
-    setFooterSongURL(undefined)
-      try {
-        const hasMnc = await checkForMetaNetClient()
-        console.log('[Footer] MNC Detected:', hasMnc)
+          if (audioPlayerRef.current?.audio?.current) {
+            audioPlayerRef.current.audio.current.pause()
+            audioPlayerRef.current.audio.current.currentTime = 0
+          }
 
-        let decryptedAudio: string | undefined = undefined
+          const previewElement = document.getElementById('preview-audio') as HTMLAudioElement | null
+          if (previewElement) {
+            previewElement.pause()
+            previewElement.currentTime = 0
+          }
 
-if (hasMnc) {
-  decryptedAudio = await decryptSong(playbackSong)
+          let url: string | undefined
+
+          console.log(['Footer] URL Check for Playback Song:', playbackSong.songURL])
+          if (playbackSong.songURL?.startsWith('/assets/')) {
+  // Always allow static preview files
+  url = playbackSong.songURL
+  setIsPreviewOnly(false)
+} else if (hasMnc) {
+  url = await decryptSong(playbackSong)
   setIsPreviewOnly(false)
 } else if (playbackSong.previewURL) {
   const hashOnly = playbackSong.previewURL.split('/').pop() || ''
-  decryptedAudio = hashOnly
+  url = hashOnly
   setIsPreviewOnly(true)
 } else {
-  decryptedAudio = playbackSong.songURL
-  setIsPreviewOnly(false)
+  url = ''
+  console.warn('[Footer] No playable URL found')
 }
 
 
-        console.log('[Footer] decryptedAudio result:', decryptedAudio)
-
-        if (isPreviewOnly) {
-  console.log('[Footer] Preview hash set as URL:', decryptedAudio)
-  setFooterSongURL(decryptedAudio)
-  setIsPlaying(true)
-  return
-}
-
-
-        if (typeof decryptedAudio === 'string') {
-          let normalizedURL = decryptedAudio
-
-          if (decryptedAudio.startsWith('/src/')) {
-            console.warn('[Footer] Patching invalid /src/ URL:', decryptedAudio)
-            normalizedURL = decryptedAudio.replace('/src', '')
-          }
-
-          console.log('[Footer] Normalized URL:', normalizedURL)
-
-          if (
-            normalizedURL.startsWith('blob:') ||
-            normalizedURL.startsWith('http') ||
-            normalizedURL.startsWith('/assets/')
-          ) {
-            console.log('[Footer] Setting footerSongURL to:', normalizedURL)
-            setFooterSongURL(normalizedURL)
+          if (url) {
+            setFooterSongURL(url)
+            setIsPlaying(true)
           } else {
-            console.warn('[Footer] Still invalid after patch:', normalizedURL)
-            setFooterSongURL('')
+            setFooterSongURL(undefined)
           }
-        } else {
-          console.warn('[Footer] decryptedAudio is not a string:', decryptedAudio)
-          setFooterSongURL('')
+        } catch (err) {
+          console.error('[Footer] Error processing playback:', err)
+          setFooterSongURL(undefined)
+        } finally {
+          setIsLoading(false)
         }
-
-        setIsPlaying(true)
-        console.log('[Footer] Playback triggered')
-      } catch (e) {
-        console.error('[Footer] Error during decryptAndSet:', e)
-        setFooterSongURL('')
-      } finally {
-        console.log('[Footer] Done loading song')
-        setIsLoading(false)
       }
-    } else {
-      console.log('[Footer] No playbackSong set')
     }
-  }
-
-  decryptAndSet()
-}, [playbackSong?.title, playbackSong?.songURL])
+          handlePlaybackChange()
+  }, [playbackSong])
 
 
   // Ensure first song plays if play clicked with no current song
@@ -223,6 +185,13 @@ if (hasMnc) {
     key={playbackSong?.title}
     controls
     autoPlay
+    onCanPlayThrough={(e) => {
+    try {
+      (e.currentTarget as HTMLAudioElement).play()
+    } catch (err) {
+      console.warn('[Footer] onCanPlayThrough error:', err)
+    }
+  }}
     onEnded={() => {
       if (userHasMetanetClient) {
         togglePlayNextSong()
@@ -232,10 +201,13 @@ if (hasMnc) {
       }
     }}
   >
-    <Source src={footerSongURL} type="audio/mpeg" />
+    <Source
+      src={footerSongURL}
+      type="audio/mpeg"
+    />
     Your browser does not support the audio element.
   </audio>
-) : (
+  ) : (
   <AudioPlayer
     key={playbackSong?.title}
     ref={audioPlayerRef}

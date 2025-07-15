@@ -118,7 +118,7 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
    * Handle double-clicking a song row to start playback.
    */
   const handleDoubleClick = (song: Song) => {
-    setPlaybackSong(song)
+    setPlaybackSong({ ...song })
     setIsPlaying(true)
   }
 

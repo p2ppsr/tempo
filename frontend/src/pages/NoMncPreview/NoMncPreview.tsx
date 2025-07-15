@@ -15,29 +15,32 @@ import MurosPreview from '../../assets/Music/Previews/MurosInstrumental_preview.
 import starfallArtwork from '../../assets/AlbumArtwork/starfall.jpg'
 import starfallPreview from '../../assets/Music/Previews/Starfall_preview.mp3'
 
+const normalize = (url: string) => url.replace('/src', '')
+
 const hardcodedPreviewSongs = [
   {
     title: 'Dawnvisions',
     artist: 'Dooblr',
-    songURL: dawnvisionsPreview,
-    decryptedSongURL: dawnvisionsPreview,
-    artworkURL: dawnvisionsArtwork
+    songURL: normalize(dawnvisionsPreview),
+    decryptedSongURL: normalize(dawnvisionsPreview),
+    artworkURL: normalize(dawnvisionsArtwork)
   },
   {
     title: 'Muros Instrumental',
     artist: 'Muros',
-    songURL: MurosPreview,
-    decryptedSongURL: MurosPreview,
-    artworkURL: MurosArtwork
+    songURL: normalize(MurosPreview),
+    decryptedSongURL: normalize(MurosPreview),
+    artworkURL: normalize(MurosArtwork)
   },
   {
     title: 'Starfall',
     artist: 'Dooblr',
-    songURL: starfallPreview,
-    decryptedSongURL: starfallPreview,
-    artworkURL: starfallArtwork
+    songURL: normalize(starfallPreview),
+    decryptedSongURL: normalize(starfallPreview),
+    artworkURL: normalize(starfallArtwork)
   }
 ] as any
+
 
 const NoMncPreview = () => {
   const [songs, setSongs] = useState(hardcodedPreviewSongs)
