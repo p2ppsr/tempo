@@ -97,21 +97,20 @@ const Footer = () => {
 
           console.log(['Footer] URL Check for Playback Song:', playbackSong.songURL])
           if (playbackSong.songURL?.startsWith('/assets/')) {
-  // Always allow static preview files
-  url = playbackSong.songURL
-  setIsPreviewOnly(false)
-} else if (hasMnc) {
-  url = await decryptSong(playbackSong)
-  setIsPreviewOnly(false)
-} else if (playbackSong.previewURL) {
-  const hashOnly = playbackSong.previewURL.split('/').pop() || ''
-  url = hashOnly
-  setIsPreviewOnly(true)
-} else {
-  url = ''
-  console.warn('[Footer] No playable URL found')
-}
-
+            // Always allow static preview files
+            url = playbackSong.songURL
+            setIsPreviewOnly(false)
+          } else if (hasMnc) {
+            url = await decryptSong(playbackSong)
+            setIsPreviewOnly(false)
+          } else if (playbackSong.previewURL) {
+            const hashOnly = playbackSong.previewURL.split('/').pop() || ''
+            url = hashOnly
+            setIsPreviewOnly(true)
+          } else {
+            url = ''
+            console.warn('[Footer] No playable URL found')
+          }
 
           if (url) {
             setFooterSongURL(url)
@@ -127,9 +126,8 @@ const Footer = () => {
         }
       }
     }
-          handlePlaybackChange()
+    handlePlaybackChange()
   }, [playbackSong])
-
 
   // Ensure first song plays if play clicked with no current song
   useEffect(() => {
@@ -181,69 +179,67 @@ const Footer = () => {
       </div>
 
       {isPreviewOnly && footerSongURL ? (
-  <audio
-    key={playbackSong?.title}
-    controls
-    autoPlay
-    onCanPlayThrough={(e) => {
-    try {
-      (e.currentTarget as HTMLAudioElement).play()
-    } catch (err) {
-      console.warn('[Footer] onCanPlayThrough error:', err)
-    }
-  }}
-    onEnded={() => {
-      if (userHasMetanetClient) {
-        togglePlayNextSong()
-      } else {
-        setInvitationModalOpen(true)
-        setInvitationModalContent('songEnd')
-      }
-    }}
-  >
-    <Source
-      src={footerSongURL}
-      type="audio/mpeg"
-    />
-    Your browser does not support the audio element.
-  </audio>
-  ) : (
-  <AudioPlayer
-    key={playbackSong?.title}
-    ref={audioPlayerRef}
-    src={
-      footerSongURL &&
-      (footerSongURL.startsWith('blob:') ||
-        footerSongURL.startsWith('http') ||
-        footerSongURL.startsWith('/assets/'))
-        ? footerSongURL
-        : undefined
-    }
-    autoPlayAfterSrcChange
-    progressUpdateInterval={10}
-    showSkipControls
-    showJumpControls={false}
-    onPlay={() => setIsPlaying(true)}
-    onPause={() => setIsPlaying(false)}
-    onEnded={() => {
-      if (userHasMetanetClient) {
-        togglePlayNextSong()
-      } else {
-        setInvitationModalOpen(true)
-        setInvitationModalContent('songEnd')
-      }
-    }}
-    onClickPrevious={togglePlayPreviousSong}
-    onClickNext={togglePlayNextSong}
-    onListen={(event) => {
-      const target = event.target as HTMLAudioElement
-      console.log('Current time:', target.currentTime)
-    }}
-    listenInterval={1000}
-  />
-)}
-
-
+        <audio
+          key={playbackSong?.title}
+          controls
+          autoPlay
+          onCanPlayThrough={(e) => {
+          try {
+            (e.currentTarget as HTMLAudioElement).play()
+          } catch (err) {
+            console.warn('[Footer] onCanPlayThrough error:', err)
+          }
+        }}
+          onEnded={() => {
+            if (userHasMetanetClient) {
+              togglePlayNextSong()
+            } else {
+              setInvitationModalOpen(true)
+              setInvitationModalContent('songEnd')
+            }
+          }}
+        >
+          <Source
+            src={footerSongURL}
+            type="audio/mpeg"
+          />
+          Your browser does not support the audio element.
+        </audio>
+        ) : (
+        <AudioPlayer
+          key={playbackSong?.title}
+          ref={audioPlayerRef}
+          src={
+            footerSongURL &&
+            (footerSongURL.startsWith('blob:') ||
+              footerSongURL.startsWith('http') ||
+              footerSongURL.startsWith('/assets/'))
+              ? footerSongURL
+              : undefined
+          }
+          autoPlayAfterSrcChange
+          progressUpdateInterval={10}
+          showSkipControls
+          showJumpControls={false}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onEnded={() => {
+            if (userHasMetanetClient) {
+              togglePlayNextSong()
+            } else {
+              setInvitationModalOpen(true)
+              setInvitationModalContent('songEnd')
+            }
+          }}
+          onClickPrevious={togglePlayPreviousSong}
+          onClickNext={togglePlayNextSong}
+          onListen={(event) => {
+            const target = event.target as HTMLAudioElement
+            console.log('Current time:', target.currentTime)
+          }}
+          listenInterval={1000}
+        />
+      )}
     </div>
   )
 }
