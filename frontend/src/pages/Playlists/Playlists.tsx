@@ -1,3 +1,15 @@
+/**
+ * @file Playlists.tsx
+ * @description
+ * React component for managing user-created playlists. Allows users to:
+ * - View all playlists saved in localStorage
+ * - Create new playlists
+ * - Edit playlist names inline
+ * - Delete playlists
+ * - Navigate to individual playlist detail pages.
+ * Updates to playlists are persisted in localStorage.
+ */
+
 import React, { useEffect, useRef, useState } from 'react'
 import uuid4 from 'uuid4'
 import { useNavigate } from 'react-router-dom'
@@ -5,14 +17,26 @@ import type { Playlist } from '../../types/interfaces'
 import { FaEdit, FaPlusCircle, FaTrash } from 'react-icons/fa'
 import './Playlists.scss'
 
+/**
+ * Playlists Component
+ *
+ * Manages playlist CRUD operations:
+ * - Displays playlists fetched from localStorage on mount.
+ * - Allows creating new playlists with unique IDs.
+ * - Provides inline editing of playlist names with auto-save on blur or Enter.
+ * - Deletes playlists and updates localStorage accordingly.
+ * - Navigates to playlist detail pages via React Router.
+ */
 const Playlists = () => {
   const navigate = useNavigate()
 
+  // ================ State Management =================
   const [playlists, setPlaylists] = useState(() => {
     const storagePlaylists = localStorage.getItem('playlists')
     return storagePlaylists ? JSON.parse(storagePlaylists) : []
   })
 
+  // Persist playlists to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('playlists', JSON.stringify(playlists))
   }, [playlists])
@@ -20,8 +44,11 @@ const Playlists = () => {
   const [editingPlaylist, setEditingPlaylist] = useState({ index: -1, text: '' })
   const editingInputRef = useRef<HTMLInputElement>(null)
 
-  // Click Outside PLaylist ====================================================================
+  // ================ Click Outside Handler =================
 
+  /**
+   * Click outside handler to finish editing a playlist name when clicking away.
+   */
   const handleClickOutside = (event: MouseEvent) => {
     if (editingInputRef.current && !editingInputRef.current.contains(event.target as Node)) {
       if (editingPlaylist.text.trim()) {
@@ -33,6 +60,7 @@ const Playlists = () => {
     }
   }
 
+  // Add event listener for click outside when editing a playlist
   useEffect(() => {
     if (editingPlaylist.index !== -1) {
       document.addEventListener('mousedown', handleClickOutside)
@@ -42,8 +70,11 @@ const Playlists = () => {
     }
   }, [editingPlaylist.index, editingPlaylist.text, playlists])
 
-  // Handlers ====================================================================
+  // ================ Playlist Handlers =================
 
+  /**
+   * Adds a new empty playlist and enters editing mode on it.
+   */
   const handleAddPlaylist = () => {
     const newPlaylist = {
       id: uuid4(),
@@ -54,6 +85,11 @@ const Playlists = () => {
     setEditingPlaylist({ index: playlists.length, text: '' })
   }
 
+  /**
+   * Updates the name of the playlist at the given index.
+   * @param index - Index of playlist in the array
+   * @param newName - New name to set
+   */
   const updatePlaylistName = (index: number, newName: string) => {
     const updatedPlaylists = playlists.map((playlist: Playlist, idx: number) =>
       idx === index ? { ...playlist, name: newName.trim() } : playlist
@@ -61,6 +97,9 @@ const Playlists = () => {
     setPlaylists(updatedPlaylists)
   }
 
+  /**
+   * Handles saving changes to a playlist name on Enter key press.
+   */
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     if (event.key === 'Enter') {
       updatePlaylistName(index, editingPlaylist.text)
@@ -68,12 +107,21 @@ const Playlists = () => {
     }
   }
 
+  /**
+   * Deletes the playlist at the given index.
+   * @param event - Mouse event to stop propagation
+   * @param index - Index of playlist to delete
+   */
   const handleDelete = (event: React.MouseEvent<SVGElement, MouseEvent>, index: number) => {
     event.stopPropagation()
     const updatedPlaylists = playlists.filter((_: any, idx: number) => idx !== index)
     setPlaylists(updatedPlaylists)
   }
 
+  /**
+   * Handles navigation to the playlist detail page.
+   * @param id - Playlist ID to navigate to
+   */
   useEffect(() => {
     if (editingInputRef.current) {
       editingInputRef.current.focus()

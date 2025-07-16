@@ -1,3 +1,13 @@
+/**
+ * @file SocialShareModal.tsx
+ * @description
+ * React component for displaying a modal that allows users to share
+ * a song link on social media platforms. When opened, it fetches
+ * song data from a provided share URL, displays the song’s title and artist,
+ * allows copying the link, and provides social share buttons for Twitter,
+ * WhatsApp, LinkedIn, Facebook, and Reddit.
+ */
+
 import React, { useRef, useState, useEffect } from 'react'
 import { CircularProgress, Modal } from '@mui/material'
 import { FaRegCopy } from 'react-icons/fa'
@@ -22,12 +32,31 @@ import { getSongDataFromHash } from '../../utils/getSongDataFromHash'
 
 import './SocialShareModal.scss'
 
-// Define type if available, else fallback to minimal shape
+/**
+ * Type representing minimal song data fetched for the modal.
+ */
 interface SongInfo {
   title: string
   artist: string
 }
 
+/**
+ * SocialShareModal Component
+ *
+ * - Opens when `socialShareModalOpen` is true (managed by global Zustand store).
+ * - Fetches song data based on the hash from the share link.
+ * - Displays song title and artist name.
+ * - Allows users to copy the share link to their clipboard.
+ * - Provides social share buttons for multiple platforms using react-share.
+ * - Closes on outside click or clicking the close button.
+ *
+ * State & Store:
+ * - Uses `socialShareModalOpen`, `setSocialShareModalOpen`, and `socialShareLink` from the Zustand store.
+ * - Local state `socialModalSongData` holds fetched song details.
+ *
+ * Hooks:
+ * - useOutsideClick to detect clicks outside modal content and close it.
+ */
 const SocialShareModal: React.FC = () => {
   const modalContentRef = useRef<HTMLDivElement>(null)
   useOutsideClick<HTMLDivElement>(modalContentRef, () => setSocialShareModalOpen(false))
@@ -60,7 +89,7 @@ const SocialShareModal: React.FC = () => {
 
   return (
     <Modal open={socialShareModalOpen} onClose={() => setSocialShareModalOpen(false)}>
-      <>
+      <div>
         {socialModalSongData ? (
           <div className="modal" ref={modalContentRef}>
             <button
@@ -109,7 +138,7 @@ const SocialShareModal: React.FC = () => {
             <CircularProgress />
           </div>
         )}
-      </>
+      </div>
     </Modal>
   )
 }

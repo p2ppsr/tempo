@@ -35,7 +35,8 @@ export class TSPStorage {
       description = "",
       duration = "",
       songFileURL = "",
-      artFileURL = ""
+      artFileURL = "",
+      previewURL = ""
     } = record
 
     // Insert new record
@@ -57,7 +58,8 @@ export class TSPStorage {
         description,
         duration,
         songFileURL,
-        artFileURL
+        artFileURL,
+        previewURL
       ].filter(value => value !== undefined && value !== "").join(' ')
     }
 

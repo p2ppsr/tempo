@@ -16,6 +16,10 @@ export async function decodeOutput(
   const data = decoded.fields
   const sats = output.satoshis ?? 0;
 
+  const previewRaw = data.length > 10 ? Utils.toUTF8(data[8]) : ''
+  const isValidUhrpHash = /^[a-zA-Z0-9_-]{30,}$/.test(previewRaw)
+  const previewURL = isValidUhrpHash ? `https://uhrp.babbage.systems/${previewRaw}` : undefined
+
   const song: DecodedSong = {
     title: Utils.toUTF8(data[2]),
     artist: Utils.toUTF8(data[3]),
@@ -23,18 +27,19 @@ export async function decodeOutput(
     duration: parseInt(Utils.toUTF8(data[5])),
     songURL: Utils.toUTF8(data[6]),
     artworkURL: Utils.toUTF8(data[7]),
+    previewURL,
     sats: output.satoshis,
     isPublished: true,
     artistIdentityKey: decoded.lockingPublicKey.toString(),
     token: {
-        txid: decodedTx.id('hex'),
-        vout: outputIndex,
-        satoshis: sats,
-        outputScript: output.lockingScript.toHex(),
-        inputs: {},
-        mapiResponses: {},
-        proof: {},
-        rawTX: ''
+      txid: decodedTx.id('hex'),
+      vout: outputIndex,
+      satoshis: sats,
+      outputScript: output.lockingScript.toHex(),
+      inputs: {},
+      mapiResponses: {},
+      proof: {},
+      rawTX: ''
     }
   }
 

@@ -19,7 +19,7 @@ export default class TSPTopicManager implements TopicManager {
           const fields = decoded.fields
 
           // Check field count
-          if (fields.length !== 10) {
+          if (fields.length < 9 || fields.length > 11) {
             console.log(`[TSPTopicManager] Output #${index} – Unexpected field count: ${fields.length}`)
             continue
           }

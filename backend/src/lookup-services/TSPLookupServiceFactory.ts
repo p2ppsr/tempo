@@ -42,7 +42,7 @@ export class TSPLookupService implements LookupService {
 
     try {
       const decoded = PushDrop.decode(lockingScript)
-      const [_, __, songTitleBuf, artistNameBuf, descriptionBuf, durationBuf, songFileURLBuf, artFileURLBuf] = decoded.fields
+      const [_, __, songTitleBuf, artistNameBuf, descriptionBuf, durationBuf, songFileURLBuf, artFileURLBuf, previewURLBuf] = decoded.fields
 
       const artistIdentityKey = Utils.toHex(payload.lockingScript.chunks[0].data!)
       const songTitle = Utils.toBase64(songTitleBuf)
@@ -51,6 +51,7 @@ export class TSPLookupService implements LookupService {
       const duration = Utils.toBase64(durationBuf)
       const songFileURL = Utils.toBase64(songFileURLBuf)
       const artFileURL = Utils.toBase64(artFileURLBuf)
+      const previewURL = Utils.toBase64(previewURLBuf)
 
       console.log(`[TSPLookupService] Decoded song "${songTitle}" by "${artistName}"`)
       console.log('[TSPLookupService] Storing TSP record with:', {
@@ -64,7 +65,8 @@ export class TSPLookupService implements LookupService {
         description,
         duration,
         songFileURL,
-        artFileURL
+        artFileURL,
+        previewURL
       })
 
       console.log('[TSPLookupService] Record stored successfully.')

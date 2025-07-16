@@ -15,6 +15,7 @@ export interface TSPRecord {
   artFileURL: string;
   createdAt: Date;
   searchableAttributes: string;
+  previewURL?: string;
 }
 
 export interface TSPAttributes {
@@ -25,6 +26,7 @@ export interface TSPAttributes {
   duration?: string;
   songFileURL?: string;
   artFileURL?: string;
+  previewURL?: string;
 }
 
 export interface TSPQuery {

@@ -1,8 +1,25 @@
+/**
+ * @file ViewPlaylist.tsx
+ * @description
+ * React component for viewing the details of a specific playlist,
+ * including its name and songs. Supports removing songs from the playlist,
+ * and updates changes to localStorage. Loads the playlist based on
+ * the ID from the React Router URL parameter.
+ */
+
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import type { Playlist } from '../../types/interfaces'
 import SongList from '../../components/SongList/SongList'
 
+/**
+ * ViewPlaylist Component
+ *
+ * Fetches a playlist by its ID (from React Router’s URL params)
+ * and displays its contents in a SongList. Provides functionality
+ * for removing songs from the playlist, updating both component
+ * state and localStorage.
+ */
 const ViewPlaylist = () => {
   const { id } = useParams()
   const [playlist, setPlaylist] = useState<Playlist | null>(null)

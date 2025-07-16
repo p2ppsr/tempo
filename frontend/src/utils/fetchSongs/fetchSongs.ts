@@ -36,12 +36,23 @@ const fetchSongs = async (
     lookupResult.map((o) => ({ beef: o.beef, outputIndex: o.outputIndex }))
   )
 
+  // Detect MetaNet Client availability
+  const userHasMetanetClient = typeof window !== 'undefined' && !!(window as any).metaid
+
   parsedSongs.forEach((song, idx) => {
-    console.log(`[fetchSongs] Song #${idx + 1} URLs:`, {
-      artworkURL: `https://${window.location.hostname === 'localhost' ? 'localhost:3000' : 'YOUR-UHRP-DOMAIN'}/${song.artworkURL}`,
-      songURL: `https://${window.location.hostname === 'localhost' ? 'localhost:3000' : 'YOUR-UHRP-DOMAIN'}/${song.songURL}`
-    })
+  // Assign preview URL as decryptedSongURL if no MNC available
+  if (!userHasMetanetClient && song.previewURL && !song.decryptedSongURL) {
+    song.decryptedSongURL = song.previewURL
+  }
+
+  console.log(`[fetchSongs] Song #${idx + 1} URLs:`, {
+    artworkURL: `https://${window.location.hostname === 'localhost' ? 'localhost:3000' : 'YOUR-UHRP-DOMAIN'}/${song.artworkURL}`,
+    songURL: `https://${window.location.hostname === 'localhost' ? 'localhost:3000' : 'YOUR-UHRP-DOMAIN'}/${song.songURL}`,
+    previewURL: song.previewURL,
+    decryptedSongURL: song.decryptedSongURL
   })
+})
+
 
   console.log('[fetchSongs] Returning parsed songs:', parsedSongs)
   return parsedSongs
