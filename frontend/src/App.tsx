@@ -22,7 +22,7 @@ import PublishSong from './pages/PublishSong/PublishSong'
 import SuccessPage from './pages/PublishSong/PublishSuccess/PublishSuccess'
 import ViewSong from './pages/ViewSong/ViewSong'
 import ViewArtist from './pages/ViewArtist/ViewArtist'
-
+import { WalletClient } from '@bsv/sdk'
 // Styles
 import './App.scss'
 import './styles/forms.scss'
@@ -43,11 +43,13 @@ const App = () => {
   // Detect MetaNet client
   useEffect(() => {
     const run = async () => {
+      const walletClient = await new WalletClient 
       const status = await checkForMetaNetClient()
       setUserHasMetanetClient(status !== 0)
       if (status === 0) {
         console.warn('MetaNet client not detected. Some features may not work as expected.')
       } else {
+        walletClient.waitForAuthentication()
         console.log('MetaNet client detected successfully.')
       }
     }

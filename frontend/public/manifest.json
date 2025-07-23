@@ -10,10 +10,25 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "babbage": {
-    "protocolPermissions": {
-       "tempo": "Needs permission to access keys for publishing and updating songs.",
-       "3241645161d8": "Needs permission to derive a public key used in payment for a song."
+   "babbage": {
+    "groupPermissions": {
+      "protocolPermissions": [
+        {
+          "protocolID": [2, "Tempo"],
+          "counterparty": "...",
+          "description": "for fetching user songs"
+        },
+         {
+          "protocolID": [2, "tmtsp"],
+          "counterparty": "...",
+          "description": "for uploading and deleting songs"
+        },
+         {
+          "protocolID": [2, "tempo"],
+          "counterparty": "...",
+          "description": "for publishing keys"
+        }
+      ] 
     }
   }
 }
