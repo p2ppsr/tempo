@@ -13,30 +13,50 @@ const pushdrop = new PushDrop(wallet)
 
 const deleteSong = async (song: Song): Promise<string> => {
   try {
-    // Destructure for clarity
-    const {
-      token: { txid, vout, satoshis, outputScript },
-      title
-    } = song
+    const { txid, vout } = song.token
+    const title = song.title
 
-    // Step 1: Convert outputScript to LockingScript
-    const outputScriptHex =
-      typeof outputScript === 'string' ? outputScript : outputScript.toHex()
+    // Step 0: Hydrate token with full metadata
+    const { outputs } = await wallet.listOutputs({
+  basket: 'localhost',
+  include: 'locking scripts'
+})
 
-    const lockingScript = LockingScript.fromHex(outputScriptHex)
+const matchedOutput = outputs.find(o => {
+  const [outputTxid, outputVoutStr] = o.outpoint?.split(':') ?? []
+  return outputTxid === txid && Number(outputVoutStr) === vout
+})
 
-    // Step 2: Get unlock script generator
+
+
+if (!matchedOutput) {
+  throw new Error(`Output ${txid}:${vout} not found in wallet`)
+}
+
+
+    if (!matchedOutput) {
+      throw new Error(`Output ${txid}:${vout} not found in wallet`)
+    }
+
+    if (!matchedOutput?.lockingScript) {
+  throw new Error('Missing lockingScript for matched output')
+}
+
+const outputScriptHex = matchedOutput.lockingScript
+const lockingScript = LockingScript.fromHex(outputScriptHex)
+
+    // Step 1: Get unlock script generator
     const { sign } = pushdrop.unlock(
       [2, 'tmtsp'],
       '1',
       'self',
       'all',
       false,
-      satoshis,
+      matchedOutput.satoshis,
       lockingScript
     )
 
-    // Step 3: Create unsigned deletion transaction
+    // Step 2: Create unsigned deletion transaction
     const { signableTransaction } = await wallet.createAction({
       description: `Song, ${title}, deleted!`,
       inputs: [
@@ -56,11 +76,11 @@ const deleteSong = async (song: Song): Promise<string> => {
       throw new Error('Failed to create signable transaction')
     }
 
-    // Step 4: Deserialize and sign
+    // Step 3: Deserialize and sign
     const tx = Transaction.fromAtomicBEEF(signableTransaction.tx)
     const unlockingScript = await sign(tx, 0)
 
-    // Step 5: Finalize by calling signAction
+    // Step 4: Finalize by calling signAction
     const action = await wallet.signAction({
       reference: signableTransaction.reference,
       spends: {
@@ -70,7 +90,7 @@ const deleteSong = async (song: Song): Promise<string> => {
       }
     })
 
-    // Step 6: Broadcast to overlay
+    // Step 5: Broadcast to overlay
     if (!action.tx) {
       throw new Error('Signed transaction is missing from action result')
     }

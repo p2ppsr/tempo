@@ -19,6 +19,7 @@ import {
 import { FaPlay } from 'react-icons/fa'
 import { IoIosCloseCircleOutline } from 'react-icons/io'
 import { Img } from '@bsv/uhrp-react'
+import { WalletClient } from '@bsv/sdk'
 
 import { usePlaybackStore } from '../../stores/stores'
 import deleteSong from '../../utils/deleteSong'
@@ -28,6 +29,8 @@ import placeholderImage from '../../assets/Images/placeholder-image.png'
 import type { Playlist, Song } from '../../types/interfaces'
 
 import './SongList.scss'
+
+const wallet = new WalletClient('auto', 'localhost')
 
 /**
  * Props for the SongList component.
@@ -69,6 +72,7 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false)
   const [isDeletingSong, setIsDeletingSong] = useState(false)
   const [playlists, setPlaylists] = useState<Playlist[]>([])
+  const [derivedKey, setDerivedKey] = useState<string | null>(null)
 
   const [
     setIsPlaying,
@@ -113,6 +117,30 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     const local = localStorage.getItem('playlists')
     if (local) setPlaylists(JSON.parse(local))
   }, [])
+
+
+  useEffect(() => {
+    (async () => {
+      const { publicKey } = await wallet.getPublicKey({
+        protocolID: [2, 'tmtsp'],
+        keyID: '1',
+        counterparty: 'anyone',
+        forSelf: true
+      })
+
+        const keyString = publicKey.toString()
+        setDerivedKey(keyString)
+
+      songs.forEach(song => {
+        console.log('[SongList Debug]', {
+          title: song.title,
+          artistIdentityKey: song.artistIdentityKey,
+          derivedKey: keyString,
+          isOwner: song.artistIdentityKey === keyString
+        })
+      })
+    })()
+  }, [songs])
 
   /**
    * Handle double-clicking a song row to start playback.
@@ -219,21 +247,26 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     createColumnHelper<Song>().accessor('songURL', {
       id: 'actions',
       header: '',
-      cell: info => (
-        <ActionsDropdown
-          info={info}
-          openAddToPlaylistModal={song => {
-            setSelectedSong(song)
-            setIsAddToPlaylistModalOpen(true)
-          }}
-          openConfirmDeleteModal={song => {
-            setSelectedSong(song)
-            setIsConfirmDeleteModalOpen(true)
-          }}
-          onRemoveFromPlaylist={onRemoveFromPlaylist}
-          isMySongsOnly={isMySongsOnly}
-        />
+      cell: info => {
+    const song = info.row.original
+    const isOwner = derivedKey !== null && song.artistIdentityKey === derivedKey
+
+    return (
+      <ActionsDropdown
+        info={info}
+        openAddToPlaylistModal={song => {
+          setSelectedSong(song)
+          setIsAddToPlaylistModalOpen(true)
+        }}
+        openConfirmDeleteModal={song => {
+          setSelectedSong(song)
+          setIsConfirmDeleteModalOpen(true)
+        }}
+        onRemoveFromPlaylist={onRemoveFromPlaylist}
+        isMySongsOnly={isOwner}
+      />
       )
+    }
     })
   ]
 

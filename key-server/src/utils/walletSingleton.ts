@@ -7,7 +7,7 @@
  */
 
 import {
-  KeyDeriver,
+  CachedKeyDeriver,
   PrivateKey,
   WalletInterface
 } from '@bsv/sdk'
@@ -43,7 +43,7 @@ export async function getWallet(): Promise<WalletInterface> {
 
   if (!walletInstance) {
     const chain = BSV_NETWORK === 'mainnet' ? 'main' : 'test'
-    const keyDeriver = new KeyDeriver(new PrivateKey(SERVER_PRIVATE_KEY, 'hex'))
+    const keyDeriver = new CachedKeyDeriver(new PrivateKey(SERVER_PRIVATE_KEY, 'hex'))
     const storageManager = new WalletStorageManager(keyDeriver.identityKey)
     const signer = new WalletSigner(chain, keyDeriver, storageManager)
     const services = new Services(chain)
