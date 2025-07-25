@@ -63,7 +63,7 @@ interface SongListProps {
  * - Local playlist management using localStorage.
  * - Modals for adding to playlists and confirming deletion.
  */
-const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongListProps) => {
+const SongList = ({ songs, style, onRemoveFromPlaylist }: SongListProps) => {
   const navigate = useNavigate()
 
   const [selectedSongIndex, setSelectedSongIndex] = useState<string | null>(null)
@@ -73,6 +73,7 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
   const [isDeletingSong, setIsDeletingSong] = useState(false)
   const [playlists, setPlaylists] = useState<Playlist[]>([])
   const [derivedKey, setDerivedKey] = useState<string | null>(null)
+  const [localSongs, setLocalSongs] = useState<Song[]>(songs)
 
   const [
     setIsPlaying,
@@ -96,6 +97,10 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
 
   useEffect(() => {
     setSongList(songs)
+  }, [songs])
+
+  useEffect(() => {
+    setLocalSongs(songs)
   }, [songs])
 
   useEffect(() => {
@@ -158,13 +163,16 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     setIsDeletingSong(true)
     try {
       await deleteSong(selectedSong)
-      toast.success('Successfully deleted song')
     } catch (e) {
       toast.error(`Error deleting song: ${e}`)
     } finally {
-      setIsDeletingSong(false)
-      setIsConfirmDeleteModalOpen(false)
-    }
+  if (selectedSong) {
+    setLocalSongs(prev => prev.filter(s => s.songURL !== selectedSong.songURL))
+  }
+  setIsDeletingSong(false)
+  setIsConfirmDeleteModalOpen(false)
+}
+
   }
 
   /**
@@ -271,7 +279,7 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
   ]
 
   const table = useReactTable({
-    data: songs,
+    data: localSongs,
     columns,
     getCoreRowModel: getCoreRowModel()
   })

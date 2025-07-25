@@ -39,7 +39,7 @@ export async function decodeOutput(
       inputs: {},
       mapiResponses: {},
       proof: {},
-      rawTX: ''
+      rawTX: Utils.toBase64(beef)
     }
   }
 

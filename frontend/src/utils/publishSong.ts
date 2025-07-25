@@ -67,7 +67,8 @@ const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> 
       {
         lockingScript: lockingScript.toHex(),
         satoshis: 1,
-        outputDescription: 'Tempo Song Token'
+        outputDescription: 'Tempo Song Token',
+        basket: 'tmtsp'
       }
     ],
     description: 'Publish a song',

@@ -35,6 +35,11 @@ const getFileUploadInfo = async ({
         selectedArtwork instanceof FileList ? selectedArtwork[0] : selectedArtwork
       const artworkBuffer = new Uint8Array(await artworkFile.arrayBuffer())
 
+      console.log('[Uploading Artwork]', {
+        size: artworkBuffer.length,
+        type: artworkFile.type
+      })
+
       const uploadedArtwork = await storageUploader.publishFile({
         file: {
           data: Array.from(artworkBuffer),
@@ -45,10 +50,18 @@ const getFileUploadInfo = async ({
 
       artworkURL = uploadedArtwork.uhrpURL
       filesToUpload.push(artworkFile)
-    } catch (err) {
-      console.error('[Upload Artwork Error]', err)
+    } catch (err: any) {
+        console.error('[Upload Artwork Error]', err)
+
+        if (err && typeof err === 'object' && 'response' in err) {
+          const response = (err as any).response
+          if (response?.text) {
+            const text = await response.text()
+            console.error('[Server Response]', text)
+          }
+        }
       throw new Error('Failed to upload artwork.')
-    }
+      }
   }
 
   // Upload preview (unencrypted)
