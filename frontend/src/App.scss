@@ -10,12 +10,12 @@ body {
   margin: 0;
   font-family: system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 a {
   text-decoration: none;
-  color:rgb(114, 171, 250);
+  color: rgb(114, 171, 250);
 }
 
 p {
@@ -25,10 +25,13 @@ p {
 .appLayout {
   display: grid;
   grid-template-columns: minmax(10rem, 20%) 1fr;
-  grid-template-rows: 10vh auto;
+  grid-template-rows: 10vh 1fr auto;
   grid-template-areas:
     'leftmenu topmenu'
-    'leftmenu maincontent';
+    'leftmenu maincontent'
+    'leftmenu footer';
+  min-height: 100vh;
+  position: relative;
 }
 
 .leftMenu {
@@ -42,6 +45,7 @@ p {
 .mainContent {
   grid-area: maincontent;
   overflow-y: auto;
+  padding-bottom: 5rem; // Make room for the footer
 }
 
 .main {
@@ -51,7 +55,7 @@ p {
 
 .container {
   padding-inline: 2rem;
-  height: calc(80vh);
+  height: auto;
   overflow-y: auto;
 }
 
@@ -66,7 +70,6 @@ p {
   width: 100%;
 }
 
-// Hide scrollbar
 ::-webkit-scrollbar {
   height: 0px;
   width: 0px;
@@ -74,7 +77,7 @@ p {
 
 .button {
   background-color: $buttonColor;
-  padding: 10px 40px 10px 40px;
+  padding: 10px 40px;
   color: white;
   font-weight: 600;
   width: 100%;
@@ -84,8 +87,8 @@ p {
 .toastButton {
   background-color: #6f44ee;
   border: 0;
-  padding: 10px 30px 10px 40px;
-  margin: 10px 0px 0px 0px;
+  padding: 10px 30px;
+  margin-top: 10px;
   color: white;
   font-weight: 600;
   text-transform: uppercase;
@@ -96,4 +99,46 @@ p {
   display: flex;
   justify-content: center;
   width: 100%;
+}
+
+// =====================
+// ✅ Mobile (Still Grid)
+// =====================
+@media screen and (max-width: 768px) {
+  .appLayout {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      'topmenu'
+      'maincontent'
+      'footer';
+    height: 100vh; // ⬅️ Required so 100% vertical space is claimed
+  }
+
+  .leftMenu {
+    display: none;
+  }
+
+  .topMenu,
+  .mainContent {
+    width: 100%;
+  }
+
+  .mainContent {
+    overflow-y: auto;
+    padding-bottom: 6rem; // room for footer
+  }
+
+  .container {
+    padding-inline: 1rem;
+    height: auto;
+  }
+
+  .button,
+  .toastButton {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+  }
 }

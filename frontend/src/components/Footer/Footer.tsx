@@ -156,7 +156,7 @@ const Footer = () => {
   console.log('[Footer] Final src being passed into AudioPlayer:', footerSongURL)
 
   return (
-    <div className="footerContainer">
+    <div className="footerContainer" style={{ gridArea: 'footer' }}>
       <div className="playbackInfoContainer">
         {isLoading ? (
           <CircularProgress />

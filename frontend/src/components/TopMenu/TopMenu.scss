@@ -34,3 +34,40 @@
     margin-right: 0.5rem; // Adjust space between the username and the icon
   }
 }
+
+@media screen and (max-width: 768px) {
+  .topMenuContainer {
+    height: 2.5rem;
+    padding: 0 0.5rem;
+
+    .navigationIcon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .menuProfileContainer {
+    margin-right: 0.5rem;
+
+    p {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.hamburger {
+  display: none;
+
+  @media screen and (max-width: 768px) {
+    display: inline-flex;
+    margin-right: 1rem;
+  }
+}
+
+.drawerContent {
+  width: 250px;
+  padding: 1rem;
+  background-color: #111;
+  height: 100%;
+  color: white;
+}

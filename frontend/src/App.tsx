@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
+import { useMediaQuery, useTheme } from '@mui/material'
 
 // Components
 import Footer from './components/Footer/Footer'
@@ -9,7 +10,7 @@ import LeftMenu from './components/LeftMenu/LeftMenu'
 import SocialShareModal from './components/SocialShareModal/SocialShareModal'
 import TopMenu from './components/TopMenu/TopMenu'
 
-// Pages
+// Pages (unchanged)
 import EditSong from './pages/EditSong/EditSong'
 import Home from './pages/Home/Home'
 import Likes from './pages/Likes/Likes'
@@ -40,6 +41,9 @@ import checkForMetaNetClient from './utils/checkForMetaNetClient'
 const App = () => {
   const setUserHasMetanetClient = useAuthStore(state => state.setUserHasMetanetClient)
 
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+
   // Detect MetaNet client
   useEffect(() => {
     const run = async () => {
@@ -64,9 +68,16 @@ const App = () => {
       <SocialShareModal />
 
       <Router>
-        <div className="appLayout">
-          <div className="leftMenu"><LeftMenu /></div>
-          <div className="topMenu"><TopMenu /></div>
+        <div className={`appLayout ${isMobile ? 'mobile' : 'desktop'}`}>
+          {!isMobile && (
+            <div className="leftMenu">
+              <LeftMenu />
+            </div>
+          )}
+
+          <div className="topMenu">
+            <TopMenu />
+          </div>
 
           <div className="mainContent">
             <Routes>

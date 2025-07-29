@@ -7,6 +7,10 @@
  */
 
 import { IoArrowBackCircle, IoArrowForwardCircle } from 'react-icons/io5'
+import { GiHamburgerMenu } from 'react-icons/gi'
+import { Drawer, IconButton } from '@mui/material'
+import { useState } from 'react'
+import MenuContent from '../MenuContent'
 import './TopMenu.scss'
 
 /**
@@ -21,7 +25,7 @@ import './TopMenu.scss'
  * and can be reused across pages where top navigation is needed.
  */
 const TopMenu = () => {
-  // const [userName] = useAuthStore((state: any) => [state.userName])
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleNavigate = (direction: 'back' | 'forward') => {
     direction === 'back' ? window.history.back() : window.history.forward()
@@ -29,26 +33,19 @@ const TopMenu = () => {
 
   return (
     <div className="topMenuContainer">
-      <IoArrowBackCircle
-        size={30}
-        color="white"
-        className="navigationIcon"
-        style={{ marginInline: '1rem' }}
-        onClick={() => handleNavigate('back')}
-      />
-      <IoArrowForwardCircle
-        size={30}
-        color="white"
-        className="navigationIcon"
-        onClick={() => handleNavigate('forward')}
-      />
+      <IconButton onClick={() => setMenuOpen(true)} className="hamburger">
+        <GiHamburgerMenu size={24} color="white" />
+      </IconButton>
+
+      <IoArrowBackCircle size={30} color="white" className="navigationIcon" onClick={() => handleNavigate('back')} />
+      <IoArrowForwardCircle size={30} color="white" className="navigationIcon" onClick={() => handleNavigate('forward')} />
       <div className="flexSpacer" />
 
-      {/* Future user profile dropdown / avatar UI could go here */}
-      {/* <NavLink to="/Profile" className="menuProfileContainer flex">
-        <p>{userName}</p>
-        <FaUserCircle size={30} />
-      </NavLink> */}
+      <Drawer anchor="left" open={menuOpen} onClose={() => setMenuOpen(false)}>
+        <div className="drawerContent" onClick={() => setMenuOpen(false)}>
+          <MenuContent close={() => setMenuOpen(false)} />
+        </div>
+      </Drawer>
     </div>
   )
 }

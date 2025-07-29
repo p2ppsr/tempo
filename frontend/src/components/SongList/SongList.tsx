@@ -6,7 +6,7 @@
  * Includes modals for adding songs to playlists and confirming deletion.
  */
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Modal, CircularProgress } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -74,6 +74,7 @@ const SongList = ({ songs, style, onRemoveFromPlaylist }: SongListProps) => {
   const [playlists, setPlaylists] = useState<Playlist[]>([])
   const [derivedKey, setDerivedKey] = useState<string | null>(null)
   const [localSongs, setLocalSongs] = useState<Song[]>(songs)
+  const scrollPositionRef = useRef(0)
 
   const [
     setIsPlaying,
@@ -102,6 +103,38 @@ const SongList = ({ songs, style, onRemoveFromPlaylist }: SongListProps) => {
   useEffect(() => {
     setLocalSongs(songs)
   }, [songs])
+
+  // Lock scroll when modal opens, restore when it closes
+useEffect(() => {
+  if (isAddToPlaylistModalOpen || isConfirmDeleteModalOpen) {
+    scrollPositionRef.current = window.scrollY
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = 'auto'
+
+    // Restore scroll position (desktop)
+    window.scrollTo({ top: scrollPositionRef.current, behavior: 'instant' })
+
+    // Reset to top on mobile
+    if (window.innerWidth <= 768) {
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }, 50)
+    }
+  }
+
+  return () => {
+    document.body.style.overflow = 'auto'
+  }
+}, [isAddToPlaylistModalOpen, isConfirmDeleteModalOpen])
+
+// Trigger a re-render of the song list when modals close
+useEffect(() => {
+  if (!isAddToPlaylistModalOpen && !isConfirmDeleteModalOpen) {
+    setLocalSongs([...songs])
+  }
+}, [isAddToPlaylistModalOpen, isConfirmDeleteModalOpen])
+
 
   useEffect(() => {
     const index = songs.findIndex(song => song.songURL === playbackSong.songURL)
@@ -188,6 +221,7 @@ const SongList = ({ songs, style, onRemoveFromPlaylist }: SongListProps) => {
     })
     setPlaylists(updated)
     localStorage.setItem('playlists', JSON.stringify(updated))
+    setIsAddToPlaylistModalOpen(false)
   }
 
   const columns = [
@@ -299,7 +333,15 @@ const SongList = ({ songs, style, onRemoveFromPlaylist }: SongListProps) => {
             />
           </div>
           {playlists.map(p => (
-            <div key={p.id} onClick={() => selectedSong && addSongToPlaylist(p.id, selectedSong)}>
+            <div
+              key={p.id}
+              onClick={() => {
+                if (selectedSong) {
+                  addSongToPlaylist(p.id, selectedSong)
+                  setIsAddToPlaylistModalOpen(false)
+                }
+              }}
+            >
               <h2 className="playlistName">{p.name}</h2>
             </div>
           ))}
