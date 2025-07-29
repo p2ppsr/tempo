@@ -42,7 +42,7 @@ const TopMenu = () => {
       <div className="flexSpacer" />
 
       <Drawer anchor="left" open={menuOpen} onClose={() => setMenuOpen(false)}>
-        <div className="drawerContent" onClick={() => setMenuOpen(false)}>
+        <div className="drawerContent">
           <MenuContent close={() => setMenuOpen(false)} />
         </div>
       </Drawer>

@@ -111,16 +111,8 @@ useEffect(() => {
     document.body.style.overflow = 'hidden'
   } else {
     document.body.style.overflow = 'auto'
-
-    // Restore scroll position (desktop)
+    // Restore scroll position for both desktop and mobile
     window.scrollTo({ top: scrollPositionRef.current, behavior: 'instant' })
-
-    // Reset to top on mobile
-    if (window.innerWidth <= 768) {
-      setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }, 50)
-    }
   }
 
   return () => {

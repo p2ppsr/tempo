@@ -60,10 +60,14 @@ p {
 }
 
 .backgroundImage {
-  position: absolute;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
   z-index: -1;
   filter: blur(0.5rem) brightness(0.8);
-  min-width: 100vw;
 }
 
 .rightContainer {
