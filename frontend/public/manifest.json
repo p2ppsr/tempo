@@ -15,18 +15,28 @@
       "protocolPermissions": [
         {
           "protocolID": [2, "Tempo"],
-          "counterparty": "...",
+          "counterparty": "self",
           "description": "for fetching user songs"
         },
          {
           "protocolID": [2, "tmtsp"],
-          "counterparty": "...",
+          "counterparty": "anyone",
           "description": "for uploading and deleting songs"
         },
          {
           "protocolID": [2, "tempo"],
-          "counterparty": "...",
+          "counterparty": "self",
           "description": "for publishing keys"
+        },
+         {
+          "protocolID": [1, "identity key retrieval"],
+          "counterparty": "self",
+          "description": "for fetching user identities"
+        },
+         {
+          "protocolID": [2, "server hmac"],
+          "counterparty": "self",
+          "description": "for deriving keys related to hmac"
         }
       ] 
     }
