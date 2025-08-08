@@ -43,7 +43,7 @@ const App = () => {
   // Detect MetaNet client
   useEffect(() => {
     const run = async () => {
-      const walletClient = await new WalletClient 
+      const walletClient = await new WalletClient()
       const status = await checkForMetaNetClient()
       setUserHasMetanetClient(status !== 0)
       if (status === 0) {
