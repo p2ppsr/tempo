@@ -27,8 +27,15 @@ const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> 
   const fileUploadInfo = await getFileUploadInfo({
     selectedArtwork: song.selectedArtwork,
     selectedMusic: song.selectedMusic,
+    selectedPreview: song.selectedPreview,
     retentionPeriod: retentionPeriod ?? constants.RETENTION_PERIOD
   })
+
+  console.log('[Publish] Upload Complete')
+  console.log('[Publish] songURL:', fileUploadInfo.songURL)
+  console.log('[Publish] artworkURL:', fileUploadInfo.artworkURL)
+  console.log('[Publish] previewURL:', fileUploadInfo.previewURL)
+  console.log('[Publish] songDuration:', fileUploadInfo.songDuration)
 
   console.log('[Publish] Creating PushDrop token...')
 
@@ -46,6 +53,7 @@ const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> 
       Utils.toArray(String(fileUploadInfo.songDuration), 'utf8'),
       Utils.toArray(fileUploadInfo.songURL, 'utf8'),
       Utils.toArray(fileUploadInfo.artworkURL, 'utf8'),
+      Utils.toArray(fileUploadInfo.previewURL || '', 'utf8'),
       Utils.toArray(uniqueID, 'utf8')
     ],
     [2, 'tmtsp'],
@@ -59,7 +67,8 @@ const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> 
       {
         lockingScript: lockingScript.toHex(),
         satoshis: 1,
-        outputDescription: 'Tempo Song Token'
+        outputDescription: 'Tempo Song Token',
+        basket: 'tmtsp'
       }
     ],
     description: 'Publish a song',

@@ -1,4 +1,12 @@
-import React, { useEffect, useState } from 'react'
+/**
+ * @file SongList.tsx
+ * @description
+ * React component for displaying a list of songs in a table format for Tempo.
+ * Provides playback, playlist management, and song-specific actions like delete or share.
+ * Includes modals for adding songs to playlists and confirming deletion.
+ */
+
+import React, { useEffect, useState, useRef } from 'react'
 import { Modal, CircularProgress } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -11,6 +19,7 @@ import {
 import { FaPlay } from 'react-icons/fa'
 import { IoIosCloseCircleOutline } from 'react-icons/io'
 import { Img } from '@bsv/uhrp-react'
+import { WalletClient } from '@bsv/sdk'
 
 import { usePlaybackStore } from '../../stores/stores'
 import deleteSong from '../../utils/deleteSong'
@@ -21,6 +30,11 @@ import type { Playlist, Song } from '../../types/interfaces'
 
 import './SongList.scss'
 
+const wallet = new WalletClient('auto', 'localhost')
+
+/**
+ * Props for the SongList component.
+ */
 interface SongListProps {
   songs: Song[]
   style?: React.CSSProperties
@@ -28,7 +42,28 @@ interface SongListProps {
   isMySongsOnly?: boolean
 }
 
-const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongListProps) => {
+/**
+ * SongList Component
+ *
+ * Renders a table of songs with artwork, titles, artists, and action buttons.
+ * - Supports playback control (double-click to play).
+ * - Integrates with playback state via Zustand.
+ * - Provides add-to-playlist and delete modals.
+ * - Uses TanStack React Table for flexible rendering of columns and rows.
+ *
+ * Columns:
+ * - Artwork + Play button
+ * - Song title
+ * - Artist name (links to artist profile)
+ * - Actions dropdown
+ *
+ * Features:
+ * - Double-click to start playback.
+ * - Navigate to artist page on click.
+ * - Local playlist management using localStorage.
+ * - Modals for adding to playlists and confirming deletion.
+ */
+const SongList = ({ songs, style, onRemoveFromPlaylist }: SongListProps) => {
   const navigate = useNavigate()
 
   const [selectedSongIndex, setSelectedSongIndex] = useState<string | null>(null)
@@ -37,6 +72,9 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false)
   const [isDeletingSong, setIsDeletingSong] = useState(false)
   const [playlists, setPlaylists] = useState<Playlist[]>([])
+  const [derivedKey, setDerivedKey] = useState<string | null>(null)
+  const [localSongs, setLocalSongs] = useState<Song[]>(songs)
+  const scrollPositionRef = useRef(0)
 
   const [
     setIsPlaying,
@@ -63,6 +101,34 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
   }, [songs])
 
   useEffect(() => {
+    setLocalSongs(songs)
+  }, [songs])
+
+  // Lock scroll when modal opens, restore when it closes
+useEffect(() => {
+  if (isAddToPlaylistModalOpen || isConfirmDeleteModalOpen) {
+    scrollPositionRef.current = window.scrollY
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = 'auto'
+    // Restore scroll position for both desktop and mobile
+    window.scrollTo({ top: scrollPositionRef.current, behavior: 'instant' })
+  }
+
+  return () => {
+    document.body.style.overflow = 'auto'
+  }
+}, [isAddToPlaylistModalOpen, isConfirmDeleteModalOpen])
+
+// Trigger a re-render of the song list when modals close
+useEffect(() => {
+  if (!isAddToPlaylistModalOpen && !isConfirmDeleteModalOpen) {
+    setLocalSongs([...songs])
+  }
+}, [isAddToPlaylistModalOpen, isConfirmDeleteModalOpen])
+
+
+  useEffect(() => {
     const index = songs.findIndex(song => song.songURL === playbackSong.songURL)
     if (playNextSong && songs.length > 0) {
       const newSong = songs[(index + 1) % songs.length]
@@ -82,25 +148,61 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     if (local) setPlaylists(JSON.parse(local))
   }, [])
 
+
+  useEffect(() => {
+    (async () => {
+      const { publicKey } = await wallet.getPublicKey({
+        protocolID: [2, 'tmtsp'],
+        keyID: '1',
+        counterparty: 'anyone',
+        forSelf: true
+      })
+
+        const keyString = publicKey.toString()
+        setDerivedKey(keyString)
+
+      songs.forEach(song => {
+        console.log('[SongList Debug]', {
+          title: song.title,
+          artistIdentityKey: song.artistIdentityKey,
+          derivedKey: keyString,
+          isOwner: song.artistIdentityKey === keyString
+        })
+      })
+    })()
+  }, [songs])
+
+  /**
+   * Handle double-clicking a song row to start playback.
+   */
   const handleDoubleClick = (song: Song) => {
-    setPlaybackSong(song)
+    setPlaybackSong({ ...song })
     setIsPlaying(true)
   }
 
+  /**
+   * Confirm and delete the selected song, updating UI state and notifying the user.
+   */
   const handleDeleteSong = async () => {
     if (!selectedSong) return
     setIsDeletingSong(true)
     try {
       await deleteSong(selectedSong)
-      toast.success('Successfully deleted song')
     } catch (e) {
       toast.error(`Error deleting song: ${e}`)
     } finally {
-      setIsDeletingSong(false)
-      setIsConfirmDeleteModalOpen(false)
-    }
+  if (selectedSong) {
+    setLocalSongs(prev => prev.filter(s => s.songURL !== selectedSong.songURL))
+  }
+  setIsDeletingSong(false)
+  setIsConfirmDeleteModalOpen(false)
+}
+
   }
 
+  /**
+   * Add the selected song to the chosen playlist, updating local state and localStorage.
+   */
   const addSongToPlaylist = (playlistId: string, song: Song) => {
     const updated = playlists.map(p => {
       if (p.id === playlistId && !p.songs.some(s => s.songURL === song.songURL)) {
@@ -111,27 +213,55 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     })
     setPlaylists(updated)
     localStorage.setItem('playlists', JSON.stringify(updated))
+    setIsAddToPlaylistModalOpen(false)
   }
 
   const columns = [
     createColumnHelper<Song>().accessor('songURL', {
       header: '',
-      cell: ({ row }) => (
-        <div
-          className="songListArtworkContainer"
-          onClick={() => setPlaybackSong(row.original)}
-        >
-          <FaPlay className="artworkThumbnailPlayIcon" />
-          <Img
-            src={row.original.artworkURL || placeholderImage}
-            alt={`${row.original.title} artwork`}
-            className="songListArtworkThumbnail"
-            onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-              (e.target as HTMLImageElement).src = placeholderImage
-            }}
-          />
-        </div>
-      )
+      cell: ({ row }) => {
+        const song = row.original
+        const isPreviewOnly = !song.decryptedSongURL && !!song.previewURL
+
+        const handlePlay = () => {
+          const songToPlay = { ...song }
+          if (isPreviewOnly) {
+            songToPlay.decryptedSongURL = song.previewURL
+          }
+          setPlaybackSong(songToPlay)
+          setIsPlaying(true)
+        }
+
+        return (
+          <div className="songListArtworkContainer" onClick={handlePlay} style={{ position: 'relative' }}>
+            <FaPlay className="artworkThumbnailPlayIcon" />
+            <Img
+              src={song.artworkURL || placeholderImage}
+              alt={`${song.title} artwork`}
+              className="songListArtworkThumbnail"
+              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                (e.target as HTMLImageElement).src = placeholderImage
+              }}
+            />
+            {isPreviewOnly && (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: '4px',
+                  left: '4px',
+                  background: 'rgba(0, 0, 0, 0.6)',
+                  color: '#fff',
+                  fontSize: '0.7rem',
+                  padding: '2px 6px',
+                  borderRadius: '4px'
+                }}
+              >
+                Preview
+              </div>
+            )}
+          </div>
+        )
+      }
     }),
     createColumnHelper<Song>().accessor('title', {
       header: 'Title',
@@ -151,26 +281,31 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
     createColumnHelper<Song>().accessor('songURL', {
       id: 'actions',
       header: '',
-      cell: info => (
-        <ActionsDropdown
-          info={info}
-          openAddToPlaylistModal={song => {
-            setSelectedSong(song)
-            setIsAddToPlaylistModalOpen(true)
-          }}
-          openConfirmDeleteModal={song => {
-            setSelectedSong(song)
-            setIsConfirmDeleteModalOpen(true)
-          }}
-          onRemoveFromPlaylist={onRemoveFromPlaylist}
-          isMySongsOnly={isMySongsOnly}
-        />
+      cell: info => {
+    const song = info.row.original
+    const isOwner = derivedKey !== null && song.artistIdentityKey === derivedKey
+
+    return (
+      <ActionsDropdown
+        info={info}
+        openAddToPlaylistModal={song => {
+          setSelectedSong(song)
+          setIsAddToPlaylistModalOpen(true)
+        }}
+        openConfirmDeleteModal={song => {
+          setSelectedSong(song)
+          setIsConfirmDeleteModalOpen(true)
+        }}
+        onRemoveFromPlaylist={onRemoveFromPlaylist}
+        isMySongsOnly={isOwner}
+      />
       )
+    }
     })
   ]
 
   const table = useReactTable({
-    data: songs,
+    data: localSongs,
     columns,
     getCoreRowModel: getCoreRowModel()
   })
@@ -190,7 +325,15 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly }: SongLis
             />
           </div>
           {playlists.map(p => (
-            <div key={p.id} onClick={() => selectedSong && addSongToPlaylist(p.id, selectedSong)}>
+            <div
+              key={p.id}
+              onClick={() => {
+                if (selectedSong) {
+                  addSongToPlaylist(p.id, selectedSong)
+                  setIsAddToPlaylistModalOpen(false)
+                }
+              }}
+            >
               <h2 className="playlistName">{p.name}</h2>
             </div>
           ))}

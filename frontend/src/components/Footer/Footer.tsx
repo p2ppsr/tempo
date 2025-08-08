@@ -13,10 +13,11 @@ import AudioPlayer from 'react-h5-audio-player'
 import placeholderImage from '../../assets/Images/placeholder-image.png'
 import { useAuthStore, usePlaybackStore, useModals } from '../../stores/stores'
 import decryptSong from '../../utils/decryptSong'
-import { Img } from '@bsv/uhrp-react'
+import { Img, Source } from '@bsv/uhrp-react'
 
 import 'react-h5-audio-player/lib/styles.css'
 import './Footer.scss'
+import checkForMetaNetClient from '../../utils/checkForMetaNetClient'
 
 /**
  * Footer Component
@@ -65,64 +66,68 @@ const Footer = () => {
   const [footerSongURL, setFooterSongURL] = useState<string | undefined>(undefined)
   const [artworkError, setArtworkError] = useState(false)
   const audioPlayerRef = useRef<AudioPlayer>(null)
-
-  /**
-   * Type guard to check whether a song object includes a valid token.
-   */
-  function hasToken(song: any): song is { token: { txid: string } } {
-    return song && typeof song === 'object' && 'token' in song && typeof song.token?.txid === 'string'
-  }
+  const [isPreviewOnly, setIsPreviewOnly] = useState(false)
 
   // ========== EFFECTS ==========
   // Load and decrypt song on playback change
   useEffect(() => {
-    const decryptAndSet = async () => {
+    const handlePlaybackChange = async () => {
       if (playbackSong) {
+        console.log('[Footer] New Playback Song Detected:', playbackSong.title)
         setIsLoading(true)
-        try {
-          const isDemo = hasToken(playbackSong) && playbackSong.token.txid === 'demo'
-          const decryptedAudio = isDemo
-            ? playbackSong.songURL
-            : await decryptSong(playbackSong)
+        setFooterSongURL(undefined)
+        setIsPreviewOnly(false)
 
-          if (
-            decryptedAudio?.startsWith('blob:') ||
-            decryptedAudio?.startsWith('http')
-          ) {
-            setFooterSongURL(decryptedAudio)
-          } else {
-            console.warn('Invalid footerSongURL', decryptedAudio)
-            setFooterSongURL('')
+        try {
+          const hasMnc = await checkForMetaNetClient()
+          console.log('[Footer] MetaNet Client Present:', hasMnc)
+
+          if (audioPlayerRef.current?.audio?.current) {
+            audioPlayerRef.current.audio.current.pause()
+            audioPlayerRef.current.audio.current.currentTime = 0
           }
 
-          setIsPlaying(true)
-        } catch (e) {
-          console.error(e)
-          setFooterSongURL('')
+          const previewElement = document.getElementById('preview-audio') as HTMLAudioElement | null
+          if (previewElement) {
+            previewElement.pause()
+            previewElement.currentTime = 0
+          }
+
+          let url: string | undefined
+
+          console.log(['Footer] URL Check for Playback Song:', playbackSong.songURL])
+          if (playbackSong.songURL?.startsWith('/assets/')) {
+            // Always allow static preview files
+            url = playbackSong.songURL
+            setIsPreviewOnly(false)
+          } else if (hasMnc) {
+            url = await decryptSong(playbackSong)
+            setIsPreviewOnly(false)
+          } else if (playbackSong.previewURL) {
+            const hashOnly = playbackSong.previewURL.split('/').pop() || ''
+            url = hashOnly
+            setIsPreviewOnly(true)
+          } else {
+            url = ''
+            console.warn('[Footer] No playable URL found')
+          }
+
+          if (url) {
+            setFooterSongURL(url)
+            setIsPlaying(true)
+          } else {
+            setFooterSongURL(undefined)
+          }
+        } catch (err) {
+          console.error('[Footer] Error processing playback:', err)
+          setFooterSongURL(undefined)
         } finally {
           setIsLoading(false)
         }
       }
     }
-
-    decryptAndSet()
+    handlePlaybackChange()
   }, [playbackSong])
-
-  // Reset URL if loading
-  useEffect(() => {
-    if (isLoading) {
-      setFooterSongURL('')
-    }
-  }, [isLoading])
-
-  // Revoke object URL on unmount
-  useEffect(() => {
-    return () => {
-      if (footerSongURL) {
-        URL.revokeObjectURL(footerSongURL)
-      }
-    }
-  }, [footerSongURL])
 
   // Ensure first song plays if play clicked with no current song
   useEffect(() => {
@@ -148,8 +153,10 @@ const Footer = () => {
   }, [playbackSong, songList, setPlaybackSong, setIsPlaying])
 
   // ========== RENDER ==========
+  console.log('[Footer] Final src being passed into AudioPlayer:', footerSongURL)
+
   return (
-    <div className="footerContainer">
+    <div className="footerContainer" style={{ gridArea: 'footer' }}>
       <div className="playbackInfoContainer">
         {isLoading ? (
           <CircularProgress />
@@ -171,35 +178,68 @@ const Footer = () => {
         </div>
       </div>
 
-      <AudioPlayer
-        ref={audioPlayerRef}
-        src={
-          footerSongURL?.startsWith('blob:') || footerSongURL?.startsWith('http')
-            ? footerSongURL
-            : undefined
-        }
-        autoPlayAfterSrcChange
-        progressUpdateInterval={10}
-        showSkipControls
-        showJumpControls={false}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-        onEnded={() => {
-          if (userHasMetanetClient) {
-            togglePlayNextSong()
-          } else {
-            setInvitationModalOpen(true)
-            setInvitationModalContent('songEnd')
+      {isPreviewOnly && footerSongURL ? (
+        <audio
+          key={playbackSong?.title}
+          controls
+          autoPlay
+          onCanPlayThrough={(e) => {
+          try {
+            (e.currentTarget as HTMLAudioElement).play()
+          } catch (err) {
+            console.warn('[Footer] onCanPlayThrough error:', err)
           }
         }}
-        onClickPrevious={togglePlayPreviousSong}
-        onClickNext={togglePlayNextSong}
-        onListen={(event) => {
-          const target = event.target as HTMLAudioElement
-          console.log('Current time:', target.currentTime)
-        }}
-        listenInterval={1000}
-      />
+          onEnded={() => {
+            if (userHasMetanetClient) {
+              togglePlayNextSong()
+            } else {
+              setInvitationModalOpen(true)
+              setInvitationModalContent('songEnd')
+            }
+          }}
+        >
+          <Source
+            src={footerSongURL}
+            type="audio/mpeg"
+          />
+          Your browser does not support the audio element.
+        </audio>
+        ) : (
+        <AudioPlayer
+          key={playbackSong?.title}
+          ref={audioPlayerRef}
+          src={
+            footerSongURL &&
+            (footerSongURL.startsWith('blob:') ||
+              footerSongURL.startsWith('http') ||
+              footerSongURL.startsWith('/assets/'))
+              ? footerSongURL
+              : undefined
+          }
+          autoPlayAfterSrcChange
+          progressUpdateInterval={10}
+          showSkipControls
+          showJumpControls={false}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onEnded={() => {
+            if (userHasMetanetClient) {
+              togglePlayNextSong()
+            } else {
+              setInvitationModalOpen(true)
+              setInvitationModalContent('songEnd')
+            }
+          }}
+          onClickPrevious={togglePlayPreviousSong}
+          onClickNext={togglePlayNextSong}
+          onListen={(event) => {
+            const target = event.target as HTMLAudioElement
+            console.log('Current time:', target.currentTime)
+          }}
+          listenInterval={1000}
+        />
+      )}
     </div>
   )
 }

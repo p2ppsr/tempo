@@ -1,98 +1,58 @@
 import type { Song } from '../types/interfaces'
+import { LookupResolver } from '@bsv/sdk'
+import { decodeOutputs } from '../utils/decodeOutput'
 
-// Assets
-import dawn from '../assets/Music/Previews/Dawnvisions_preview.mp3'
-import muros from '../assets/Music/Previews/MurosInstrumental_preview.mp3'
-import starfall from '../assets/Music/Previews/Starfall_preview.mp3'
-import dawnArt from '../assets/AlbumArtwork/dawnvisions.jpg'
-import murosArt from '../assets/AlbumArtwork/muros.jpg'
-import starfallArt from '../assets/AlbumArtwork/starfall.jpg'
+const resolver = new LookupResolver({
+  networkPreset: window.location.hostname === 'localhost' ? 'local' : 'mainnet'
+})
 
 /**
- * Converts a static file to a Blob URL for use in audio/image components.
- */
-async function toObjectURL(file: string): Promise<string> {
-  const response = await fetch(file)
-  const blob = await response.blob()
-  return URL.createObjectURL(blob)
-}
-
-/**
- * Returns an array of demo songs in the same format as overlay songs.
+ * loadDemoSongs
+ * - Queries the overlay for publicly available preview songs.
+ * - Returns an array of songs that include a previewURL (unencrypted).
  */
 export default async function loadDemoSongs(): Promise<Song[]> {
-  const previews = await Promise.all([
-    toObjectURL(dawn),
-    toObjectURL(muros),
-    toObjectURL(starfall),
-    toObjectURL(dawnArt),
-    toObjectURL(murosArt),
-    toObjectURL(starfallArt)
-  ])
+  console.log('[loadDemoSongs] Querying overlay for previews...')
 
-  return [
-    {
-      title: 'Dawnvisions',
-      artist: 'Demo Artist',
-      description: 'A dreamy instrumental.',
-      duration: 180,
-      isPublished: true,
-      sats: 1000,
-      songURL: previews[0],
-      artworkURL: previews[3],
-      artistIdentityKey: 'demo-key',
-      token: {
-        txid: 'demo',
-        vout: 0,
-        satoshis: 1000,
-        outputScript: 'demo',
-        rawTX: '00',
-        proof: {},
-        inputs: [],
-        mapiResponses: []
-      }
-    },
-    {
-      title: 'Muros Instrumental',
-      artist: 'Demo Artist',
-      description: 'Moody and minimal.',
-      duration: 195,
-      isPublished: true,
-      sats: 1000,
-      songURL: previews[1],
-      artworkURL: previews[4],
-      artistIdentityKey: 'demo-key',
-      token: {
-        txid: 'demo',
-        vout: 1,
-        satoshis: 1000,
-        outputScript: 'demo',
-        rawTX: '00',
-        proof: {},
-        inputs: [],
-        mapiResponses: []
-      }
-    },
-    {
-      title: 'Starfall',
-      artist: 'Demo Artist',
-      description: 'Synth-heavy cosmic tones.',
-      duration: 205,
-      isPublished: true,
-      sats: 1000,
-      songURL: previews[2],
-      artworkURL: previews[5],
-      artistIdentityKey: 'demo-key',
-      token: {
-        txid: 'demo',
-        vout: 2,
-        satoshis: 1000,
-        outputScript: 'demo',
-        rawTX: '00',
-        proof: {},
-        inputs: [],
-        mapiResponses: []
-      }
+  try {
+    const response = await resolver.query({
+      service: 'ls_tsp',
+      query: { type: 'findAll', value: {} }
+    })
+
+    console.log('[loadDemoSongs] Resolver response:', response)
+
+    if (response.type !== 'output-list') {
+      console.warn('[loadDemoSongs] Unexpected response type:', response)
+      return []
     }
-  ]
+
+    if (!Array.isArray(response.outputs) || response.outputs.length === 0) {
+      console.warn('[loadDemoSongs] No outputs returned from overlay.')
+      return []
+    }
+
+    console.log(`[loadDemoSongs] Decoding ${response.outputs.length} outputs...`)
+    const parsedOverlaySongs = await decodeOutputs(
+      response.outputs.map((o) => ({ beef: o.beef, outputIndex: o.outputIndex }))
+    )
+
+    console.log('[loadDemoSongs] Decoded songs:', parsedOverlaySongs)
+
+    const overlayPreviews = parsedOverlaySongs.filter((song, index) => {
+      const hasPreview = !!song.previewURL
+      console.log(`[loadDemoSongs] [#${index}] Title: ${song.title}, Has Preview: ${hasPreview}, Preview URL:`, song.previewURL)
+      return hasPreview
+    })
+
+    overlayPreviews.forEach((song) => {
+      song.decryptedSongURL = song.previewURL
+    })
+
+    console.log('[loadDemoSongs] Overlay previews found:', overlayPreviews.length)
+    return overlayPreviews
+  } catch (err) {
+    console.error('[loadDemoSongs] Failed to load overlay previews:', err)
+    return []
+  }
 }

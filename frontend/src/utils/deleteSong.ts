@@ -1,53 +1,56 @@
 import {
   PushDrop,
-  LockingScript,
   WalletClient,
   Transaction,
-  TopicBroadcaster
+  TopicBroadcaster,
+  Beef
 } from '@bsv/sdk'
 import constants from './constants'
 import type { Song } from '../types/interfaces'
+import { toast } from 'react-toastify'
 
 const wallet = new WalletClient('auto', 'localhost')
 const pushdrop = new PushDrop(wallet)
 
 const deleteSong = async (song: Song): Promise<string> => {
   try {
-    // Destructure for clarity
-    const {
-      token: { txid, vout, satoshis, outputScript },
-      title
-    } = song
+    const { txid, vout, rawTX } = song.token
+    const title = song.title
 
-    // Step 1: Convert outputScript to LockingScript
-    const outputScriptHex =
-      typeof outputScript === 'string' ? outputScript : outputScript.toHex()
+    if (!rawTX) {
+      throw new Error('Missing rawTX from token; required for deletion')
+    }
 
-    const lockingScript = LockingScript.fromHex(outputScriptHex)
-
-    // Step 2: Get unlock script generator
-    const { sign } = pushdrop.unlock(
-      [2, 'tmtsp'],
-      '1',
-      'self',
-      'all',
-      false,
-      satoshis,
-      lockingScript
+    // Step 1: Parse BEEF and hydrate transaction
+    const loadedBEEF = Beef.fromBinary(
+      Array.from(Uint8Array.from(atob(rawTX), c => c.charCodeAt(0)))
     )
+    const prevOutpoint = `${txid}.${vout}` as const
 
-    // Step 3: Create unsigned deletion transaction
+    const originalTx = Transaction.fromBEEF(loadedBEEF.toBinary())
+    const output = originalTx.outputs[vout]
+    if (!output?.lockingScript) {
+      throw new Error('Missing lockingScript from transaction output')
+    }
+
+    const satoshis = output.satoshis ?? 0
+    const lockingScript = output.lockingScript
+
+    // Step 2: Create signable deletion action
     const { signableTransaction } = await wallet.createAction({
       description: `Song, ${title}, deleted!`,
+      inputBEEF: loadedBEEF.toBinary(),
       inputs: [
         {
-          outpoint: `${txid}:${vout}`,
-          unlockingScriptLength: 73,
+          outpoint: prevOutpoint,
+          unlockingScriptLength: 74,
           inputDescription: 'Delete a song'
         }
       ],
-      outputs: [],
+      outputs: [], // No outputs = token burned
       options: {
+        acceptDelayedBroadcast: false,
+        randomizeOutputs: false,
         signAndProcess: false
       }
     })
@@ -56,33 +59,50 @@ const deleteSong = async (song: Song): Promise<string> => {
       throw new Error('Failed to create signable transaction')
     }
 
-    // Step 4: Deserialize and sign
-    const tx = Transaction.fromAtomicBEEF(signableTransaction.tx)
-    const unlockingScript = await sign(tx, 0)
+    // Step 3: Sign input 0 with PushDrop
+    const unlocker = pushdrop.unlock(
+      [2, 'tmtsp'],
+      '1',
+      'anyone',
+      'all',
+      true,
+      satoshis,
+      lockingScript
+    )
+    const unlockingScript = await unlocker.sign(
+      Transaction.fromBEEF(signableTransaction.tx),
+      0
+    )
 
-    // Step 5: Finalize by calling signAction
-    const action = await wallet.signAction({
+    // Step 4: Finalize and broadcast
+    const { tx, txid: newTxid } = await wallet.signAction({
       reference: signableTransaction.reference,
       spends: {
-        0: {
-          unlockingScript: unlockingScript.toHex()
-        }
+        0: { unlockingScript: unlockingScript.toHex() }
       }
     })
 
-    // Step 6: Broadcast to overlay
-    if (!action.tx) {
-      throw new Error('Signed transaction is missing from action result')
+    if (!tx || !newTxid) {
+      throw new Error('Signed transaction missing or failed to return txid')
     }
 
-    const broadcaster = new TopicBroadcaster([constants.tempoTopic])
-    await broadcaster.broadcast(Transaction.fromAtomicBEEF(action.tx))
+    const broadcaster = new TopicBroadcaster(
+      [`tm_${constants.tempoTopic}`],
+      {
+        networkPreset: window.location.hostname === 'localhost' ? 'local' : 'mainnet'
+      }
+    )
 
-    if (!action.txid) {
-      throw new Error('Signed transaction did not return a txid')
-    }
 
-    return action.txid
+    await broadcaster.broadcast(Transaction.fromAtomicBEEF(tx))
+
+    console.log(`[Delete] Successfully deleted song "${title}" with txid: ${newTxid}`)
+    toast.success(`Successfully deleted song "${title}" with txid: ${newTxid}`, {
+      containerId: 'alertToast'
+    })
+
+
+    return newTxid
   } catch (error) {
     console.error(error)
     throw new Error('Failed to delete song!')

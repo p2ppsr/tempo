@@ -1,3 +1,26 @@
+/**
+ * useSwipeScroll.ts
+ *
+ * A custom React hook that adds drag/swipe-based horizontal scrolling
+ * with momentum physics to a scrollable slider element. Designed for
+ * carousels, image sliders, or any horizontally scrollable content.
+ *
+ * Usage:
+ *   const sliderRef = useRef<HTMLDivElement>(null)
+ *   const { hasSwiped } = useSwipeScroll({ sliderRef })
+ *
+ * Features:
+ * - Mouse drag to scroll horizontally.
+ * - Adds momentum-based scrolling when released.
+ * - Detects swipe events with a hasSwiped flag.
+ *
+ * @param sliderRef - React ref pointing to the horizontal scroll container.
+ * @param reliants - array of dependencies that re-initialize the hook.
+ * @param momentumVelocity - multiplier controlling deceleration of momentum.
+ *
+ * @returns { hasSwiped } - boolean flag indicating if user has swiped.
+ */
+
 import { useState, useEffect, useCallback } from 'react'
 import type { RefObject } from 'react'
 
