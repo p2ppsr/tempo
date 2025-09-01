@@ -1,5 +1,6 @@
 import { WalletClient, AuthFetch, type AtomicBEEF } from '@bsv/sdk'
 import constants from './constants'
+import { toast } from 'react-toastify'
 
 interface RoyaltyResponse {
   status: string
@@ -27,19 +28,19 @@ const checkForRoyalties = async () => {
 
     if (!response.ok) {
       console.warn(`Royalties check failed: ${response.status} ${response.statusText}`)
-      return { status: 'noUpdates' }
+      return
     }
 
     const result: RoyaltyResponse = await response.json()
 
     if (result.status === 'error') {
       console.warn(`Royalties check error: ${result.description} (code: ${result.code})`)
-      return { status: 'noUpdates' }
+      return
     }
 
     if (result.status === 'noUpdates') {
       console.log(result.message)
-      return { status: 'noUpdates' }
+      return
     }
 
     // Internalize the transaction if we have one
@@ -60,13 +61,11 @@ const checkForRoyalties = async () => {
         description: 'Received song royalty payment'
       })
     }
-
-    return {
-      result: `${result.amount} satoshis received for song royalties!`,
-    }
+    toast.success(`${result.amount} satoshis received for song royalties!`, {
+      containerId: 'alertToast'
+    })
   } catch (e) {
     console.error('checkForRoyalties error:', e)
-    return { status: 'noUpdates' }
   }
 }
 

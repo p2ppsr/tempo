@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { useMediaQuery, useTheme } from '@mui/material'
 
 // Components
@@ -62,7 +63,7 @@ const App = () => {
 
   return (
     <>
-      <ToastContainer position="top-center" containerId="alertToast" autoClose={5000} />
+      <ToastContainer position="top-right" containerId="alertToast" autoClose={5000} />
 
       <img src={backgroundImage} className="backgroundImage" />
 
@@ -100,6 +101,17 @@ const App = () => {
 
           <Footer />
         </div>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
       </Router>
     </>
   )

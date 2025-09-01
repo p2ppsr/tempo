@@ -10,7 +10,6 @@
  */
 
 import { useEffect } from 'react'
-import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 // Global state
@@ -39,10 +38,7 @@ const Home = () => {
   useEffect(() => {
     const checkRoyalties = async () => {
       try {
-        const res = await checkForRoyalties()
-        if (res.status === 'updatesAvailable') {
-          toast.success(res.result)
-        }
+        await checkForRoyalties()
       } catch (e) {
         console.error((e as Error).message)
       }
