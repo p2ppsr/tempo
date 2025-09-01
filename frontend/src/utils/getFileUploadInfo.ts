@@ -19,7 +19,7 @@ const getFileUploadInfo = async ({
 }: Partial<GetFileUploadInfoParams> = {}) => {
   const wallet = new WalletClient('auto', 'localhost')
 
-  const storageUploader = new StorageUploader({storageURL, wallet})
+  const storageUploader = new StorageUploader({ storageURL, wallet })
 
   const filesToUpload: File[] = []
   let songURL = ''
@@ -51,39 +51,43 @@ const getFileUploadInfo = async ({
       artworkURL = uploadedArtwork.uhrpURL
       filesToUpload.push(artworkFile)
     } catch (err: any) {
-        console.error('[Upload Artwork Error]', err)
+      console.error('[Upload Artwork Error]', err)
 
-        if (err && typeof err === 'object' && 'response' in err) {
-          const response = (err as any).response
-          if (response?.text) {
-            const text = await response.text()
-            console.error('[Server Response]', text)
-          }
+      if (err && typeof err === 'object' && 'response' in err) {
+        const response = (err as any).response
+        if (response?.text) {
+          const text = await response.text()
+          console.error('[Server Response]', text)
         }
-      throw new Error('Failed to upload artwork.')
       }
+      throw new Error('Failed to upload artwork.')
+    }
   }
 
   // Upload preview (unencrypted)
   if (selectedPreview) {
-    try {
-      const previewFile =
-        selectedPreview instanceof FileList ? selectedPreview[0] : selectedPreview
-      const previewBuffer = new Uint8Array(await previewFile.arrayBuffer())
+    const previewFile =
+      selectedPreview instanceof FileList ? selectedPreview[0] : selectedPreview
 
-      const uploadedPreview = await storageUploader.publishFile({
-        file: {
-          data: Array.from(previewBuffer),
-          type: previewFile.type
-        },
-        retentionPeriod
-      })
+    // Only proceed if we actually have a file
+    if (previewFile && previewFile.size > 0) {
+      try {
+        const previewBuffer = new Uint8Array(await previewFile.arrayBuffer())
 
-      previewURL = uploadedPreview.uhrpURL
-      filesToUpload.push(previewFile)
-    } catch (err) {
-      console.error('[Upload Preview Error]', err)
-      throw new Error('Failed to upload preview.')
+        const uploadedPreview = await storageUploader.publishFile({
+          file: {
+            data: Array.from(previewBuffer),
+            type: previewFile.type
+          },
+          retentionPeriod
+        })
+
+        previewURL = uploadedPreview.uhrpURL
+        filesToUpload.push(previewFile)
+      } catch (err) {
+        console.error('[Upload Preview Error]', err)
+        throw new Error('Failed to upload preview.')
+      }
     }
   }
 

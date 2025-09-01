@@ -1,5 +1,17 @@
-import { WalletClient, AuthFetch } from '@bsv/sdk'
+import { WalletClient, AuthFetch, type AtomicBEEF } from '@bsv/sdk'
 import constants from './constants'
+
+interface RoyaltyResponse {
+  status: string
+  tx?: AtomicBEEF
+  derivationPrefix?: string
+  derivationSuffix?: string
+  amount?: number
+  senderIdentityKey?: string
+  message?: string
+  description?: string
+  code?: string
+}
 
 const checkForRoyalties = async () => {
   try {
@@ -18,7 +30,7 @@ const checkForRoyalties = async () => {
       return { status: 'noUpdates' }
     }
 
-    const result = await response.json()
+    const result: RoyaltyResponse = await response.json()
 
     if (result.status === 'error') {
       console.warn(`Royalties check error: ${result.description} (code: ${result.code})`)
@@ -30,10 +42,27 @@ const checkForRoyalties = async () => {
       return { status: 'noUpdates' }
     }
 
+    // Internalize the transaction if we have one
+    if (result.tx && result.derivationPrefix && result.derivationSuffix && result.senderIdentityKey) {
+      await wallet.internalizeAction({
+        tx: result.tx,
+        outputs: [
+          {
+            outputIndex: 0, // Assuming the royalty payment is the first output
+            protocol: 'wallet payment',
+            paymentRemittance: {
+              derivationPrefix: result.derivationPrefix,
+              derivationSuffix: result.derivationSuffix,
+              senderIdentityKey: result.senderIdentityKey
+            }
+          }
+        ],
+        description: 'Received song royalty payment'
+      })
+    }
+
     return {
-      status: 'updatesAvailable',
       result: `${result.amount} satoshis received for song royalties!`,
-      txid: result.transaction?.txid ?? 'unknown'
     }
   } catch (e) {
     console.error('checkForRoyalties error:', e)

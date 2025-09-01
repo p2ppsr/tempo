@@ -183,10 +183,7 @@ const startServer = async () => {
 
         return res.status(200).json({
           status: 'Royalty payment sent!',
-          transaction: {
-            ...tx,
-            note: 'The transaction has been processed and broadcast.'
-          },
+          tx,
           derivationPrefix,
           derivationSuffix,
           amount: totalAmount,

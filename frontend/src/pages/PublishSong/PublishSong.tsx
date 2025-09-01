@@ -85,7 +85,7 @@ const PublishSong = () => {
     },
     selectedArtwork: formData.selectedArtwork,
     selectedMusic: formData.selectedMusic,
-    selectedPreview: formData.selectedPreview
+    selectedPreview: formData.selectedPreview || undefined
   }
 
   try {
