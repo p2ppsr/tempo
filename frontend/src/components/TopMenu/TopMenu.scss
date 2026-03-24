@@ -4,70 +4,85 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 3rem;
-  background-color: $grayBackground;
+  gap: 0.85rem;
+  height: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(180deg, rgba(13, 21, 35, 0.88), rgba(12, 20, 33, 0.72));
+  border-bottom: 1px solid $transparentBorder;
+  backdrop-filter: blur(10px);
+}
 
-  .navigationIcon {
-    cursor: pointer;
+.topMenuNav {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
 
-    &:hover {
-      fill: $accentColor;
-    }
-    &:active {
-      fill: $accentColor;
-      filter: brightness(0.55);
-    }
+.navButton {
+  border: 1px solid rgba(154, 182, 212, 0.26);
+  background: rgba(14, 22, 35, 0.84);
+  color: $textColor;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 120ms ease, transform 120ms ease;
+
+  &:hover {
+    border-color: rgba(35, 198, 165, 0.7);
+    transform: translateY(-1px);
   }
 }
 
-.menuProfileContainer {
+.navigationIcon {
+  color: #d8e8fa;
+}
+
+.topMenuMeta {
   display: flex;
   align-items: center;
+  margin-left: auto;
+}
+
+.topMenuPageLabel {
+  color: #b7cae3;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hamburger {
+  display: none !important;
+  color: #d8e8fa !important;
+}
+
+.drawerContent {
+  width: min(280px, 90vw);
+  padding: 1rem;
+  background: linear-gradient(180deg, rgba(12, 20, 32, 0.98), rgba(8, 13, 22, 0.98));
+  height: 100%;
   color: white;
-  margin-right: 1rem; // Adjust right margin as needed
+}
 
-  &:hover {
-    color: $accentColor;
-  }
-
-  p {
-    margin-right: 0.5rem; // Adjust space between the username and the icon
-  }
+.topMenuDrawerPaper {
+  background: transparent !important;
+  border-right: 1px solid $transparentBorder;
 }
 
 @media screen and (max-width: 768px) {
   .topMenuContainer {
-    height: 2.5rem;
-    padding: 0 0.5rem;
-
-    .navigationIcon {
-      width: 24px;
-      height: 24px;
-    }
+    padding: 0.65rem 0.7rem;
   }
 
-  .menuProfileContainer {
-    margin-right: 0.5rem;
-
-    p {
-      font-size: 0.9rem;
-    }
+  .topMenuPageLabel {
+    display: none;
   }
-}
 
-.hamburger {
-  display: none;
-
-  @media screen and (max-width: 768px) {
-    display: inline-flex;
-    margin-right: 1rem;
+  .hamburger {
+    display: inline-flex !important;
   }
-}
-
-.drawerContent {
-  width: 250px;
-  padding: 1rem;
-  background-color: #111;
-  height: 100%;
-  color: white;
 }

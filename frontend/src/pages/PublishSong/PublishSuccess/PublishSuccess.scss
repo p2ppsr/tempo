@@ -1,0 +1,18 @@
+@import '../../../styles/styleVariables.scss';
+
+.publishSuccessPage {
+  border: 1px solid rgba(163, 189, 217, 0.35);
+  border-radius: $borderRadius;
+  background: linear-gradient(180deg, rgba(14, 24, 38, 0.86), rgba(9, 15, 25, 0.9));
+  padding: 1.1rem;
+  max-width: 42rem;
+
+  h1 {
+    margin-bottom: 0.45rem;
+  }
+
+  h3 {
+    color: $textMutedColor;
+    font-weight: 500;
+  }
+}

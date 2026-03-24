@@ -37,9 +37,9 @@ const ViewSong = () => {
   }
 
   return (
-    <div className="container">
+    <div className="container songsPage">
       <h1>{song.title}</h1>
-      <h2 style={{ marginBottom: '1rem' }}>{song.artist}</h2>
+      <h2 className="songsPageSubheading">{song.artist}</h2>
       <SongList songs={[song]} />
     </div>
   )

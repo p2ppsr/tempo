@@ -37,9 +37,9 @@ const MySongs = () => {
   }, [])
 
   return (
-    <div className="container">
+    <div className="container songsPage">
       <h1>My Songs</h1>
-      <div style={{ marginTop: '1rem' }}>
+      <div className="songsPageContent">
         {songs.length === 0 ? <CircularProgress /> : <SongList songs={songs} isMySongsOnly />}
       </div>
     </div>

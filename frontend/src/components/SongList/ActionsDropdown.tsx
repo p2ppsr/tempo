@@ -86,7 +86,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
     state.setLikesHasChanged
   ])
 
-  const [_, setSocialShareModalOpen, setSocialShareLink] = useModals((state) => [
+  const [, setSocialShareModalOpen, setSocialShareLink] = useModals((state) => [
     state.socialShareModalOpen,
     state.setSocialShareModalOpen,
     state.setSocialShareLink

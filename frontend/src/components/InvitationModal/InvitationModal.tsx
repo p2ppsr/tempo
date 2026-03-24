@@ -11,6 +11,7 @@
 import type { InvitationContent } from '../../stores/stores'
 import { useModals } from '../../stores/stores'
 import { Modal } from '@mui/material'
+import './InvitationModal.scss'
 
 /**
  * InvitationModal Component
@@ -44,8 +45,8 @@ const InvitationModal = () => {
 
   return (
     <Modal open={invitationModalOpen} onClose={() => setInvitationModalOpen(false)}>
-      <div className="modal">
-        <h1 style={{ marginBottom: '1rem', maxWidth: '90%' }}>
+      <div className="modal invitationModal">
+        <h1 className="invitationTitle">
           {getInvitationText(invitationModalContent)[0]}
         </h1>
         <button

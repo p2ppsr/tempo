@@ -91,7 +91,7 @@ const SocialShareModal: React.FC = () => {
     <Modal open={socialShareModalOpen} onClose={() => setSocialShareModalOpen(false)}>
       <div>
         {socialModalSongData ? (
-          <div className="modal" ref={modalContentRef}>
+          <div className="modal socialShareModal" ref={modalContentRef}>
             <button
               className="modalCloseButton"
               onClick={() => setSocialShareModalOpen(false)}
@@ -99,7 +99,7 @@ const SocialShareModal: React.FC = () => {
               X
             </button>
             <h1>Share</h1>
-            <h2 style={{ marginTop: '1rem' }}>
+            <h2 className="socialShareSubheading">
               {socialModalSongData.title} by {socialModalSongData.artist}
             </h2>
 
@@ -134,7 +134,7 @@ const SocialShareModal: React.FC = () => {
             )}
           </div>
         ) : (
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '33vh' }}>
+          <div className="socialShareLoading">
             <CircularProgress />
           </div>
         )}

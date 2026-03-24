@@ -1,13 +1,38 @@
 @import '../../styles/styleVariables.scss';
 
 .publishSongContainer {
-  // height: calc(500px);
-  overflow-y: scroll;
+  max-width: 46rem;
+  position: relative;
+
+  .publishHeader {
+    margin-bottom: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    p {
+      color: $textMutedColor;
+      max-width: 42rem;
+    }
+  }
+
+  .publishHeaderHint {
+    width: fit-content;
+    border: 1px solid rgba(35, 198, 165, 0.35);
+    background: rgba(35, 198, 165, 0.09);
+    color: #befdeb;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 0.2rem 0.62rem;
+  }
 
   .publishButton {
-    background: rgb(36, 149, 36);
+    margin-top: 0.85rem;
+    background: linear-gradient(180deg, rgba(35, 198, 165, 0.95), rgba(24, 150, 124, 0.95));
     border: none;
-    height: 3rem;
+    height: 2.9rem;
+    color: #04231d;
     cursor: pointer;
 
     &:disabled {
@@ -18,23 +43,136 @@
   }
 
   #piracyBannerContainer {
-    border: 1px solid rgba(255, 99, 71, 0.67);
-    width: fit-content;
-    // max-width: 25rem;
-    padding: 1rem;
+    border: 1px solid rgba(249, 115, 84, 0.63);
+    width: min(42rem, 100%);
+    padding: 0.85rem;
     border-radius: $borderRadius;
-    margin-block: 1rem;
+    margin-bottom: 0.85rem;
+    background: rgba(34, 14, 10, 0.38);
+
+    h2 {
+      margin-bottom: 0.35rem;
+      font-size: 1.05rem;
+    }
+  }
+
+  .formContainer {
+    max-width: 100%;
+    width: min(46rem, 100%);
+  }
+
+  .publishFieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .fieldHint {
+    color: $textMutedColor;
+    font-size: 0.8rem;
+    margin-top: -0.4rem;
+    margin-bottom: 0.65rem;
   }
 
   #piracyCheckboxContainer {
-    border: 1px solid rgba(255, 99, 71, 0.67);
-    padding: 1rem;
-    border-radius: $borderRadius;
-    
+    border: 1px solid rgba(249, 115, 84, 0.64);
+    padding: 0.75rem;
+    border-radius: 12px;
+    gap: 0.6rem;
+    align-items: flex-start;
+
     #piracyCheckbox {
-      width: 2rem;
-      height: 2rem;
-      margin-right: 0.5rem;
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-top: 0.2rem;
+      margin-right: 0;
+      accent-color: #f97354;
+      flex-shrink: 0;
+    }
+
+    label {
+      margin: 0;
+      font-size: 0.92rem;
+      color: #ffd6cc;
+    }
+  }
+
+  .publishLoadingOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(4, 8, 14, 0.66);
+    backdrop-filter: blur(6px);
+  }
+
+  .publishLoadingCard {
+    width: min(28rem, 100%);
+    border: 1px solid rgba(163, 189, 217, 0.36);
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(13, 22, 36, 0.97), rgba(7, 13, 23, 0.98));
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.36);
+    padding: 1.2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    p {
+      margin: 0;
+      color: $textMutedColor;
+      font-size: 0.92rem;
+    }
+  }
+
+  .publishSpinner {
+    color: #23c6a5 !important;
+    margin-bottom: 0.2rem;
+  }
+
+  .publishStepList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.35rem;
+  }
+
+  .publishStep {
+    border: 1px solid rgba(145, 170, 198, 0.26);
+    border-radius: 10px;
+    padding: 0.46rem 0.62rem;
+    color: #a9bed6;
+    font-size: 0.88rem;
+    transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease;
+
+    &.active {
+      border-color: rgba(35, 198, 165, 0.65);
+      background: rgba(35, 198, 165, 0.13);
+      color: #dcfff6;
+    }
+
+    &.done {
+      border-color: rgba(35, 198, 165, 0.42);
+      color: #bffceb;
+      background: rgba(35, 198, 165, 0.08);
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .publishLoadingCard {
+      padding: 1rem 0.9rem;
+
+      h2 {
+        font-size: 1.1rem;
+      }
     }
   }
 }

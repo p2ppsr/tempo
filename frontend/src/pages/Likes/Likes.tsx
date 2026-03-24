@@ -64,18 +64,20 @@ const Likes = () => {
   }, [likesHasChanged])
 
   return (
-    <div className="container">
+    <div className="container songsPage">
       <h1>Likes</h1>
       {!isLoaded && songs.length === 0 && (
-        <CircularProgress style={{ marginTop: '1rem' }} />
+        <div className="songsPageContent">
+          <CircularProgress />
+        </div>
       )}
       {isLoaded && songs.length > 0 && (
-        <div style={{ marginTop: '1rem' }}>
+        <div className="songsPageContent">
           <SongList songs={songs} />
         </div>
       )}
       {isLoaded && songs.length === 0 && (
-        <p style={{ marginTop: '1rem' }}>No songs have been liked yet.</p>
+        <p className="emptyPageState">No songs have been liked yet.</p>
       )}
     </div>
   )

@@ -1,9 +1,10 @@
 import type { Song } from '../types/interfaces'
 import { LookupResolver } from '@bsv/sdk'
 import { decodeOutputs } from '../utils/decodeOutput'
+import constants from './constants'
 
 const resolver = new LookupResolver({
-  networkPreset: window.location.hostname === 'localhost' ? 'local' : 'mainnet'
+  networkPreset: constants.overlayNetworkPreset
 })
 
 /**
@@ -16,7 +17,7 @@ export default async function loadDemoSongs(): Promise<Song[]> {
 
   try {
     const response = await resolver.query({
-      service: 'ls_tsp',
+      service: constants.overlayLookupService,
       query: { type: 'findAll', value: {} }
     })
 

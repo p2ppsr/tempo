@@ -1,0 +1,22 @@
+@import '../../styles/styleVariables.scss';
+
+.invitationModal {
+  .invitationTitle {
+    margin-bottom: 0.75rem;
+    max-width: 90%;
+  }
+
+  p {
+    color: #d4e5fa;
+    line-height: 1.6;
+  }
+
+  a {
+    color: #93f5df;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

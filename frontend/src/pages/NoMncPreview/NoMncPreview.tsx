@@ -60,22 +60,23 @@ const NoMncPreview = () => {
   }, [])
 
   return (
-    <div className="container">
+    <div className="container noMncPreviewContainer">
       <div id="previewBanner">
         <h3>
           To get the full experience, please launch the Metanet Client. If you don't have it
           yet, it's available for{' '}
-          <a href="https://projectbabbage.com/desktop/res/MetaNet%20Client.exe" target="_blank">
+          <a href="https://projectbabbage.com/desktop/res/MetaNet%20Client.exe" target="_blank" rel="noreferrer">
             Windows
           </a>
           ,{' '}
-          <a href="https://projectbabbage.com/desktop/res/MetaNet%20Client.dmg" target="_blank">
+          <a href="https://projectbabbage.com/desktop/res/MetaNet%20Client.dmg" target="_blank" rel="noreferrer">
             macOS
           </a>
           , and{' '}
           <a
             href="https://projectbabbage.com/desktop/res/MetaNet%20Client.AppImage"
             target="_blank"
+            rel="noreferrer"
           >
             Linux
           </a>
@@ -83,7 +84,7 @@ const NoMncPreview = () => {
         </h3>
       </div>
 
-      <h1 style={{ marginBottom: '1rem' }}>Previews</h1>
+      <h1 className="previewHeading">Previews</h1>
       <SongList songs={songs} />
     </div>
   )

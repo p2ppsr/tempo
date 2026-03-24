@@ -55,10 +55,10 @@ const ViewArtist: React.FC = () => {
   }, [songs])
 
   return (
-    <div className="container">
+    <div className="container songsPage">
       {songs.length > 0 ? (
         <>
-          <h1 style={{ marginBottom: '1rem' }}>{artistName}</h1>
+          <h1 className="songsPageHeading">{artistName}</h1>
           <SongList songs={songs} />
         </>
       ) : (

@@ -1,88 +1,113 @@
-.footerContainer {
-  grid-area: footer;
-  background-color: black;
-  color: white;
-  width: 100%;
-  z-index: 9999;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+@import '../../styles/styleVariables.scss';
 
-  // ⬇️ These two lines are key
-  flex-shrink: 0;
+.footerContainer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.72rem 1rem;
+  border-top: 1px solid $transparentBorder;
+  background: linear-gradient(180deg, rgba(11, 18, 29, 0.94), rgba(8, 14, 23, 0.98));
+  backdrop-filter: blur(10px);
   min-height: 5rem;
+  flex-shrink: 0;
 }
 
 .playbackInfoContainer {
   display: flex;
   align-items: center;
-  margin-left: 1rem;
+  gap: 0.72rem;
+  min-width: 0;
 
   .titleArtistContainer {
     display: block;
+    min-width: 0;
   }
 
   .songTitle {
-    font-size: 1.5rem;
-    margin-inline: 1rem;
-    width: 20vw;
-    text-align: center;
+    font-size: 1rem;
+    margin: 0;
+    color: #f1f8ff;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 260px;
   }
 
   .artistName {
-    font-size: 1rem;
-    margin-inline: 1rem;
-    width: 20vw;
-    text-align: center;
+    font-size: 0.84rem;
+    margin: 0;
+    color: $textMutedColor;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 260px;
   }
 
   .playerAlbumArt {
-    max-width: 4rem;
-    aspect-ratio: 1 / 1;
+    width: 3.05rem;
+    height: 3.05rem;
+    border-radius: 10px;
     object-fit: cover;
+    border: 1px solid rgba(166, 191, 221, 0.28);
+    background: rgba(15, 25, 40, 0.9);
   }
 }
 
-@media screen and (max-width: 768px) {
+.previewPlayer {
+  width: 100%;
+  border-radius: 12px;
+  max-width: 760px;
+}
+
+.rhap_container {
+  background: rgba(17, 27, 44, 0.55) !important;
+  border: 1px solid rgba(163, 189, 217, 0.3);
+  border-radius: 12px;
+  padding: 0.45rem 0.65rem !important;
+  box-shadow: none !important;
+}
+
+.rhap_time,
+.rhap_volume-indicator,
+.rhap_progress-indicator,
+.rhap_repeat-button,
+.rhap_main-controls-button,
+.rhap_volume-button {
+  color: #d6e6fb !important;
+}
+
+.rhap_progress-filled,
+.rhap_download-progress,
+.rhap_volume-filled {
+  background: linear-gradient(90deg, rgba(35, 198, 165, 1), rgba(117, 232, 208, 1)) !important;
+}
+
+@media screen and (max-width: 920px) {
   .footerContainer {
     flex-direction: column;
-    align-items: flex-start;
-    padding: 0.5rem;
+    align-items: stretch;
+    gap: 0.6rem;
+    padding: 0.65rem 0.7rem;
   }
 
   .playbackInfoContainer {
     width: 100%;
-    margin-left: 0;
-    margin-bottom: 0.5rem;
-    padding: 0 0.5rem;
-    gap: 0.75rem;
 
-    .playerAlbumArt {
-      max-width: 3rem;
-    }
-
-    .titleArtistContainer {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-
-      .songTitle,
-      .artistName {
-        width: 100%;
-        margin-inline: 0;
-        text-align: left;
-        font-size: 1rem;
-      }
-
-      .songTitle {
-        font-weight: bold;
-      }
+    .songTitle,
+    .artistName {
+      max-width: 100%;
     }
   }
 
+  .previewPlayer,
   .rhap_container {
     width: 100%;
-    padding: 0 0.25rem;
   }
 }

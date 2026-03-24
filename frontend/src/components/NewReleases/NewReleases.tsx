@@ -17,9 +17,9 @@ import { usePlaybackStore } from '../../stores/stores'
 import type { Song } from '../../types/interfaces'
 import fetchSongs from '../../utils/fetchSongs/fetchSongs'
 import SongList from '../SongList/SongList'
+import ArtworkImage from '../ArtworkImage/ArtworkImage'
 import loadDemoSongs from '../../utils/loadDemoSongs.js'
 import './NewReleases.scss'
-import { Img } from '@bsv/uhrp-react'
 
 /**
  * Clamps a value between -clampAt and +clampAt.
@@ -43,15 +43,8 @@ interface NewReleasesProps {
  * - Falls back to demo songs if no real songs are available.
  */
 const NewReleases: React.FC<NewReleasesProps> = ({ className }) => {
-  const [
-    _isPlaying,
-    _setIsPlaying,
-    _playbackSong,
-    setPlaybackSong
-  ] = usePlaybackStore((state) => [
-    state.isPlaying,
+  const [setIsPlaying, setPlaybackSong] = usePlaybackStore((state) => [
     state.setIsPlaying,
-    state.playbackSong,
     state.setPlaybackSong
   ])
 
@@ -94,8 +87,11 @@ const NewReleases: React.FC<NewReleasesProps> = ({ className }) => {
 
   // ========== RENDER ==========
   return (
-    <div className={`container ${className}`}>
-      <h1>New Releases</h1>
+    <div className={`container newReleasesSection ${className || ''}`}>
+      <div className="sectionHeading">
+        <h1>New Releases</h1>
+        <p>Discover the latest tracks and jump straight into playback.</p>
+      </div>
       {songs.length === 0 ? (
         <CircularProgress style={{ marginTop: '1rem' }} />
       ) : (
@@ -106,12 +102,12 @@ const NewReleases: React.FC<NewReleasesProps> = ({ className }) => {
 
               return (
                 <motion.div
-                  key={i}
+                  key={`${newRelease.songURL}-${i}`}
                   animate={{ transform: `perspective(500px) rotateY(${rotation}deg)` }}
                   className="newReleaseCardContainer"
-                  style={{ position: 'relative' }} // Needed for absolute positioning the label
+                  style={{ '--stagger-order': i } as React.CSSProperties}
                 >
-                  <Img
+                  <ArtworkImage
                     className="newReleaseCard"
                     src={newRelease.artworkURL || placeholderImage}
                     onClick={() => {
@@ -122,27 +118,13 @@ const NewReleases: React.FC<NewReleasesProps> = ({ className }) => {
                       }
 
                       setPlaybackSong(songToPlay)
+                      setIsPlaying(true)
                     }}
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = placeholderImage
-                    }}
+                    alt={`${newRelease.title} artwork`}
                   />
 
                   {isPreviewOnly && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        bottom: '6px',
-                        left: '6px',
-                        background: 'rgba(0,0,0,0.6)',
-                        color: '#fff',
-                        fontSize: '0.75rem',
-                        padding: '2px 6px',
-                        borderRadius: '4px'
-                      }}
-                    >
-                      Preview
-                    </div>
+                    <div className="previewChip">Preview</div>
                   )}
                 </motion.div>
               )

@@ -14,14 +14,28 @@ import type { Song } from '../../src/types/interfaces'
 const wallet = new WalletClient('auto', 'localhost')
 const pushdrop = new PushDrop(wallet)
 
+export type PublishProgressStage =
+  | 'uploading_files'
+  | 'creating_token'
+  | 'broadcasting'
+  | 'publishing_key'
+  | 'completed'
+
+type PublishProgressCallback = (stage: PublishProgressStage, message: string) => void
+
 const broadcaster = new TopicBroadcaster(
   [`tm_${constants.tempoTopic}`],
   {
-    networkPreset: window.location.hostname === 'localhost' ? 'local' : 'mainnet'
+    networkPreset: constants.overlayNetworkPreset
   }
 )
 
-const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> => {
+const publishSong = async (
+  song: Song,
+  retentionPeriod?: number,
+  onProgress?: PublishProgressCallback
+): Promise<Song> => {
+  onProgress?.('uploading_files', 'Uploading audio, artwork, and preview files...')
   console.log('[Publish] Uploading files...')
 
   const fileUploadInfo = await getFileUploadInfo({
@@ -37,6 +51,7 @@ const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> 
   console.log('[Publish] previewURL:', fileUploadInfo.previewURL)
   console.log('[Publish] songDuration:', fileUploadInfo.songDuration)
 
+  onProgress?.('creating_token', 'Creating your song token...')
   console.log('[Publish] Creating PushDrop token...')
 
   const uniqueID = Utils.toHex(
@@ -84,10 +99,12 @@ const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> 
   const txid = transaction.id('hex')
   const outputIndex = 0
 
+  onProgress?.('broadcasting', 'Broadcasting your song to the overlay...')
   console.log('[Publish] Broadcasting to overlay...')
   await broadcaster.broadcast(transaction)
 
   if (fileUploadInfo.encryptionKey) {
+    onProgress?.('publishing_key', 'Publishing your encryption key...')
     console.log('[Publish] Publishing encryption key...')
     await publishKey({
       wallet,
@@ -97,6 +114,8 @@ const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> 
   } else {
     console.log('[Publish] No encryption key to publish.')
   }
+
+  onProgress?.('completed', 'Publish complete.')
 
   return {
     ...song,
@@ -109,7 +128,7 @@ const publishSong = async (song: Song, retentionPeriod?: number): Promise<Song> 
       inputs: {},
       mapiResponses: {},
       proof: {},
-      rawTX: Utils.toBase64(tx)
+      rawTX: Utils.toBase64(Array.from(tx))
     }
   }
 }

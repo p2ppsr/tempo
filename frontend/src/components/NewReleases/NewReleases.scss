@@ -1,60 +1,105 @@
+.newReleasesSection {
+  .sectionHeading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.7rem;
+
+    p {
+      color: #9bb2cd;
+      font-size: 0.92rem;
+      max-width: 30rem;
+      text-align: right;
+    }
+  }
+}
+
 .horizontalArtworkScroller {
   display: flex;
   align-items: center;
+  gap: 0.55rem;
   overflow-x: auto;
-  width: 80vw;
-  padding-block: 1rem;
-  transform: translateX(-0.5rem) !important;
+  width: 100%;
+  padding: 0.8rem 0.2rem 1rem;
+  scroll-snap-type: x mandatory;
 }
 
 .newReleaseCardContainer {
+  position: relative;
   flex: 0 0 auto;
+  scroll-snap-align: start;
+  animation: releaseCardFade 340ms ease-out both;
+  animation-delay: calc(var(--stagger-order) * 50ms);
 
   .newReleaseCard {
-    max-width: 12rem;
-    margin-inline: 1rem;
-    border-radius: 0.5rem;
+    width: clamp(8.5rem, 18vw, 12.6rem);
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
     object-fit: cover;
-    aspect-ratio: 1/1;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
+    border: 1px solid rgba(160, 186, 215, 0.32);
+    box-shadow: 0 12px 24px rgba(5, 11, 19, 0.34);
     cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease;
 
     &:hover {
-      transform: scale(1.1);
+      transform: translateY(-4px) scale(1.02);
+      border-color: rgba(35, 198, 165, 0.7);
     }
+
     &:active {
-      transform: scale(0.9);
+      transform: scale(0.97);
     }
-    transition: 0.2s ease;
+  }
+}
+
+.previewChip {
+  position: absolute;
+  bottom: 0.45rem;
+  left: 0.45rem;
+  background: rgba(5, 10, 17, 0.72);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 8px;
+}
+
+@keyframes releaseCardFade {
+  from {
+    opacity: 0;
+    transform: translateY(9px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @media screen and (max-width: 768px) {
-  .container {
-    padding: 0 1rem;
-  }
+  .newReleasesSection {
+    .sectionHeading {
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 0.2rem;
 
-  .horizontalArtworkScroller {
-    gap: 0.75rem;
-    padding: 0.5rem 0;
-    width: 100vw; // expand width slightly for mobile fluidity
-  }
-
-  .newReleaseCardContainer {
-    flex: 0 0 auto;
-
-    .newReleaseCard {
-      width: 120px;
-      height: 120px;
-      margin-inline: 0.5rem;
+      p {
+        text-align: left;
+        font-size: 0.88rem;
+      }
     }
   }
 
-  h1 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-    text-align: center;
+  .horizontalArtworkScroller {
+    gap: 0.55rem;
+    padding: 0.45rem 0 0.7rem;
+  }
+
+  .newReleaseCardContainer {
+    .newReleaseCard {
+      width: 7.4rem;
+      height: 7.4rem;
+    }
   }
 }

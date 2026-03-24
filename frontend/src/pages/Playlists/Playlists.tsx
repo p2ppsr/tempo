@@ -131,9 +131,12 @@ const Playlists = () => {
   return (
     <>
       <div className="container">
-        <div className="flex" style={{ alignItems: 'center' }}>
+        <div className="playlistHeadingRow">
           <h1>Playlists</h1>
-          <FaPlusCircle fill="white" className="newPlayListIcon" onClick={handleAddPlaylist} />
+          <button className="newPlayListButton" onClick={handleAddPlaylist} aria-label="Create playlist">
+            <FaPlusCircle className="newPlayListIcon" />
+            New Playlist
+          </button>
         </div>
 
         <div className="playlistsContainer">
@@ -176,6 +179,11 @@ const Playlists = () => {
               </div>
             )
           })}
+          {playlists.length === 0 && (
+            <div className="playlistEmptyState">
+              <p>No playlists yet. Create one to organize your songs.</p>
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -58,17 +58,17 @@ const ViewPlaylist = () => {
   }, [id])
 
   return (
-    <div className="container">
+    <div className="container songsPage">
       {playlist ? (
         <div>
           <h1>{playlist.name}</h1>
-          <div style={{ marginTop: '1rem' }}>
+          <div className="songsPageContent">
             {playlist.songs.length > 0 ? (
               <>
                 <SongList songs={playlist.songs} onRemoveFromPlaylist={handleSongDelete}/>
               </>
             ) : (
-              <p>This playlist doesn't contain any songs...yet!</p>
+              <p className="emptyPageState">This playlist doesn&apos;t contain any songs yet.</p>
             )}
           </div>
         </div>

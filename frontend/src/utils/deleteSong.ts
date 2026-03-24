@@ -89,7 +89,7 @@ const deleteSong = async (song: Song): Promise<string> => {
     const broadcaster = new TopicBroadcaster(
       [`tm_${constants.tempoTopic}`],
       {
-        networkPreset: window.location.hostname === 'localhost' ? 'local' : 'mainnet'
+        networkPreset: constants.overlayNetworkPreset
       }
     )
 

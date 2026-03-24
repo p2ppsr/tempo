@@ -1,50 +1,83 @@
 @import '../../styles/styleVariables.scss';
 
+.songListTableWrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: $borderRadius;
+}
+
 .songListTable {
   color: $textColor;
-  border: 2px solid $transparentBorder;
+  border: 1px solid $transparentBorder;
   width: 100%;
-  max-width: 60rem;
+  min-width: 640px;
   border-radius: $borderRadius;
-  padding: 1rem;
-  margin: auto;
-  margin-bottom: 5rem;
-  background: rgba(14, 39, 60, 0.25);
+  margin: 0 auto 2.6rem;
+  background: linear-gradient(180deg, rgba(15, 24, 39, 0.85), rgba(10, 16, 26, 0.9));
+  border-collapse: collapse;
+  overflow: hidden;
 
   thead {
     text-align: left;
-  }
+    background: rgba(17, 28, 45, 0.9);
 
-  th {
-    padding-left: 0.5rem;
+    th {
+      padding: 0.82rem 0.7rem;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #b8cde7;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(153, 181, 211, 0.21);
+
+      &:first-child {
+        width: 88px;
+      }
+
+      &:last-child {
+        width: 72px;
+      }
+    }
   }
 
   tbody {
     tr {
-      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(145, 170, 198, 0.14);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
       &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: rgba(35, 198, 165, 0.08);
       }
     }
   }
 
   td {
-    padding-left: 0.5rem;
+    padding: 0.64rem 0.72rem;
+    vertical-align: middle;
+    font-size: 0.95rem;
   }
 }
 
 .songListArtworkContainer {
   position: relative;
-  display: flex;
+  display: inline-flex;
   justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  cursor: pointer;
 
   .songListArtworkThumbnail {
     width: 3rem;
     height: 3rem;
     user-select: none;
     margin-block: 0.25rem;
-    aspect-ratio: 1/1;
+    aspect-ratio: 1 / 1;
     object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid rgba(163, 189, 217, 0.3);
   }
 
   .artworkThumbnailPlayIcon {
@@ -53,176 +86,67 @@
     left: 50%;
     transform: translate(-50%, -50%);
     visibility: hidden;
+    color: #ecf6ff;
+    filter: drop-shadow(0 4px 8px rgba(5, 10, 16, 0.6));
   }
+
   &:hover .artworkThumbnailPlayIcon {
-    visibility: visible; // Show the icon on hover
+    visibility: visible;
   }
 }
 
-// Overrides for audio playback component
-.rhap_container {
-  background: rgba(0, 0, 0, 0.8) !important;
-
-  .rhap_time {
-    color: $textColor;
-  }
-}
-
-.actionsContainer {
-  // border:1px solid red;
-  gap: 0.5rem;
-  justify-content: space-evenly;
-  padding-right: 0.5rem;
-  cursor: pointer;
-  .likedIcon,
-  .addToPlaylistIcon,
-  .deleteFromPlaylistIcon {
-    font-size: 1.5rem;
-    visibility: hidden; // Keep the icon hidden by default
-  }
-
-  .alwaysVisible {
-    visibility: visible !important; // Always show the icon if it's liked
-  }
-}
-
-.songRow {
-  cursor: pointer;
-
-  &:hover .likedIcon,
-  &:hover .addToPlaylistIcon,
-  &:hover .deleteFromPlaylistIcon {
-    /* Ensure this line is correctly specifying hover */
-    visibility: visible; // Show the icons on hover
-  }
-
-  &.selectedRow {
-    background-color: rgba(255, 255, 255, 0.1);
-
-    .likedIcon,
-    .addToPlaylistIcon,
-    .deleteFromPlaylistIcon {
-      visibility: visible; // Ensure icons are always visible for the selected row
-    }
-  }
-
-  td:first-child {
-    padding-left: 0px; // Apply 0px padding-left to the first td of each row
-  }
-}
-
-.songRow.selectedRow {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.addToPlayListModal,
-.confirmDeleteModal {
-  margin: auto;
-  overflow: auto;
-  height: calc(67vh + 100px);
-  margin-top: 5rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: $borderRadius;
-  background: rgba(0, 0, 0, 0.9);
-  width: 50vw;
-  min-width: 20rem;
-  max-width: 30rem;
-  padding: 1rem;
-  &:focus {
-    outline: none;
-  }
-
-  .modalCloseIcon {
-    font-size: 2.5rem;
-    font-weight: bolder;
-    align-self: flex-start;
-    cursor: pointer;
-
-    &:hover {
-      fill: tomato;
-    }
-  }
-
-  .playlistName {
-    color: $textColor;
-    margin-block: 0.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    padding: 0.5rem;
-    border-radius: $borderRadius;
-    cursor: pointer;
-    &:hover {
-      border: 1px solid $accentColor;
-      color: $accentColor;
-    }
-  }
-}
-
-.confirmDeleteModal {
-  height: fit-content;
-
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  button {
-    border: none;
-    border-radius: $borderRadius;
-    cursor: pointer;
-    &:hover {
-    }
-  }
-
-  .deleteButton {
-    margin-right: 2rem;
-    background: tomato;
-    height: 2.5rem;
-
-    &:disabled {
-      filter: saturate(0);
-      cursor: progress;
-    }
-  }
-
-  .cancelButton {
-    background: gray;
-    height: 2.5rem;
-
-    &:disabled {
-      filter: saturate(0);
-      cursor: progress;
-    }
-  }
-}
-
-.buttonLoadingSpinner {
-  padding: none;
-  margin: none;
+.previewFlag {
+  position: absolute;
+  bottom: 0.18rem;
+  left: 0.18rem;
+  background: rgba(3, 9, 16, 0.72);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.1rem 0.34rem;
+  border-radius: 6px;
 }
 
 .actionsContainer {
   position: relative;
+  justify-content: flex-end;
 
   .dropdownToggle {
     background: none;
     border: none;
     cursor: pointer;
-    color: white; // Adjust color as needed
+    color: #dbe9fb;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border-radius: 8px;
+
+    &:hover {
+      background: rgba(35, 198, 165, 0.14);
+      color: #d4fff4;
+    }
   }
 
   .dropdownMenu {
     position: absolute;
     right: 0;
-    background-color: #333; // Adjust background color as needed
-    border-radius: 4px;
-    padding: 5px 0;
-    z-index: 100;
-    min-width: 120px; // Adjust width as needed
+    top: 2.2rem;
+    background: linear-gradient(180deg, rgba(15, 24, 39, 0.98), rgba(8, 13, 23, 0.98));
+    border: 1px solid rgba(163, 189, 217, 0.35);
+    border-radius: 10px;
+    padding: 0.4rem 0;
+    z-index: 120;
+    min-width: 158px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
 
     div {
-      padding: 8px 12px;
+      padding: 0.45rem 0.72rem;
       cursor: pointer;
+      color: #deebfb;
+      font-size: 0.9rem;
+
       &:hover {
-        background-color: #444; // Adjust hover background color as needed
+        background-color: rgba(35, 198, 165, 0.15);
       }
     }
   }
@@ -230,9 +154,184 @@
 
 .artistName {
   cursor: pointer;
-  transition: text-decoration 0.2s ease-in-out; // Smooth transition for the underline
+  color: #cee7ff;
+  font-weight: 500;
 
   &:hover {
-    text-decoration: underline; // Add underline on hover
+    color: #9df9e4;
+    text-decoration: underline;
+  }
+}
+
+.songRow {
+  cursor: pointer;
+
+  &.selectedRow {
+    background-color: rgba(35, 198, 165, 0.12);
+  }
+}
+
+.modalHeaderRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.addToPlayListModal,
+.confirmDeleteModal {
+  margin: 7.5vh auto 0;
+  max-height: 80vh;
+  overflow: auto;
+  border: 1px solid rgba(163, 189, 217, 0.34);
+  border-radius: $borderRadius;
+  background: linear-gradient(180deg, rgba(14, 23, 37, 0.97), rgba(8, 13, 23, 0.97));
+  width: min(30rem, calc(100% - 1.4rem));
+  padding: 1rem;
+
+  &:focus {
+    outline: none;
+  }
+
+  .modalCloseIcon {
+    font-size: 2.2rem;
+    font-weight: bolder;
+    align-self: flex-start;
+    cursor: pointer;
+
+    &:hover {
+      fill: $accentColorWarm;
+    }
+  }
+
+  .playlistName {
+    color: $textColor;
+    margin-block: 0.5rem;
+    border: 1px solid rgba(163, 189, 217, 0.34);
+    padding: 0.58rem 0.65rem;
+    border-radius: 12px;
+    cursor: pointer;
+
+    &:hover {
+      border-color: $accentColor;
+      color: #c8fff2;
+      background: rgba(35, 198, 165, 0.08);
+    }
+  }
+}
+
+.emptyModalState {
+  color: $textMutedColor;
+  margin-top: 0.75rem;
+}
+
+.confirmDeleteModal {
+  h1 {
+    font-size: 1.3rem;
+    line-height: 1.35;
+  }
+
+  .deleteButton,
+  .cancelButton {
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    height: 2.5rem;
+  }
+
+  .deleteButton {
+    margin-right: 0.75rem;
+    background: linear-gradient(180deg, rgba(241, 102, 80, 0.98), rgba(202, 72, 47, 0.98));
+
+    &:disabled {
+      filter: saturate(0.15);
+      cursor: progress;
+    }
+  }
+
+  .cancelButton {
+    background: rgba(79, 96, 119, 0.92);
+
+    &:disabled {
+      filter: saturate(0.15);
+      cursor: progress;
+    }
+  }
+}
+
+.buttonLoadingSpinner {
+  padding: 0;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .songListTable {
+    min-width: 100%;
+    border: none;
+    background: transparent;
+
+    thead {
+      display: none;
+    }
+
+    tbody {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    tr.songRow {
+      display: grid;
+      grid-template-columns: 1fr;
+      border: 1px solid rgba(163, 189, 217, 0.32);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(13, 21, 35, 0.92), rgba(9, 14, 24, 0.94));
+      padding: 0.72rem;
+      gap: 0.28rem;
+    }
+
+    td {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.85rem;
+      border-bottom: 1px dashed rgba(142, 167, 194, 0.22);
+      padding: 0.5rem 0;
+      font-size: 0.93rem;
+
+      &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      &::before {
+        content: attr(data-label);
+        color: #9cb3cd;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+    }
+  }
+
+  .songListArtworkContainer {
+    justify-content: flex-end;
+
+    .songListArtworkThumbnail {
+      width: 3.1rem;
+      height: 3.1rem;
+      margin: 0;
+    }
+  }
+
+  .actionsContainer {
+    justify-content: flex-end;
+  }
+
+  .addToPlayListModal,
+  .confirmDeleteModal {
+    padding: 0.9rem;
+  }
+
+  .confirmDeleteModal h1 {
+    font-size: 1.15rem;
   }
 }

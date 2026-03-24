@@ -1,13 +1,14 @@
 import type { Song } from '../../types/interfaces'
 import { LookupResolver } from '@bsv/sdk'
 import { decodeOutputs } from '../../utils/decodeOutput'
+import constants from '../constants'
 import type { TSPLookupQuery, FindAllQuery } from '../../types/interfaces.js'
 
 const fetchSongs = async (
   query: TSPLookupQuery = { type: 'findAll' } as FindAllQuery
 ): Promise<Song[]> => {
   const resolver = new LookupResolver({
-    networkPreset: window.location.hostname === 'localhost' ? 'local' : 'mainnet'
+    networkPreset: constants.overlayNetworkPreset
   })
 
   let lookupResult: any[] = []
@@ -15,7 +16,7 @@ const fetchSongs = async (
   try {
     console.log('[fetchSongs] Sending query:', query)
     const response = await resolver.query({
-      service: 'ls_tsp',
+      service: constants.overlayLookupService,
       query
     })
     console.log('[fetchSongs] Received response:', response)
@@ -46,8 +47,8 @@ const fetchSongs = async (
   }
 
   console.log(`[fetchSongs] Song #${idx + 1} URLs:`, {
-    artworkURL: `https://${window.location.hostname === 'localhost' ? 'localhost:3000' : 'YOUR-UHRP-DOMAIN'}/${song.artworkURL}`,
-    songURL: `https://${window.location.hostname === 'localhost' ? 'localhost:3000' : 'YOUR-UHRP-DOMAIN'}/${song.songURL}`,
+    artworkURL: song.artworkURL,
+    songURL: song.songURL,
     previewURL: song.previewURL,
     decryptedSongURL: song.decryptedSongURL
   })

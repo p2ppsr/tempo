@@ -1,16 +1,21 @@
-// Color scheme
-$grayBackground: #2b2b2b;
-$baseColor: rgb(14, 39, 60);
-// $accentColor: #aee6f2;
-$accentColor: #c5fffb;
+// Core palette
+$grayBackground: #131f31;
+$baseColor: #0b121d;
+$accentColor: #23c6a5;
+$accentColorWarm: #f97354;
 
 // Typography
-$headerColor: rgb(236, 236, 236);
-$textColor: rgb(236, 236, 236);
-$navTextColor: rgb(219, 219, 219);
+$headerColor: #f3f8ff;
+$textColor: #e4edf8;
+$textMutedColor: #95a9c2;
+$navTextColor: #d9e5f3;
 
-// Components
-$buttonColor: rgb(20, 38, 57);
-$transparentBorder: rgba(255, 255, 255, 0.3);
+// Surfaces
+$buttonColor: #17283f;
+$panelColor: rgba(16, 26, 41, 0.76);
+$panelColorStrong: rgba(11, 18, 29, 0.9);
+$transparentBorder: rgba(163, 189, 217, 0.28);
 
-$borderRadius: 0.5rem;
+// Effects
+$shadowColor: rgba(6, 10, 18, 0.45);
+$borderRadius: 0.9rem;

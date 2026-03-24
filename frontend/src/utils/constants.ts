@@ -3,14 +3,20 @@ interface Constants {
   tspProtocolID: string
   keyServerURL: string
   uploadURL: string
+  overlayNetworkPreset: 'mainnet' | 'local'
+  overlayLookupService: 'ls_tsp'
   RETENTION_PERIOD: number
 }
 
 const constants: Constants = {
   tempoTopic: 'tsp',
   tspProtocolID: 'tmtsp',
-  keyServerURL: window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://tempo-keyserver.babbage.systems',
-  uploadURL: window.location.hostname === 'localhost' ? 'http://localhost:3301' : 'https://uhrp-lite.babbage.systems',
+  // Temporary forced production routing:
+  // keep these static while we validate against mainnet + prod services.
+  keyServerURL: 'https://tempo-keyserver.babbage.systems',
+  uploadURL: 'https://nanostore.babbage.systems',
+  overlayNetworkPreset: 'mainnet',
+  overlayLookupService: 'ls_tsp',
   RETENTION_PERIOD: 5
 }
 

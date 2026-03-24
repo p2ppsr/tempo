@@ -1,99 +1,103 @@
 @import '../../styles/styleVariables.scss';
 
-.leftMenu {
-  min-height: 140vh;
-  min-width: 10rem;
-  // max-width: 15rem;
-  background: linear-gradient($baseColor, black);
-  z-index: 0;
+.leftMenuContent,
+.mobileMenuContent {
+  min-height: 100%;
+  width: 100%;
+  padding: 1.05rem 0.7rem 1rem;
 
   * {
     user-select: none;
   }
+
+  ul {
+    list-style: none;
+    padding-top: 0.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.38rem;
+  }
+
+  a {
+    color: inherit;
+  }
 }
 
-.leftMenu .logoContainer {
-  padding: 1rem;
-  padding-bottom: 0.5rem;
+.logoContainer {
+  padding: 0.2rem 0.55rem 1rem;
 }
 
 .menuLogo {
-  max-width: 100%;
+  width: min(150px, 88%);
   display: block;
-  margin: auto;
+  margin-bottom: 0.65rem;
 }
 
-.leftMenu ul {
-  padding-top: 10px;
-  font-size: large;
+.menuTagline {
+  color: $textMutedColor;
+  font-size: 0.84rem;
+  line-height: 1.35;
 }
 
 .link {
   list-style: none;
-  padding-left: 2rem;
-  padding-block: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  margin-bottom: 0.4rem;
+  padding: 0.74rem 0.86rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: rgba(155, 179, 208, 0.08);
   color: $navTextColor;
   cursor: pointer;
+  font-weight: 600;
+  transition: border-color 120ms ease, transform 120ms ease, background-color 120ms ease;
+}
+
+.link:hover,
+.menuAccordionLink:hover {
+  border-color: rgba(35, 198, 165, 0.55);
+  background: rgba(35, 198, 165, 0.11);
+  color: #d7fff4;
+}
+
+.link:active,
+.menuAccordionLink:active {
+  transform: translateY(1px);
+}
+
+.libraryToggle svg {
+  align-self: center;
+  color: #d4e5f8;
 }
 
 .menuAccordionLink {
   display: block;
-  width:67%;
-  padding: 0.5rem;
-  padding-left:1rem;
-  margin-inline: 10%;
-  margin-block: 5%;
-  user-select: none;
-  font-weight: 700;
-  color: $navTextColor;
-  border-radius: $borderRadius;
+  margin-left: 0.55rem;
+  padding: 0.54rem 0.72rem;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  color: #c2d5ec;
+  font-size: 0.94rem;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
 
-  &:hover {
-    color: $accentColor;
-    background: rgba(255, 255, 255, 0.05);
+.leftMenuContent .active .link,
+.leftMenuContent a.active .link,
+.mobileMenuContent a.active .link,
+.menuAccordionLink.active {
+  border-color: rgba(35, 198, 165, 0.55);
+  background: rgba(35, 198, 165, 0.16);
+  color: #e8fff9;
+}
+
+@media screen and (max-width: 768px) {
+  .mobileMenuContent {
+    padding-top: 0.3rem;
+
+    .menuLogo {
+      width: min(135px, 72%);
+    }
+
+    .menuTagline {
+      font-size: 0.8rem;
+    }
   }
-}
-
-.menuAccordionDivider {
-  height: 1px;
-  width: 67%;
-  background: rgba(255, 255, 255, 0.3);
-  margin-left: 10%;
-}
-
-.leftMenu ul .active {
-  /* color:#DE5F3B; */
-  font-weight: 700;
-}
-
-.childLink:hover,
-.link:hover {
-  background: rgba(195, 195, 195, 0.35);
-  // font-weight: 700;
-}
-
-.topLevel {
-  font-weight: 700;
-  list-style: none;
-  padding: 15px 0px 15px 25px;
-  background: rgba(255, 255, 255, 0.1);
-  margin-bottom: 6px;
-  color: rgb(219, 219, 219);
-}
-
-.childLink {
-  /* background: rgba(34, 34, 34, 0.35); */
-  font-weight: 700;
-  list-style: none;
-  padding: 15px 0px 15px 25px;
-  background: rgba(148, 148, 148, 0.1);
-  margin-bottom: 6px;
-  color: rgb(219, 219, 219);
-}
-
-.logoImage {
-  width: 100px;
-  padding-right: 10px;
 }

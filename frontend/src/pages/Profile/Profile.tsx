@@ -72,7 +72,7 @@ const Profile = () => {
 
   return (
     <>
-      <div className="container">
+      <div className="container profilePage">
         <img
           alt="artist"
           src={profilePictureUrl || placeholderImage}
@@ -82,7 +82,7 @@ const Profile = () => {
             target.src = placeholderImage
           }}
         />
-        <div style={{ padding: '1rem' }}>
+        <div className="profileCopy">
           <h1>{userName}</h1>
           <p>
             Listener profile info such as top artists, tracks, followers, following etc. will go

@@ -10,7 +10,7 @@
   ],
   "start_url": ".",
   "display": "standalone",
-   "babbage": {
+   "metanet": {
     "groupPermissions": {
       "protocolPermissions": [
         {

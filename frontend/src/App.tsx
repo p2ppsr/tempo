@@ -1,17 +1,16 @@
 import { useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useMediaQuery, useTheme } from '@mui/material'
+import { WalletClient } from '@bsv/sdk'
 
-// Components
 import Footer from './components/Footer/Footer'
 import InvitationModal from './components/InvitationModal/InvitationModal'
 import LeftMenu from './components/LeftMenu/LeftMenu'
 import SocialShareModal from './components/SocialShareModal/SocialShareModal'
 import TopMenu from './components/TopMenu/TopMenu'
 
-// Pages (unchanged)
 import EditSong from './pages/EditSong/EditSong'
 import Home from './pages/Home/Home'
 import Likes from './pages/Likes/Likes'
@@ -24,48 +23,60 @@ import PublishSong from './pages/PublishSong/PublishSong'
 import SuccessPage from './pages/PublishSong/PublishSuccess/PublishSuccess'
 import ViewSong from './pages/ViewSong/ViewSong'
 import ViewArtist from './pages/ViewArtist/ViewArtist'
-import { WalletClient } from '@bsv/sdk'
-// Styles
+
 import './App.scss'
 import './styles/forms.scss'
 import './styles/modal.scss'
 import './styles/typography.scss'
 import './styles/utils.scss'
 
-// Assets
 import backgroundImage from './assets/Images/background.jpg'
 
-// Store and utils
 import { useAuthStore } from './stores/stores'
 import checkForMetaNetClient from './utils/checkForMetaNetClient'
 
 const App = () => {
-  const setUserHasMetanetClient = useAuthStore(state => state.setUserHasMetanetClient)
+  const [setUserHasMetanetClient] = useAuthStore((state) => [state.setUserHasMetanetClient])
 
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
-  // Detect MetaNet client
   useEffect(() => {
+    let isMounted = true
+
     const run = async () => {
-      const walletClient = await new WalletClient()
-      const status = await checkForMetaNetClient()
-      setUserHasMetanetClient(status !== 0)
-      if (status === 0) {
-        console.warn('MetaNet client not detected. Some features may not work as expected.')
-      } else {
-        walletClient.waitForAuthentication()
-        console.log('MetaNet client detected successfully.')
+      try {
+        const walletClient = new WalletClient('auto', 'localhost')
+        const status = await checkForMetaNetClient()
+        const hasMetaNetClient = status !== 0
+
+        if (!isMounted) return
+
+        setUserHasMetanetClient(hasMetaNetClient)
+
+        if (!hasMetaNetClient) {
+          return
+        }
+
+        await walletClient.waitForAuthentication()
+      } catch (error) {
+        console.warn('MetaNet initialization failed:', error)
+        if (!isMounted) return
+
+        setUserHasMetanetClient(false)
       }
     }
+
     run()
+
+    return () => {
+      isMounted = false
+    }
   }, [setUserHasMetanetClient])
 
   return (
     <>
-      <ToastContainer position="top-right" containerId="alertToast" autoClose={5000} />
-
-      <img src={backgroundImage} className="backgroundImage" />
+      <img src={backgroundImage} className="backgroundImage" alt="" aria-hidden />
 
       <InvitationModal />
       <SocialShareModal />
@@ -82,7 +93,7 @@ const App = () => {
             <TopMenu />
           </div>
 
-          <div className="mainContent">
+          <main className="mainContent">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/Playlists/*" element={<Playlists />} />
@@ -97,22 +108,23 @@ const App = () => {
               <Route path="/Song/:songURL" element={<ViewSong />} />
               <Route path="/Artist/:artistIdentityKey" element={<ViewArtist />} />
             </Routes>
-          </div>
+          </main>
 
           <Footer />
         </div>
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
       </Router>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        containerId="alertToast"
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </>
   )
 }

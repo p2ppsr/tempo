@@ -1,8 +1,5 @@
 import { SymmetricKey, StorageUploader, WalletClient } from '@bsv/sdk'
-
-const RETENTION_PERIOD = 5
-
-const storageURL = 'https://uhrp-lite.babbage.systems'
+import constants from './constants'
 
 interface GetFileUploadInfoParams {
   selectedArtwork: File | FileList | null
@@ -15,11 +12,11 @@ const getFileUploadInfo = async ({
   selectedArtwork = null,
   selectedMusic = null,
   selectedPreview = null,
-  retentionPeriod = RETENTION_PERIOD
+  retentionPeriod = constants.RETENTION_PERIOD
 }: Partial<GetFileUploadInfoParams> = {}) => {
   const wallet = new WalletClient('auto', 'localhost')
 
-  const storageUploader = new StorageUploader({ storageURL, wallet })
+  const storageUploader = new StorageUploader({ storageURL: constants.uploadURL, wallet })
 
   const filesToUpload: File[] = []
   let songURL = ''

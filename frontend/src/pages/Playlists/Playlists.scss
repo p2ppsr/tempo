@@ -1,99 +1,130 @@
 @import '../../styles/styleVariables.scss';
 
-.playlistLink {
-  background: rgba(255, 255, 255, 0.8);
-  border: none;
-  width: 50%;
-  padding: 1rem;
+.playlistHeadingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.newPlayListButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid rgba(35, 198, 165, 0.45);
+  background: rgba(35, 198, 165, 0.12);
+  color: #d6fff4;
+  padding: 0.46rem 0.7rem;
+  border-radius: 11px;
   cursor: pointer;
+  font-weight: 700;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.9);
-  }
-
-  &:active {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(35, 198, 165, 0.22);
   }
 }
 
 .newPlayListIcon {
-  font-size: 2rem;
-  margin-left: 1.5rem;
-  cursor: pointer;
-  &:hover {
-    fill: $accentColor;
-  }
-  &:active {
-    filter: brightness(0.9);
-  }
+  font-size: 1.2rem;
 }
 
 .playlistsContainer {
   margin-top: 1rem;
-  width: 67%;
-  max-width: 30rem;
-  min-width: 20rem;
-  margin-bottom:5rem;
-  cursor: pointer;
+  width: min(34rem, 100%);
+  margin-bottom: 5rem;
 
   .playlist {
     display: flex;
     align-items: center;
-    height: 3rem;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    margin-bottom: 0.5rem;
+    min-height: 3.2rem;
+    border: 1px solid rgba(163, 189, 217, 0.28);
+    background: linear-gradient(180deg, rgba(14, 23, 38, 0.86), rgba(9, 15, 24, 0.9));
+    padding: 0.5rem 0.65rem;
+    border-radius: 12px;
+    margin-bottom: 0.52rem;
     user-select: none;
-    transition: 0.1s ease;
+    transition: border-color 0.14s ease, transform 0.14s ease;
+    cursor: pointer;
 
     &:hover {
       p {
-        color: $accentColor;
+        color: #ccffef;
       }
-      border: 1px solid $accentColor;
+
+      border-color: rgba(35, 198, 165, 0.54);
+      transform: translateY(-1px);
     }
+
     &:active {
-      filter: brightness(0.9);
+      filter: brightness(0.95);
     }
 
     p {
-      font-size: 1.5rem;
+      font-size: 1.08rem;
+      color: $textColor;
     }
 
     .editingPlaylistInput {
-      font-size: 1.5rem;
-      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 1.05rem;
+      font-family: inherit;
+      width: 100%;
       background: transparent;
-      border: none;
+      border: 1px solid rgba(147, 173, 204, 0.4);
+      border-radius: 8px;
       color: $textColor;
+      padding: 0.34rem 0.5rem;
 
       &:focus {
         outline: none;
+        border-color: rgba(35, 198, 165, 0.72);
       }
     }
 
     .playlistIcon {
-      font-size: 2rem;
-      margin-left: 1.5rem;
+      font-size: 1.22rem;
+      margin-left: 0.8rem;
       cursor: pointer;
-      display: none;
+      opacity: 0;
+      transition: opacity 0.14s ease;
     }
 
     &:hover .playlistIcon {
-      display: block; // Show icons on hover
+      opacity: 1;
     }
 
     .playlistEditIcon {
       &:hover {
-        fill: rgb(255, 255, 99);
+        fill: #ffe280;
       }
     }
 
     .playlistDeleteIcon {
       &:hover {
-        fill: tomato;
+        fill: $accentColorWarm;
       }
     }
+  }
+}
+
+.playlistEmptyState {
+  border: 1px dashed rgba(163, 189, 217, 0.35);
+  border-radius: 12px;
+  padding: 1rem;
+  background: rgba(12, 20, 31, 0.6);
+
+  p {
+    color: $textMutedColor;
+  }
+}
+
+@media (max-width: 768px) {
+  .playlistHeadingRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .newPlayListButton {
+    width: 100%;
+    justify-content: center;
   }
 }

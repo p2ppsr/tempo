@@ -1,37 +1,37 @@
 @import '../styles/styleVariables.scss';
 
-.modal{
-  border:1px solid rgba(255, 255, 255, 0.5);
+.modal {
+  border: 1px solid $transparentBorder;
   display: block;
-  margin: auto;
-  // width:53vw;
-  width:fit-content;
-  // min-width:20rem;
-  margin-top:20vh;
-  padding:1rem;
-  border-radius: $borderRadius;
-  background: black;
-  position:relative;
+  margin: 14vh auto 0;
+  width: min(32rem, calc(100% - 1.4rem));
+  padding: 1.1rem 1rem 1rem;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(14, 23, 37, 0.96), rgba(8, 13, 22, 0.96));
+  position: relative;
+  box-shadow: 0 16px 44px $shadowColor;
 
   .modalCloseButton {
-    position:absolute;
-    top:0;
-    right:0;
-    border-radius: $borderRadius;
-    padding:.5rem;
-    height:2rem;
-    width:2rem;
-    background: tomato;
-    color:white;
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    border-radius: 10px;
+    height: 1.95rem;
+    width: 1.95rem;
+    background: rgba(249, 115, 84, 0.18);
+    border: 1px solid rgba(249, 115, 84, 0.48);
+    color: #ffd5ca;
+    font-weight: 700;
     cursor: pointer;
-    border: none;
-    margin:.5rem;
-    transition:.1s;
+    transition: transform 120ms ease, filter 120ms ease;
 
     &:hover {
-      filter:brightness(1.1);
-      transform:scale(1.1)
-    
+      filter: brightness(1.08);
+      transform: scale(1.05);
     }
   }
+}
+
+.MuiModal-root {
+  backdrop-filter: blur(5px);
 }

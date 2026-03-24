@@ -10,10 +10,10 @@
 import { CircularProgress } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
 import AudioPlayer from 'react-h5-audio-player'
-import placeholderImage from '../../assets/Images/placeholder-image.png'
 import { useAuthStore, usePlaybackStore, useModals } from '../../stores/stores'
 import decryptSong from '../../utils/decryptSong'
-import { Img, Source } from '@bsv/uhrp-react'
+import { Source } from '@bsv/uhrp-react'
+import ArtworkImage from '../ArtworkImage/ArtworkImage'
 
 import 'react-h5-audio-player/lib/styles.css'
 import './Footer.scss'
@@ -31,7 +31,6 @@ import checkForMetaNetClient from '../../utils/checkForMetaNetClient'
 const Footer = () => {
   // ========== GLOBAL STATE ==========
   const [
-    _isPlaying,
     isLoading,
     setIsLoading,
     setIsPlaying,
@@ -41,7 +40,6 @@ const Footer = () => {
     togglePlayPreviousSong,
     songList
   ] = usePlaybackStore((state) => [
-    state.isPlaying,
     state.isLoading,
     state.setIsLoading,
     state.setIsPlaying,
@@ -56,15 +54,13 @@ const Footer = () => {
     state.userHasMetanetClient
   ])
 
-  const [_invitationModalOpen, setInvitationModalOpen, setInvitationModalContent] = useModals((state) => [
-    state.invitationModalOpen,
+  const [setInvitationModalOpen, setInvitationModalContent] = useModals((state) => [
     state.setInvitationModalOpen,
     state.setInvitationModalContent
   ])
 
   // ========== COMPONENT STATE ==========
   const [footerSongURL, setFooterSongURL] = useState<string | undefined>(undefined)
-  const [artworkError, setArtworkError] = useState(false)
   const audioPlayerRef = useRef<AudioPlayer>(null)
   const [isPreviewOnly, setIsPreviewOnly] = useState(false)
 
@@ -156,16 +152,15 @@ const Footer = () => {
   console.log('[Footer] Final src being passed into AudioPlayer:', footerSongURL)
 
   return (
-    <div className="footerContainer" style={{ gridArea: 'footer' }}>
+    <div className="footerContainer">
       <div className="playbackInfoContainer">
         {isLoading ? (
           <CircularProgress />
         ) : (
           <>
-            {playbackSong.artworkURL && (
-              <Img
-                src={artworkError ? placeholderImage : playbackSong.artworkURL}
-                onError={() => setArtworkError(true)}
+            {playbackSong?.title && (
+              <ArtworkImage
+                src={playbackSong.artworkURL}
                 className="playerAlbumArt"
                 alt={`${playbackSong.title} Album Art`}
               />
@@ -173,13 +168,14 @@ const Footer = () => {
           </>
         )}
         <div className="titleArtistContainer">
-          <p className="songTitle">{playbackSong?.title}</p>
-          <p className="artistName">{playbackSong?.artist}</p>
+          <p className="songTitle">{playbackSong?.title || 'Nothing playing'}</p>
+          <p className="artistName">{playbackSong?.artist || 'Choose a song to start playback'}</p>
         </div>
       </div>
 
       {isPreviewOnly && footerSongURL ? (
         <audio
+          className="previewPlayer"
           key={playbackSong?.title}
           controls
           autoPlay

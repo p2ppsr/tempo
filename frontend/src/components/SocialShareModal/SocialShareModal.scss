@@ -1,9 +1,23 @@
 @import '../../styles/styleVariables.scss';
 
+.socialShareModal {
+  .socialShareSubheading {
+    margin-top: 0.8rem;
+    font-size: 1.05rem;
+    color: #d4e3f6;
+  }
+}
+
 .socialHeaderContainer {
   display: flex;
+  align-items: center;
   margin-block: 1rem;
   cursor: pointer;
+  width: fit-content;
+  border: 1px solid rgba(163, 189, 217, 0.3);
+  border-radius: 10px;
+  padding: 0.38rem 0.6rem;
+
   h3 {
     margin-right: 0.5rem;
   }
@@ -14,6 +28,8 @@
   }
 
   &:hover {
+    border-color: rgba(35, 198, 165, 0.62);
+
     * {
       color: $accentColor;
       fill: $accentColor;
@@ -24,7 +40,13 @@
 .socialButtons {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 10px;
+}
+
+.socialShareLoading {
+  display: flex;
+  justify-content: center;
+  margin-top: 33vh;
 }

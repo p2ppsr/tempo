@@ -1,6 +1,46 @@
+@import '../../styles/styleVariables.scss';
+
+.profilePage {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1.1rem;
+  align-items: center;
+  max-width: 56rem;
+  border: 1px solid rgba(163, 189, 217, 0.34);
+  border-radius: $borderRadius;
+  background: linear-gradient(180deg, rgba(14, 23, 37, 0.86), rgba(9, 15, 24, 0.9));
+  padding: 1rem;
+}
+
 .profileImage {
-  width:15rem;
-  height:15rem;
+  width: 11.2rem;
+  height: 11.2rem;
   border-radius: 100%;
   object-fit: cover;
+  border: 2px solid rgba(35, 198, 165, 0.4);
+}
+
+.profileCopy {
+  p {
+    margin-top: 0.45rem;
+    color: $textMutedColor;
+    max-width: 38rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .profilePage {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .profileImage {
+    width: 8.5rem;
+    height: 8.5rem;
+  }
+
+  .profileCopy p {
+    max-width: 100%;
+  }
 }

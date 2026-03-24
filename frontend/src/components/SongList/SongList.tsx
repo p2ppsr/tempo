@@ -18,14 +18,14 @@ import {
 } from '@tanstack/react-table'
 import { FaPlay } from 'react-icons/fa'
 import { IoIosCloseCircleOutline } from 'react-icons/io'
-import { Img } from '@bsv/uhrp-react'
 import { WalletClient } from '@bsv/sdk'
 
 import { usePlaybackStore } from '../../stores/stores'
 import deleteSong from '../../utils/deleteSong'
 import ActionsDropdown from './ActionsDropdown'
-
 import placeholderImage from '../../assets/Images/placeholder-image.png'
+import ArtworkImage from '../ArtworkImage/ArtworkImage'
+
 import type { Playlist, Song } from '../../types/interfaces'
 
 import './SongList.scss'
@@ -183,7 +183,7 @@ useEffect(() => {
   /**
    * Confirm and delete the selected song, updating UI state and notifying the user.
    */
-  const handleDeleteSong = async () => {
+const handleDeleteSong = async () => {
     if (!selectedSong) return
     setIsDeletingSong(true)
     try {
@@ -218,7 +218,7 @@ useEffect(() => {
 
   const columns = [
     createColumnHelper<Song>().accessor('songURL', {
-      header: '',
+      header: 'Play',
       cell: ({ row }) => {
         const song = row.original
         const isPreviewOnly = !song.decryptedSongURL && !!song.previewURL
@@ -233,31 +233,15 @@ useEffect(() => {
         }
 
         return (
-          <div className="songListArtworkContainer" onClick={handlePlay} style={{ position: 'relative' }}>
+          <div className="songListArtworkContainer" onClick={handlePlay}>
             <FaPlay className="artworkThumbnailPlayIcon" />
-            <Img
+            <ArtworkImage
               src={song.artworkURL || placeholderImage}
               alt={`${song.title} artwork`}
               className="songListArtworkThumbnail"
-              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                (e.target as HTMLImageElement).src = placeholderImage
-              }}
             />
             {isPreviewOnly && (
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '4px',
-                  left: '4px',
-                  background: 'rgba(0, 0, 0, 0.6)',
-                  color: '#fff',
-                  fontSize: '0.7rem',
-                  padding: '2px 6px',
-                  borderRadius: '4px'
-                }}
-              >
-                Preview
-              </div>
+              <div className="previewFlag">Preview</div>
             )}
           </div>
         )
@@ -315,7 +299,7 @@ useEffect(() => {
       {/* Add to Playlist Modal */}
       <Modal open={isAddToPlaylistModalOpen} onClose={() => setIsAddToPlaylistModalOpen(false)}>
         <div className="addToPlayListModal">
-          <div className="flex" style={{ marginBottom: '1rem' }}>
+          <div className="modalHeaderRow">
             <h1>Add to playlist</h1>
             <div className="flexSpacer" />
             <IoIosCloseCircleOutline
@@ -337,13 +321,16 @@ useEffect(() => {
               <h2 className="playlistName">{p.name}</h2>
             </div>
           ))}
+          {playlists.length === 0 && (
+            <p className="emptyModalState">Create a playlist first to save this track.</p>
+          )}
         </div>
       </Modal>
 
       {/* Confirm Delete Modal */}
       <Modal open={isConfirmDeleteModalOpen} onClose={() => setIsConfirmDeleteModalOpen(false)}>
         <div className="confirmDeleteModal">
-          <div className="flex" style={{ marginBottom: '1rem' }}>
+          <div className="modalHeaderRow">
             <h1>Are you sure you want to delete this song?</h1>
             <div className="flexSpacer" />
             <IoIosCloseCircleOutline
@@ -371,33 +358,47 @@ useEffect(() => {
         </div>
       </Modal>
 
-      <table className="songListTable" style={style}>
-        <thead>
-          {table.getHeaderGroups().map(group => (
-            <tr key={group.id}>
-              {group.headers.map(header => (
-                <th key={header.id}>
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map(row => (
-            <tr
-              key={row.id}
-              className={`songRow ${selectedSongIndex === row.id ? 'selectedRow' : ''}`}
-              onClick={() => setSelectedSongIndex(row.id)}
-              onDoubleClick={() => handleDoubleClick(row.original)}
-            >
-              {row.getVisibleCells().map(cell => (
-                <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="songListTableWrap">
+        <table className="songListTable" style={style}>
+          <thead>
+            {table.getHeaderGroups().map(group => (
+              <tr key={group.id}>
+                {group.headers.map(header => (
+                  <th key={header.id}>
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map(row => (
+              <tr
+                key={row.id}
+                className={`songRow ${selectedSongIndex === row.id ? 'selectedRow' : ''}`}
+                onClick={() => setSelectedSongIndex(row.id)}
+                onDoubleClick={() => handleDoubleClick(row.original)}
+              >
+                {row.getVisibleCells().map(cell => {
+                  const headerValue = cell.column.columnDef.header
+                  const label =
+                    typeof headerValue === 'string'
+                      ? headerValue || 'Play'
+                      : cell.column.id === 'actions'
+                        ? 'Actions'
+                        : ''
+
+                  return (
+                    <td key={cell.id} data-label={label}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </>
   )
 }

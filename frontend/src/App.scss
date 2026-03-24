@@ -1,51 +1,131 @@
 @import './styles/styleVariables.scss';
 
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+:root {
+  --tempo-bg: #08111d;
+  --tempo-bg-soft: #0e1728;
+  --tempo-panel: #111d30;
+  --tempo-panel-glass: rgba(17, 29, 48, 0.72);
+  --tempo-stroke: rgba(163, 189, 217, 0.32);
+  --tempo-text: #e4edf8;
+  --tempo-text-muted: #95a9c2;
+  --tempo-headline: #f3f8ff;
+  --tempo-accent: #23c6a5;
+  --tempo-accent-soft: rgba(35, 198, 165, 0.16);
+  --tempo-warm: #f97354;
+  --tempo-warm-soft: rgba(249, 115, 84, 0.17);
+  --tempo-shadow: rgba(3, 8, 16, 0.52);
+  --tempo-radius: 16px;
+  --tempo-radius-sm: 12px;
+  --shell-sidebar-width: clamp(230px, 19vw, 360px);
+  --shell-topbar-height: 72px;
+  --shell-footer-height: 92px;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
 body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: 'Outfit', 'Trebuchet MS', 'Segoe UI', sans-serif;
+  color: var(--tempo-text);
+  background: radial-gradient(circle at 15% -15%, rgba(35, 198, 165, 0.24), transparent 42%),
+    radial-gradient(circle at 95% 110%, rgba(249, 115, 84, 0.18), transparent 42%),
+    linear-gradient(145deg, var(--tempo-bg) 0%, #0a1322 60%, #0a111a 100%);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
 
 a {
   text-decoration: none;
-  color: rgb(114, 171, 250);
+  color: var(--tempo-accent);
+}
+
+a:hover {
+  color: #58e4c8;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--tempo-headline);
+  font-family: 'Space Grotesk', 'Outfit', sans-serif;
+  letter-spacing: 0.01em;
 }
 
 p {
-  line-height: 1.5rem;
+  color: var(--tempo-text);
+  line-height: 1.55;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+.backgroundImage {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  object-position: center;
+  z-index: -3;
+  filter: blur(40px) brightness(0.24) saturate(1.2);
+  transform: scale(1.08);
+  pointer-events: none;
 }
 
 .appLayout {
-  display: grid;
-  grid-template-columns: minmax(10rem, 20%) 1fr;
-  grid-template-rows: 10vh 1fr auto;
-  grid-template-areas:
-    'leftmenu topmenu'
-    'leftmenu maincontent'
-    'leftmenu footer';
-  min-height: 100vh;
   position: relative;
+  display: block;
+  min-height: 100vh;
+  width: 100%;
 }
 
 .leftMenu {
-  grid-area: leftmenu;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: var(--shell-footer-height);
+  width: var(--shell-sidebar-width);
+  overflow-y: auto;
+  border-right: 1px solid var(--tempo-stroke);
+  backdrop-filter: blur(14px);
+  background: linear-gradient(180deg, rgba(13, 21, 35, 0.94), rgba(9, 16, 27, 0.88));
+  z-index: 24;
 }
 
 .topMenu {
-  grid-area: topmenu;
+  position: fixed;
+  top: 0;
+  left: var(--shell-sidebar-width);
+  right: 0;
+  height: var(--shell-topbar-height);
+  z-index: 20;
 }
 
 .mainContent {
-  grid-area: maincontent;
-  overflow-y: auto;
-  padding-bottom: 5rem; // Make room for the footer
+  margin-left: var(--shell-sidebar-width);
+  padding: calc(var(--shell-topbar-height) + 1rem) 1.65rem calc(var(--shell-footer-height) + 1rem);
+  min-height: 100vh;
+  overflow: visible;
 }
 
 .main {
@@ -54,20 +134,31 @@ p {
 }
 
 .container {
-  padding-inline: 2rem;
-  height: auto;
-  overflow-y: auto;
+  width: min(1160px, 100%);
+  padding-inline: 0.25rem;
+  margin: 0 auto;
 }
 
-.backgroundImage {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
-  z-index: -1;
-  filter: blur(0.5rem) brightness(0.8);
+.songsPage {
+  .songsPageHeading {
+    margin-bottom: 0.78rem;
+  }
+
+  .songsPageSubheading {
+    margin: 0.2rem 0 0.78rem;
+    color: #a8c0dc;
+    font-size: 1.05rem;
+    font-weight: 500;
+  }
+}
+
+.songsPageContent {
+  margin-top: 0.95rem;
+}
+
+.emptyPageState {
+  margin-top: 0.95rem;
+  color: #9db4cf;
 }
 
 .rightContainer {
@@ -75,26 +166,59 @@ p {
 }
 
 ::-webkit-scrollbar {
-  height: 0px;
-  width: 0px;
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(7, 12, 20, 0.45);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(152, 174, 200, 0.3);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(152, 174, 200, 0.48);
 }
 
 .button {
-  background-color: $buttonColor;
-  padding: 10px 40px;
-  color: white;
-  font-weight: 600;
-  width: 100%;
-  border: 5px solid $buttonColor;
+  border: 1px solid var(--tempo-stroke);
+  background: linear-gradient(180deg, rgba(39, 64, 95, 0.95), rgba(21, 37, 58, 0.95));
+  color: var(--tempo-headline);
+  padding: 0.72rem 1.15rem;
+  border-radius: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, filter 140ms ease;
+}
+
+.button:hover {
+  border-color: rgba(35, 198, 165, 0.65);
+  transform: translateY(-1px);
+}
+
+.button:active {
+  filter: brightness(0.92);
+  transform: translateY(0);
+}
+
+.button:disabled {
+  opacity: 0.56;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .toastButton {
-  background-color: #6f44ee;
+  background: linear-gradient(180deg, rgba(44, 208, 178, 0.95), rgba(24, 142, 123, 0.95));
   border: 0;
-  padding: 10px 30px;
-  margin-top: 10px;
-  color: white;
-  font-weight: 600;
+  border-radius: 12px;
+  padding: 0.62rem 1rem;
+  margin-top: 0.65rem;
+  color: #041c17;
+  font-weight: 800;
   text-transform: uppercase;
   width: 240px;
 }
@@ -105,44 +229,61 @@ p {
   width: 100%;
 }
 
-// =====================
-// ✅ Mobile (Still Grid)
-// =====================
+.Toastify__toast {
+  border-radius: 12px;
+  background: rgba(12, 20, 33, 0.95);
+  border: 1px solid var(--tempo-stroke);
+  color: var(--tempo-headline);
+}
+
+.Toastify__progress-bar {
+  background: linear-gradient(90deg, var(--tempo-accent), #7cebd3);
+}
+
+@media screen and (max-width: 1024px) {
+  .mainContent {
+    padding-inline: 1rem;
+  }
+
+  .container {
+    padding-inline: 0;
+  }
+}
+
 @media screen and (max-width: 768px) {
+  :root {
+    --shell-topbar-height: 64px;
+    --shell-footer-height: 146px;
+  }
+
   .appLayout {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
-    grid-template-areas:
-      'topmenu'
-      'maincontent'
-      'footer';
-    height: 100vh; // ⬅️ Required so 100% vertical space is claimed
+    display: block;
   }
 
   .leftMenu {
     display: none;
   }
 
-  .topMenu,
-  .mainContent {
+  .topMenu {
+    left: 0;
+    right: 0;
     width: 100%;
+    height: var(--shell-topbar-height);
   }
 
   .mainContent {
-    overflow-y: auto;
-    padding-bottom: 6rem; // room for footer
+    margin-left: 0;
+    padding: calc(var(--shell-topbar-height) + 0.45rem) 0.85rem calc(var(--shell-footer-height) + 0.65rem);
   }
 
   .container {
-    padding-inline: 1rem;
-    height: auto;
+    padding-inline: 0;
   }
 
   .button,
   .toastButton {
     width: 100%;
-    padding: 12px;
-    font-size: 1rem;
+    padding: 0.78rem 1rem;
+    font-size: 0.98rem;
   }
 }
