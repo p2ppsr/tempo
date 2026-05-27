@@ -10,6 +10,7 @@ import InvitationModal from './components/InvitationModal/InvitationModal'
 import LeftMenu from './components/LeftMenu/LeftMenu'
 import SocialShareModal from './components/SocialShareModal/SocialShareModal'
 import TopMenu from './components/TopMenu/TopMenu'
+import PageMetadata from './components/PageMetadata'
 
 import EditSong from './pages/EditSong/EditSong'
 import Home from './pages/Home/Home'
@@ -82,6 +83,7 @@ const App = () => {
       <SocialShareModal />
 
       <Router>
+        <PageMetadata />
         <div className={`appLayout ${isMobile ? 'mobile' : 'desktop'}`}>
           {!isMobile && (
             <div className="leftMenu">
