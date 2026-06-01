@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tempo-key-server-config
+  labels:
+    app.kubernetes.io/name: tempo-key-server
+    app.kubernetes.io/component: runtime-config
+data:
+  NODE_ENV: "production"
+  HTTP_PORT: "8081"
+  BSV_NETWORK: "mainnet"
+  WALLET_STORAGE_URL: "http://wallet-storage.wallet-storage-prod.svc.cluster.local:8080"

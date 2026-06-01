@@ -69,6 +69,10 @@ const startServer = async () => {
 
   app.use(express.static('public'))
 
+  app.get('/healthz', (_req: Request, res: Response) => {
+    res.status(200).json({ status: 'ok' })
+  })
+
   const dbClient = new MongoClient(MONGO_URI)
   await dbClient.connect()
   console.log('Connected to MongoDB')

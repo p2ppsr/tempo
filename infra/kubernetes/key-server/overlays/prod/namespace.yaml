@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tempo-key-server-prod
+  labels:
+    app.kubernetes.io/name: tempo-key-server
+    app.kubernetes.io/part-of: tempo
+    environment: prod
