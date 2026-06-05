@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "description": "Tempo project using CARS and LARS",
   "dependencies": {
-    "@bsv/cars-cli": "^1.2.9",
-    "@bsv/lars": "^1.5.8"
+    "@p2ppsr/cars-cli": "^1.2.13",
+    "@p2ppsr/lars": "^1.5.11"
   },
   "scripts": {
     "lars": "lars",
