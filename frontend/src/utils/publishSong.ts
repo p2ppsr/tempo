@@ -80,7 +80,12 @@ const publishSong = async (
       selectedArtwork: song.selectedArtwork,
       selectedMusic: song.selectedMusic,
       selectedPreview: song.selectedPreview,
-      retentionPeriod: retentionPeriod ?? constants.RETENTION_PERIOD
+      retentionPeriod: retentionPeriod ?? constants.RETENTION_PERIOD,
+      onProgress: message => onProgress?.('uploading_files', message),
+      onAssetReceipt: (asset, assetReceipt) => {
+        receipt.assets[asset] = assetReceipt
+        saveReceipt(`${asset}_storage_verified`)
+      }
     })
 
     if (!fileUploadInfo.assets.audio?.available || !fileUploadInfo.assets.artwork?.available ||

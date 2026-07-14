@@ -52,4 +52,11 @@ describe('publication recovery contract', () => {
     expect(source).toContain("saveReceipt('failed')")
     expect(source).toContain("localStorage.setItem('tempo:last-publication'")
   })
+
+  it('verifies uploads through the expiry-aware public UHRP overlay without billable find calls', () => {
+    const source = readFileSync(resolve(process.cwd(), 'src/utils/getFileUploadInfo.ts'), 'utf8')
+    expect(source).toContain('storageDownloader.resolve(uhrpURL)')
+    expect(source).toContain('onAssetReceipt?.')
+    expect(source).not.toContain('storageUploader.findFile')
+  })
 })

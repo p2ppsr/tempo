@@ -1,21 +1,42 @@
-import { SymmetricKey, StorageUploader } from '@bsv/sdk'
+import { SymmetricKey, StorageDownloader, StorageUploader } from '@bsv/sdk'
 import constants from './constants'
 import { getInteractiveWallet } from './wallet'
 import type { PublicationAssetReceipt } from '../types/interfaces'
-import { buildAssetReceipt } from './publicationReceipt'
 
 interface GetFileUploadInfoParams {
   selectedArtwork: File | FileList | null
   selectedMusic: File | FileList | null
   selectedPreview?: File | FileList | null
   retentionPeriod?: number
+  onProgress?: (message: string) => void
+  onAssetReceipt?: (asset: 'audio' | 'artwork' | 'preview', receipt: PublicationAssetReceipt) => void
+}
+
+const storageDownloader = new StorageDownloader({ networkPreset: constants.overlayNetworkPreset })
+
+const sleep = async (milliseconds: number) => await new Promise(resolve => window.setTimeout(resolve, milliseconds))
+
+async function withDeadline<T>(promise: Promise<T>, label: string, milliseconds: number): Promise<T> {
+  let timeout: number | undefined
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_resolve, reject) => {
+        timeout = window.setTimeout(() => reject(new Error(`${label} timed out after ${Math.ceil(milliseconds / 1000)} seconds.`)), milliseconds)
+      })
+    ])
+  } finally {
+    if (timeout !== undefined) window.clearTimeout(timeout)
+  }
 }
 
 const getFileUploadInfo = async ({
   selectedArtwork = null,
   selectedMusic = null,
   selectedPreview = null,
-  retentionPeriod = constants.RETENTION_PERIOD
+  retentionPeriod = constants.RETENTION_PERIOD,
+  onProgress,
+  onAssetReceipt
 }: Partial<GetFileUploadInfoParams> = {}) => {
   const wallet = getInteractiveWallet()
 
@@ -33,21 +54,47 @@ const getFileUploadInfo = async ({
     preview?: PublicationAssetReceipt
   } = {}
 
-  const receiptFor = async (uhrpURL: string, hostedBy: string[]): Promise<PublicationAssetReceipt> => {
-    const checks = await Promise.all(hostedBy.map(async host => {
+  const receiptFor = async (
+    asset: 'audio' | 'artwork' | 'preview',
+    uhrpURL: string,
+    hostedBy: string[]
+  ): Promise<PublicationAssetReceipt> => {
+    const requiredHosts = 2
+    let activeHosts: string[] = []
+
+    // Provider /find calls are authenticated, billable, and historically
+    // capable of hanging after payment. The UHRP overlay is the authoritative
+    // public catalogue: resolve() omits expired records and needs no extra
+    // wallet request. Poll it until every required replica is admitted.
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      onProgress?.(`Verifying ${asset} storage replicas (${attempt + 1}/6)...`)
       try {
-        const record = await storageUploader.findFile(uhrpURL, { hostedBy: [host] })
-        return { host, expiryTime: record.expiryTime }
+        const resolved = await withDeadline(storageDownloader.resolve(uhrpURL), `${asset} storage verification`, 10000)
+        activeHosts = [...new Set(resolved.map(url => {
+          try {
+            return new URL(url).origin
+          } catch {
+            return url
+          }
+        }))]
+        if (activeHosts.length >= requiredHosts) break
       } catch {
-        return null
+        activeHosts = []
       }
-    }))
-    return buildAssetReceipt(uhrpURL, checks)
+      if (attempt < 5) await sleep(1500 * (attempt + 1))
+    }
+
+    return {
+      uhrpURL,
+      hostedBy: activeHosts,
+      available: hostedBy.length >= requiredHosts && activeHosts.length >= requiredHosts
+    }
   }
 
   // Upload artwork (unencrypted)
   if (selectedArtwork) {
     try {
+      onProgress?.('Uploading artwork to two storage providers...')
       const artworkFile =
         selectedArtwork instanceof FileList ? selectedArtwork[0] : selectedArtwork
       const artworkBuffer = new Uint8Array(await artworkFile.arrayBuffer())
@@ -66,11 +113,13 @@ const getFileUploadInfo = async ({
       })
 
       artworkURL = uploadedArtwork.uhrpURL
-      assets.artwork = await receiptFor(uploadedArtwork.uhrpURL, uploadedArtwork.hostedBy)
+      assets.artwork = await receiptFor('artwork', uploadedArtwork.uhrpURL, uploadedArtwork.hostedBy)
+      onAssetReceipt?.('artwork', assets.artwork)
       filesToUpload.push(artworkFile)
     } catch (err) {
       console.error('[Upload Artwork Error]', err)
-      throw new Error('Failed to upload artwork.')
+      const detail = err instanceof Error ? err.message : String(err)
+      throw new Error(`Failed to upload artwork: ${detail}`)
     }
   }
 
@@ -82,6 +131,7 @@ const getFileUploadInfo = async ({
     // Only proceed if we actually have a file
     if (previewFile && previewFile.size > 0) {
       try {
+        onProgress?.('Uploading the preview to two storage providers...')
         const previewBuffer = new Uint8Array(await previewFile.arrayBuffer())
 
         const uploadedPreview = await storageUploader.publishFile({
@@ -93,11 +143,13 @@ const getFileUploadInfo = async ({
         })
 
         previewURL = uploadedPreview.uhrpURL
-        assets.preview = await receiptFor(uploadedPreview.uhrpURL, uploadedPreview.hostedBy)
+        assets.preview = await receiptFor('preview', uploadedPreview.uhrpURL, uploadedPreview.hostedBy)
+        onAssetReceipt?.('preview', assets.preview)
         filesToUpload.push(previewFile)
       } catch (err) {
         console.error('[Upload Preview Error]', err)
-        throw new Error('Failed to upload preview.')
+        const detail = err instanceof Error ? err.message : String(err)
+        throw new Error(`Failed to upload preview: ${detail}`)
       }
     }
   }
@@ -105,6 +157,7 @@ const getFileUploadInfo = async ({
   // Encrypt and upload music
   if (selectedMusic) {
     try {
+      onProgress?.('Encrypting and uploading the master audio to two storage providers...')
       const musicFile =
         selectedMusic instanceof FileList ? selectedMusic[0] : selectedMusic
       const musicBuffer = await musicFile.arrayBuffer()
@@ -128,7 +181,8 @@ const getFileUploadInfo = async ({
       })
 
       songURL = uploadedMusic.uhrpURL
-      assets.audio = await receiptFor(uploadedMusic.uhrpURL, uploadedMusic.hostedBy)
+      assets.audio = await receiptFor('audio', uploadedMusic.uhrpURL, uploadedMusic.hostedBy)
+      onAssetReceipt?.('audio', assets.audio)
 
       const blob = new Blob([Uint8Array.from(encrypted as number[])], {
         type: 'application/octet-stream'
@@ -140,7 +194,8 @@ const getFileUploadInfo = async ({
       filesToUpload.push(encryptedFile)
     } catch (err) {
       console.error('[Upload Music Error]', err)
-      throw new Error('Failed to upload and encrypt music.')
+      const detail = err instanceof Error ? err.message : String(err)
+      throw new Error(`Failed to upload and encrypt music: ${detail}`)
     }
   }
 
