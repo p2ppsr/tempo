@@ -7,14 +7,12 @@
  * certain features and prompts the InvitationModal when necessary.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FaCaretDown, FaCaretUp } from 'react-icons/fa'
 import { NavLink, useLocation } from 'react-router-dom'
 import './LeftMenu.scss'
 
 import tempoLogo from '../../assets/Images/tempoLogo.png'
-import fetchUserSongs from '../../utils/fetchSongs/fetchUserSongs'
-import { useAuthStore, useModals } from '../../stores/stores'
 
 /**
  * LeftMenu Component
@@ -31,18 +29,6 @@ import { useAuthStore, useModals } from '../../stores/stores'
 const LeftMenu = () => {
   // ========== COMPONENT STATE ==========
   const [libraryOpen, setLibraryOpen] = useState(false)
-  const [showMySongsTab, setShowMySongsTab] = useState(false)
-
-  // ========== GLOBAL STATE ==========
-  const [userHasMetanetClient] = useAuthStore((state: any) => [state.userHasMetanetClient])
-
-  const [
-    setInvitationModalOpen,
-    setInvitationModalContent
-  ] = useModals((state: any) => [
-    state.setInvitationModalOpen,
-    state.setInvitationModalContent
-  ])
 
   // ========== EFFECTS ==========
 
@@ -51,33 +37,6 @@ const LeftMenu = () => {
   useEffect(() => {
     setLibraryOpen(false)
   }, [location])
-
-  useEffect(() => {
-    if (!userHasMetanetClient) return
-
-    ;(async () => {
-      try {
-        const userSongs = await fetchUserSongs()
-        if (userSongs && userSongs.length > 0) {
-          setShowMySongsTab(true)
-        }
-      } catch (err) {
-        console.error('Failed to fetch user songs:', err)
-      }
-    })()
-  }, [userHasMetanetClient])
-
-  /**
-   * Prevents navigation if Metanet Client is not installed,
-   * opens the invitation modal instead.
-   */
-  const handleMncCheck = (e: React.MouseEvent, source: string) => {
-    if (!userHasMetanetClient) {
-      e.preventDefault()
-      setInvitationModalContent(source)
-      setInvitationModalOpen(true)
-    }
-  }
 
   // ========== RENDER ==========
   return (
@@ -105,36 +64,23 @@ const LeftMenu = () => {
             <NavLink
               to="/Likes"
               className="menuAccordionLink"
-              onClick={e => {
-                handleMncCheck(e, 'library')
-              }}
             >
               Likes
             </NavLink>
             <NavLink
               to="/Playlists"
               className="menuAccordionLink"
-              onClick={e => {
-                handleMncCheck(e, 'library')
-              }}
             >
               Playlists
             </NavLink>
           </>
         )}
 
-        {showMySongsTab && (
-          <NavLink to="/MySongs">
-            <li className="link">My Songs</li>
-          </NavLink>
-        )}
+        <NavLink to="/MySongs">
+          <li className="link">My Songs</li>
+        </NavLink>
 
-        <NavLink
-          to="/PublishSong"
-          onClick={e => {
-            handleMncCheck(e, 'publish')
-          }}
-        >
+        <NavLink to="/PublishSong">
           <li className="link">Publish</li>
         </NavLink>
       </ul>

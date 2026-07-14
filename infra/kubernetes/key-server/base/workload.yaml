@@ -6,7 +6,12 @@ metadata:
     app.kubernetes.io/name: tempo-key-server
     app.kubernetes.io/component: api
 spec:
-  replicas: 1
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: tempo-key-server
@@ -17,6 +22,17 @@ spec:
         app.kubernetes.io/name: tempo-key-server
         app.kubernetes.io/component: api
     spec:
+      terminationGracePeriodSeconds: 45
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: tempo-key-server
+                    app.kubernetes.io/component: api
       containers:
         - name: tempo-key-server
           image: tempo-key-server:local
@@ -31,11 +47,11 @@ spec:
                 name: tempo-key-server-secrets
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /readyz
               port: http
-            periodSeconds: 10
+            periodSeconds: 5
             timeoutSeconds: 5
-            failureThreshold: 6
+            failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /healthz
@@ -51,6 +67,13 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 60
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - sleep 5
           resources:
             requests:
               cpu: 500m

@@ -28,9 +28,7 @@ const Likes = () => {
   const [songs, setSongs] = useState<Song[]>([])
   const [isLoaded, setIsLoaded] = useState(false)
 
-  const [likesHasChanged] = useLikesStore((state: any) => [
-    state.likesHasChanged
-  ])
+  const likesHasChanged = useLikesStore(state => state.likesHasChanged)
 
   useEffect(() => {
     const fetchLikedSongs = async () => {

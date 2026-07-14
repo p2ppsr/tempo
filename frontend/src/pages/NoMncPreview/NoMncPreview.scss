@@ -1,4 +1,4 @@
-@import '../../styles/styleVariables.scss';
+@use '../../styles/styleVariables.scss' as *;
 
 .noMncPreviewContainer {
   #previewBanner {
@@ -28,6 +28,46 @@
     }
   }
 
+  .tempoHero {
+    width: 100% !important;
+    padding: clamp(1.2rem, 4vw, 3rem) !important;
+    border-color: rgba(139, 124, 255, 0.45) !important;
+    border-radius: 24px !important;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(53, 214, 195, 0.2), transparent 34%),
+      radial-gradient(circle at 12% 0%, rgba(139, 124, 255, 0.3), transparent 42%),
+      linear-gradient(145deg, rgba(20, 25, 43, 0.96), rgba(9, 13, 23, 0.96)) !important;
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.3);
+
+    h1 { max-width: 760px; font-size: clamp(2.25rem, 6vw, 4.7rem); line-height: 0.98; letter-spacing: -0.045em; margin: 0.45rem 0 1rem; }
+    > p:not(.heroEyebrow) { max-width: 680px; color: #c3cada; font-size: clamp(1rem, 2vw, 1.18rem); }
+  }
+
+  .heroEyebrow,
+  .sectionEyebrow {
+    margin: 0;
+    color: #7ce9d8;
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .heroActions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.35rem; }
+  .heroActions .button { width: auto; }
+  .primaryAction { background: linear-gradient(135deg, #8b7cff, #35d6c3); color: #071018; border: 0; }
+  .secondaryAction { background: rgba(255, 255, 255, 0.06); }
+
+  .catalogueHeading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 2rem 0 0.85rem;
+  }
+
+  .catalogStatus { max-width: 34rem; color: #aeb7c9; text-align: right; font-size: 0.86rem; }
+
   .previewHeading {
     margin-bottom: 0.8rem;
   }
@@ -42,6 +82,16 @@
       border-radius: 0.75rem;
       text-align: left;
     }
+
+    .tempoHero {
+      padding: 1.2rem !important;
+      h1 { font-size: 2.5rem; }
+    }
+
+    .heroActions { display: grid; }
+    .heroActions .button { width: 100%; text-align: center; }
+    .catalogueHeading { display: block; }
+    .catalogStatus { text-align: left; margin-top: 0.55rem; }
 
     .previewHeading {
       font-size: 1.4rem;

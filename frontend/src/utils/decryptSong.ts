@@ -1,14 +1,9 @@
-import {
-  WalletClient,
-  AuthFetch,
-  SymmetricKey,
-  StorageDownloader,
-  Utils
-} from '@bsv/sdk';
+import { AuthFetch, SymmetricKey, StorageDownloader, Utils } from '@bsv/sdk'
 import constants from './constants';
 import type { Song } from '../types/interfaces';
+import { getInteractiveWallet } from './wallet'
 
-const wallet = new WalletClient('auto', 'localhost');
+const wallet = getInteractiveWallet()
 const authFetch = new AuthFetch(wallet);
 
 type MinimalSong = Pick<Song, 'songURL' | 'title' | 'artist'>;
@@ -22,7 +17,6 @@ const decryptSong = async (song: MinimalSong) => {
     const storageDownloader = new StorageDownloader();
     const rawBytesResponse = await storageDownloader.download(song.songURL);
     console.timeEnd('Song download time');
-    console.log('[decryptSong] Downloaded encrypted data:', rawBytesResponse);
     return rawBytesResponse;
   })();
 
@@ -33,16 +27,15 @@ const decryptSong = async (song: MinimalSong) => {
       body: {
         songURL: song.songURL,
       },
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      paymentRetryAttempts: 1
     });
     console.timeEnd('Payment receipt request');
 
-    const key = await purchasedKeyResponse.json() as any;
+    const key = await purchasedKeyResponse.json() as { result?: string; description?: string };
     if (!key || !key.result) {
-      throw new Error('[decryptSong] Failed to retrieve encryption key');
+      throw new Error(key.description || 'Tempo could not retrieve this song key.');
     }
-
-    console.log('[decryptSong] Received encryption key:', key.result);
 
     return key.result; // return the base64 key string
   })();
@@ -56,18 +49,15 @@ const decryptSong = async (song: MinimalSong) => {
   // Create symmetric key
   const keyBytes = Utils.toArray(keyBase64, 'base64');
   const symmetricKey = new SymmetricKey(keyBytes);
-  console.log('[decryptSong] Symmetric key created:', symmetricKey);
 
   // Decrypt the song
   console.time('Decryption time');
   const decrypted = await symmetricKey.decrypt([...rawBytesResponse.data]) as number[];
   console.timeEnd('Decryption time');
-  console.log('[decryptSong] Decrypted song bytes:', decrypted);
 
   const blob = new Blob([Uint8Array.from(decrypted)], { type: 'audio/mpeg' });
   const url = URL.createObjectURL(blob);
 
-  console.log('[decryptSong] Decrypted song URL:', url);
   return url;
 };
 

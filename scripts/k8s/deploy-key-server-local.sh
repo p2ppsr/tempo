@@ -42,6 +42,8 @@ perl -0pi -e 's#newTag: [^\n]+#newTag: $ENV{IMAGE_TAG}#g' "${kustomization}"
   -i \
   --restart=Never \
   --image=curlimages/curl:8.11.1 \
-  --command -- curl --fail --show-error --silent http://tempo-key-server:8081/healthz
+  --command -- sh -ceu \
+  'curl --fail --show-error --silent http://tempo-key-server:8081/readyz &&
+   curl --fail --show-error --silent http://tempo-key-server:8081/metrics | grep -q "^tempo_key_server_ready 1$"'
 
 printf 'tempo-key-server prod deployment completed for image tag %s\n' "${IMAGE_TAG}"

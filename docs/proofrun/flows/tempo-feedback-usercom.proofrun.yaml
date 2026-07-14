@@ -1,0 +1,115 @@
+proofrunVersion: 1
+id: tempo-feedback-usercom
+name: Tempo in-product feedback and UserCom observability
+surface:
+  repo: p2ppsr/tempo
+  workspace: /Users/tyeverett/projects/tempo
+  dossier: /Users/tyeverett/projects/network-ops/docs/repos/p2ppsr/tempo.md
+  category: feedback
+  audience: "A listener or artist reporting a bug, catalogue issue, or idea."
+environment:
+  kind: production
+  baseUrl: https://tempomusic.net
+  healthEndpoints:
+    - https://usercom.babbage.systems/healthz
+  deployment:
+    system: cars
+    workflow: Deploy Tempo Production
+    namespace: cars-project-50247d539b678476a0b00db7bd5584e8
+    workload: frontend
+    releaseSource: master
+safety:
+  stateChanging: true
+  spendCap:
+    amount: 0
+    unit: sats
+  testIdentities: []
+  cleanup:
+    required: false
+    instructions: "Tag the test note as a Commercial Readiness feedback verification so it can be archived in UserCom."
+matrix:
+  desktopBrowsers:
+    - chrome
+  mobileBrowsers:
+    - ios-simulator-safari
+  mobileSimulators:
+    - ios-simulator
+  desktopWallets: []
+  mobileWallets: []
+  serverWallets:
+    - usercom
+  networks:
+    - mainnet
+preflight:
+  commands:
+    - description: Check UserCom health
+      command: curl -fsS https://usercom.babbage.systems/healthz
+      cwd: /Users/tyeverett/projects/tempo
+  requiredState:
+    - "Feedback dock is visible without wallet connection on desktop and iOS Simulator."
+    - "No personal email is needed for this run."
+flow:
+  steps:
+    - id: open-feedback
+      actor: user
+      action: "Open Feedback and choose Song availability."
+      expected:
+        ui:
+          - "The form explains the accepted feedback types and email is optional."
+        telemetry:
+          - "feedback.opened is emitted."
+      timing:
+        thresholdMs: 1000
+    - id: submit-feedback
+      actor: user
+      action: "Submit a clearly labeled Commercial Readiness verification note without email."
+      expected:
+        ui:
+          - "A clear success confirmation appears and the panel closes."
+        domain:
+          - "UserCom stores the feedback with source tempomusic.net and category tag."
+        telemetry:
+          - "feedback.submit_started, feedback.submitted, and feedback.client_acknowledged are queryable."
+      timing:
+        thresholdMs: 5000
+assertions:
+  uiAppearance:
+    - "Feedback controls remain above the player and mobile safe area."
+  audienceIntuition:
+    - "Category, message, optional email, and consent semantics are obvious."
+  customerTrust:
+    - "Contact consent appears only when email is supplied."
+  flowSuccess:
+    - "The UI acknowledgment and UserCom stored record agree."
+  telemetryObservability:
+    - "Feedback carries safe source/surface/category context and no wallet material."
+  reliabilityRepeatability:
+    - "The form can reopen and submit another distinct note."
+  performance:
+    - "Submission acknowledgment appears within 5 seconds."
+evidence:
+  publicSafe:
+    - "Run record with event names and response status."
+  privateArtifacts:
+    - "network-ops/artifacts/proofrun/p2ppsr/tempo/<timestamp>-tempo-feedback-usercom/"
+telemetry:
+  expectedEvents:
+    - name: feedback.opened
+      required: true
+    - name: feedback.submitted
+      required: true
+    - name: feedback.client_acknowledged
+      required: true
+  queryInstructions: "Use the protected UserCom admin API for source tempomusic.net and the run time window; do not copy unrelated user data."
+performanceThresholds:
+  firstMeaningfulContentMs: 2000
+  uiFeedbackAfterActionMs: 500
+  walletPromptShownMs: 0
+  approvalToConfirmationMs: 0
+  fullFlowMs: 15000
+  telemetryVisibleMs: 60000
+recording:
+  runRecordTemplate: /Users/tyeverett/projects/network-ops/docs/runbooks/proofrun-run-record-template.md
+  productRunPath: docs/proofrun/runs/<YYYYMMDDTHHMMSSZ>-tempo-feedback-usercom.md
+  updateDossier: true
+  updateReadinessRegistry: true

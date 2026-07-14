@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
 import SongList from '../../components/SongList/SongList'
 import loadDemoSongs from '../../utils/loadDemoSongs'
 
@@ -14,77 +15,92 @@ import MurosPreview from '../../assets/Music/Previews/MurosInstrumental_preview.
 
 import starfallArtwork from '../../assets/AlbumArtwork/starfall.jpg'
 import starfallPreview from '../../assets/Music/Previews/Starfall_preview.mp3'
+import type { Song } from '../../types/interfaces'
 
-const normalize = (url: string) => url.replace('/src', '')
+const previewToken = {
+  inputs: {}, mapiResponses: {}, outputScript: '', proof: {}, rawTX: '', satoshis: 0, txid: '', vout: 0
+}
 
-const hardcodedPreviewSongs = [
+const hardcodedPreviewSongs: Song[] = [
   {
     title: 'Dawnvisions',
     artist: 'Dooblr',
-    songURL: normalize(dawnvisionsPreview),
-    decryptedSongURL: normalize(dawnvisionsPreview),
-    artworkURL: normalize(dawnvisionsArtwork)
+    songURL: dawnvisionsPreview,
+    decryptedSongURL: dawnvisionsPreview,
+    artworkURL: dawnvisionsArtwork,
+    isPublished: false,
+    description: 'Bundled Tempo preview',
+    duration: 15,
+    token: previewToken
   },
   {
     title: 'Muros Instrumental',
     artist: 'Muros',
-    songURL: normalize(MurosPreview),
-    decryptedSongURL: normalize(MurosPreview),
-    artworkURL: normalize(MurosArtwork)
+    songURL: MurosPreview,
+    decryptedSongURL: MurosPreview,
+    artworkURL: MurosArtwork,
+    isPublished: false,
+    description: 'Bundled Tempo preview',
+    duration: 15,
+    token: previewToken
   },
   {
     title: 'Starfall',
     artist: 'Dooblr',
-    songURL: normalize(starfallPreview),
-    decryptedSongURL: normalize(starfallPreview),
-    artworkURL: normalize(starfallArtwork)
+    songURL: starfallPreview,
+    decryptedSongURL: starfallPreview,
+    artworkURL: starfallArtwork,
+    isPublished: false,
+    description: 'Bundled Tempo preview',
+    duration: 15,
+    token: previewToken
   }
-] as any
+]
 
 
 const NoMncPreview = () => {
   const [songs, setSongs] = useState(hardcodedPreviewSongs)
+  const [catalogStatus, setCatalogStatus] = useState('Checking live catalogue availability…')
 
   useEffect(() => {
     ;(async () => {
       try {
-        console.log('[NoMncPreview] Loading overlay previews...')
         const overlaySongs = await loadDemoSongs()
         const combined = [...hardcodedPreviewSongs, ...overlaySongs]
-        console.log('[NoMncPreview] Total preview songs:', combined)
         setSongs(combined)
+        setCatalogStatus(overlaySongs.length > 0
+          ? `${overlaySongs.length} live independent release${overlaySongs.length === 1 ? '' : 's'} verified now.`
+          : 'No independent releases currently have live storage and a purchase key. Bundled previews remain available.')
       } catch (err) {
         console.error('[NoMncPreview] Failed to load overlay previews:', err)
+        setCatalogStatus('The live catalogue could not be verified. Bundled previews remain available.')
+        toast.warn('Tempo could not verify the live catalogue. Try again shortly.')
       }
     })()
   }, [])
 
   return (
     <div className="container noMncPreviewContainer">
-      <div id="previewBanner">
-        <h3>
-          To get the full experience, please launch the Metanet Client. If you don't have it
-          yet, it's available for{' '}
-          <a href="https://projectbabbage.com/desktop/res/MetaNet%20Client.exe" target="_blank" rel="noreferrer">
-            Windows
-          </a>
-          ,{' '}
-          <a href="https://projectbabbage.com/desktop/res/MetaNet%20Client.dmg" target="_blank" rel="noreferrer">
-            macOS
-          </a>
-          , and{' '}
-          <a
-            href="https://projectbabbage.com/desktop/res/MetaNet%20Client.AppImage"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Linux
-          </a>
-          .
-        </h3>
+      <div id="previewBanner" className="tempoHero">
+        <p className="heroEyebrow">Direct music · live availability · wallet-approved payments</p>
+        <h1>Hear it now. Own the release path.</h1>
+        <p>
+          Preview music without a wallet prompt. When you publish or unlock a full track,
+          Babbage Go opens one clear Metanet permission flow.
+        </p>
+        <div className="heroActions">
+          <a className="button primaryAction" href="#live-catalogue">Browse playable music</a>
+          <a className="button secondaryAction" href="/PublishSong">Publish a song</a>
+        </div>
       </div>
 
-      <h1 className="previewHeading">Previews</h1>
+      <div id="live-catalogue" className="catalogueHeading">
+        <div>
+          <p className="sectionEyebrow">Verified catalogue</p>
+          <h2 className="previewHeading">Playable right now</h2>
+        </div>
+        <p className="catalogStatus" role="status">{catalogStatus}</p>
+      </div>
       <SongList songs={songs} />
     </div>
   )

@@ -129,9 +129,9 @@ export class TSPLookupService implements LookupService {
         const exists = await this.storage.isSongFileURLInDatabase(query.value.songFileURL)
         return exists ? [{ txid: 'exists', outputIndex: 0 }] : []
 
-      } else if (typeof query === 'object' && query.type === 'findAll') {
+      } else if (query === 'findAll' || (typeof query === 'object' && query.type === 'findAll')) {
         console.log('[TSPLookupService] Query type: findAll (possibly filtered)')
-        const filters = query.value || {}
+        const filters = typeof query === 'object' ? query.value || {} : {}
 
         if (filters.songIDs && filters.songIDs.length > 0) {
           return await this.storage.findBySongIDs(filters.songIDs)
@@ -191,5 +191,4 @@ function isSongFileCheckQuery(query: TSPLookupQuery): query is FindBySongFileURL
 export default (db: Db): TSPLookupService => {
   return new TSPLookupService(new TSPStorage(db))
 }
-
 

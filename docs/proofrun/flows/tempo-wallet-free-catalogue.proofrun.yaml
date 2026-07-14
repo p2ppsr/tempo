@@ -1,0 +1,131 @@
+proofrunVersion: 1
+id: tempo-wallet-free-catalogue
+name: Tempo wallet-free catalogue and preview playback
+surface:
+  repo: p2ppsr/tempo
+  workspace: /Users/tyeverett/projects/tempo
+  dossier: /Users/tyeverett/projects/network-ops/docs/repos/p2ppsr/tempo.md
+  category: discover
+  audience: "A music listener with no BSV or wallet knowledge."
+environment:
+  kind: production
+  baseUrl: https://tempomusic.net
+  healthEndpoints:
+    - https://tempo-keyserver.babbage.systems/readyz
+  deployment:
+    system: cars
+    workflow: Deploy Tempo Production
+    namespace: cars-project-50247d539b678476a0b00db7bd5584e8
+    workload: frontend and backend deployments
+    releaseSource: master
+safety:
+  stateChanging: false
+  spendCap:
+    amount: 0
+    unit: sats
+  testIdentities: []
+  cleanup:
+    required: false
+    instructions: "No state is created."
+matrix:
+  desktopBrowsers:
+    - chrome
+  mobileBrowsers:
+    - ios-simulator-safari
+  mobileSimulators:
+    - ios-simulator
+  desktopWallets: []
+  mobileWallets: []
+  serverWallets: []
+  networks:
+    - mainnet
+preflight:
+  commands:
+    - description: Check source state
+      command: git status --short --branch
+      cwd: /Users/tyeverett/projects/tempo
+    - description: Check public frontend
+      command: curl -fsS https://tempomusic.net/
+      cwd: /Users/tyeverett/projects/tempo
+    - description: Check key-server dependencies
+      command: curl -fsS https://tempo-keyserver.babbage.systems/readyz
+      cwd: /Users/tyeverett/projects/tempo
+  requiredState:
+    - "Production release identity and CARS deployment ID are recorded."
+    - "iOS Simulator is booted and Safari can reach the production URL."
+    - "No wallet window is open or invoked by passive catalogue browsing."
+flow:
+  steps:
+    - id: open-catalogue
+      actor: listener
+      action: "Open Tempo production and inspect the first screen."
+      expected:
+        ui:
+          - "The listener understands that previews are wallet-free and publishing or purchase uses Metanet."
+          - "Catalogue status explains whether independent releases are playable now."
+        telemetry:
+          - "app.opened is emitted."
+      timing:
+        thresholdMs: 2000
+    - id: verify-admission
+      actor: listener
+      action: "Inspect every visible independent song."
+      expected:
+        domain:
+          - "Every independent song has an active nonexpired audio host and a purchase key."
+          - "A declared preview must also have an active nonexpired host."
+        telemetry:
+          - "catalog.availability_completed is emitted with aggregate exclusion reasons only."
+      timing:
+        thresholdMs: 10000
+    - id: play-preview
+      actor: listener
+      action: "Play a bundled or publisher-provided preview."
+      expected:
+        ui:
+          - "Playback starts in the persistent player without a wallet prompt."
+        telemetry:
+          - "playback.started is emitted."
+      timing:
+        thresholdMs: 3000
+assertions:
+  uiAppearance:
+    - "Desktop and iOS Simulator layouts have no horizontal overflow or hidden player controls."
+  audienceIntuition:
+    - "A listener can browse and start audio without maintainer knowledge."
+  customerTrust:
+    - "Expired, missing, or keyless songs are not shown."
+  flowSuccess:
+    - "A visible preview reaches playing state with readyState at least 2."
+  telemetryObservability:
+    - "Catalogue and playback events reach UserCom without keys, BEEF, or raw transactions."
+  reliabilityRepeatability:
+    - "Reloading repeats catalogue admission and playback successfully."
+  performance:
+    - "First meaningful content is visible within 2 seconds on the test connection."
+evidence:
+  publicSafe:
+    - "Run record under docs/proofrun/runs/."
+  privateArtifacts:
+    - "network-ops/artifacts/proofrun/p2ppsr/tempo/<timestamp>-tempo-wallet-free-catalogue/"
+telemetry:
+  expectedEvents:
+    - name: app.opened
+      required: true
+    - name: catalog.availability_completed
+      required: true
+    - name: playback.started
+      required: true
+  queryInstructions: "Query UserCom signals for source tempomusic.net and the run time window."
+performanceThresholds:
+  firstMeaningfulContentMs: 2000
+  uiFeedbackAfterActionMs: 500
+  walletPromptShownMs: 0
+  approvalToConfirmationMs: 0
+  fullFlowMs: 30000
+  telemetryVisibleMs: 60000
+recording:
+  runRecordTemplate: /Users/tyeverett/projects/network-ops/docs/runbooks/proofrun-run-record-template.md
+  productRunPath: docs/proofrun/runs/<YYYYMMDDTHHMMSSZ>-tempo-wallet-free-catalogue.md
+  updateDossier: true
+  updateReadinessRegistry: true

@@ -69,10 +69,10 @@ export interface FindAllQuery {
 }
 
 export type TSPLookupQuery =
+  | 'findAll'
   | FindBySongTitleQuery
   | FindByArtistNameQuery
   | FindByArtistIdentityKeyQuery
   | FindBySongIDsQuery
   | FindBySongFileURLQuery
   | FindAllQuery 
-

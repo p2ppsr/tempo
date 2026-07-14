@@ -1,8 +1,8 @@
-import { WalletClient, Utils, Hash, SymmetricKey, AuthFetch } from '@bsv/sdk'
+import { Utils, SymmetricKey, AuthFetch, type WalletInterface } from '@bsv/sdk'
 import constants from './constants'
 
 interface PublishKeyParams {
-  wallet: WalletClient
+  wallet: WalletInterface
   key: SymmetricKey
   songURL: string
 }
@@ -12,35 +12,15 @@ const publishKey = async ({ wallet, key, songURL }: PublishKeyParams): Promise<v
   try {
     const authFetch = new AuthFetch(wallet)
 
-    // Prepare key & signature
+    // The BRC-103 authenticated request proves the publisher's identity. Avoid
+    // separate signature/public-key calls that would create redundant prompts.
     const rawKey = key.toArray('be', 32)
     const base64Key = Utils.toBase64(rawKey)
-    const message = JSON.stringify({ songURL, key: base64Key })
-    const hash = Hash.sha256(Utils.toArray(message, 'utf8'))
-
-    const { signature } = await wallet.createSignature({
-      hashToDirectlySign: hash,
-      protocolID: [1, 'tempo'],
-      keyID: 'signing-key',
-      counterparty: 'self'
-    })
-
-    await wallet.getPublicKey({ identityKey: true })
-
-    const { publicKey } = await wallet.getPublicKey({
-      protocolID: [1, 'tempo'],
-      keyID: 'signing-key',
-      counterparty: 'self'
-    })
 
     const payload = {
       songURL,
-      key: base64Key,
-      signature: Utils.toHex(signature),
-      publicKey
+      key: base64Key
     }
-
-    console.log('[publishKey] Sending payload to key server:', payload)
 
     // Authenticated fetch
     const response = await authFetch.fetch(`${constants.keyServerURL}/publish`, {
@@ -65,7 +45,6 @@ const publishKey = async ({ wallet, key, songURL }: PublishKeyParams): Promise<v
       throw err
     }
 
-    console.log('[publishKey] Key successfully published')
   } catch (err) {
     console.error('[publishKey] Unhandled error:', err)
     throw err

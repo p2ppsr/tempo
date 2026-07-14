@@ -1,4 +1,4 @@
-@import '../../styles/styleVariables.scss';
+@use '../../styles/styleVariables.scss' as *;
 
 .songListTableWrap {
   width: 100%;
@@ -68,6 +68,10 @@
   align-items: center;
   border-radius: 10px;
   cursor: pointer;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
 
   .songListArtworkThumbnail {
     width: 3rem;

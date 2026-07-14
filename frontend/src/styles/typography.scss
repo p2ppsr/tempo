@@ -1,4 +1,4 @@
-@import './styleVariables.scss';
+@use './styleVariables.scss' as *;
 
 h1 {
   color: $headerColor;

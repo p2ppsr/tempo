@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "description": "Tempo project using CARS and LARS",
   "dependencies": {
-    "@p2ppsr/cars-cli": "^1.2.13",
-    "@p2ppsr/lars": "^1.5.11"
+    "@p2ppsr/cars-cli": "^1.2.31",
+    "@p2ppsr/lars": "^1.5.12"
   },
   "scripts": {
     "lars": "lars",
@@ -13,7 +13,7 @@
     "lars:config": "lars config",
     "start": "lars start",
     "build": "cars build 1",
-    "deploy": "cars deploy now 1"
+    "deploy": "cars release now 1"
   },
   "devDependencies": {
     "sass": "^1.89.2",

@@ -50,6 +50,7 @@ export class TSPStorage {
       duration,
       songFileURL,
       artFileURL,
+      previewURL,
       createdAt: new Date(),
       searchableAttributes: [
         artistIdentityKey,

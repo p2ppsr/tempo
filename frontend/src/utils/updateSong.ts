@@ -1,7 +1,6 @@
 import constants from './constants'
 import {
   PushDrop,
-  WalletClient,
   Utils,
   LockingScript,
   Transaction,
@@ -10,8 +9,9 @@ import {
 import getFileUploadInfo from './getFileUploadInfo'
 import publishKey from './publishKey'
 import type { Song } from '../types/interfaces'
+import { getInteractiveWallet } from './wallet'
 
-const wallet = new WalletClient('auto', 'localhost')
+const wallet = getInteractiveWallet()
 const pushdrop = new PushDrop(wallet)
 
 const broadcaster = new TopicBroadcaster(

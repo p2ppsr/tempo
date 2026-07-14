@@ -17,7 +17,7 @@ const constants: Constants = {
   uploadURL: 'https://nanostore.babbage.systems',
   overlayNetworkPreset: 'mainnet',
   overlayLookupService: 'ls_tsp',
-  RETENTION_PERIOD: 5
+  RETENTION_PERIOD: 60 * 24 * 365 * 7
 }
 
 export default constants

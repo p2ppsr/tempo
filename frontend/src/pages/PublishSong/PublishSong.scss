@@ -1,4 +1,4 @@
-@import '../../styles/styleVariables.scss';
+@use '../../styles/styleVariables.scss' as *;
 
 .publishSongContainer {
   max-width: 46rem;
@@ -175,4 +175,17 @@
       }
     }
   }
+}
+
+.publicationFailure {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 126, 126, 0.55);
+  border-radius: 16px;
+  background: rgba(80, 20, 28, 0.35);
+
+  dl { display: grid; gap: 0.45rem; }
+  dl div { display: grid; grid-template-columns: minmax(105px, 0.3fr) 1fr; gap: 0.7rem; }
+  dt { color: #c6cfdd; }
+  dd { margin: 0; overflow-wrap: anywhere; }
 }

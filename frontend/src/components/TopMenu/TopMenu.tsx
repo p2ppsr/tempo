@@ -13,6 +13,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import MenuContent from '../MenuContent'
 import './TopMenu.scss'
+import { useAuthStore } from '../../stores/stores'
+import { toast } from 'react-toastify'
 
 /**
  * TopMenu Component
@@ -29,6 +31,10 @@ const TopMenu = () => {
   const [menuOpen, setMenuOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
+  const [userHasMetanetClient, setUserHasMetanetClient] = useAuthStore(state => [
+    state.userHasMetanetClient,
+    state.setUserHasMetanetClient
+  ])
 
   const [navState, setNavState] = useState(() => {
     const route = `${location.pathname}${location.search}${location.hash}`
@@ -92,6 +98,17 @@ const TopMenu = () => {
     }
   }
 
+  const handleConnect = async () => {
+    try {
+      const { connectWallet } = await import('../../utils/wallet')
+      await connectWallet()
+      setUserHasMetanetClient(true)
+      toast.success('Metanet wallet connected. Tempo permissions are grouped for this app.')
+    } catch {
+      // Babbage Go owns the missing-wallet and funding handoff UI.
+    }
+  }
+
   return (
     <div className="topMenuContainer">
       <div className="topMenuNav">
@@ -113,6 +130,9 @@ const TopMenu = () => {
 
       <div className="topMenuMeta">
         <p className="topMenuPageLabel">{pageLabel}</p>
+        <button className="walletConnectButton" onClick={handleConnect} disabled={userHasMetanetClient}>
+          {userHasMetanetClient ? 'Wallet connected' : 'Connect wallet'}
+        </button>
       </div>
 
       <Drawer

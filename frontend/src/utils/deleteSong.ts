@@ -1,6 +1,5 @@
 import {
   PushDrop,
-  WalletClient,
   Transaction,
   TopicBroadcaster,
   Beef
@@ -8,8 +7,9 @@ import {
 import constants from './constants'
 import type { Song } from '../types/interfaces'
 import { toast } from 'react-toastify'
+import { getInteractiveWallet } from './wallet'
 
-const wallet = new WalletClient('auto', 'localhost')
+const wallet = getInteractiveWallet()
 const pushdrop = new PushDrop(wallet)
 
 const deleteSong = async (song: Song): Promise<string> => {

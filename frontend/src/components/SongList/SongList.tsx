@@ -18,10 +18,8 @@ import {
 } from '@tanstack/react-table'
 import { FaPlay } from 'react-icons/fa'
 import { IoIosCloseCircleOutline } from 'react-icons/io'
-import { WalletClient } from '@bsv/sdk'
 
 import { usePlaybackStore } from '../../stores/stores'
-import deleteSong from '../../utils/deleteSong'
 import ActionsDropdown from './ActionsDropdown'
 import placeholderImage from '../../assets/Images/placeholder-image.png'
 import ArtworkImage from '../ArtworkImage/ArtworkImage'
@@ -29,8 +27,6 @@ import ArtworkImage from '../ArtworkImage/ArtworkImage'
 import type { Playlist, Song } from '../../types/interfaces'
 
 import './SongList.scss'
-
-const wallet = new WalletClient('auto', 'localhost')
 
 /**
  * Props for the SongList component.
@@ -63,7 +59,7 @@ interface SongListProps {
  * - Local playlist management using localStorage.
  * - Modals for adding to playlists and confirming deletion.
  */
-const SongList = ({ songs, style, onRemoveFromPlaylist }: SongListProps) => {
+const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly = false }: SongListProps) => {
   const navigate = useNavigate()
 
   const [selectedSongIndex, setSelectedSongIndex] = useState<string | null>(null)
@@ -72,11 +68,10 @@ const SongList = ({ songs, style, onRemoveFromPlaylist }: SongListProps) => {
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false)
   const [isDeletingSong, setIsDeletingSong] = useState(false)
   const [playlists, setPlaylists] = useState<Playlist[]>([])
-  const [derivedKey, setDerivedKey] = useState<string | null>(null)
   const [localSongs, setLocalSongs] = useState<Song[]>(songs)
   const scrollPositionRef = useRef(0)
 
-  const [
+  const {
     setIsPlaying,
     playbackSong,
     setPlaybackSong,
@@ -85,20 +80,11 @@ const SongList = ({ songs, style, onRemoveFromPlaylist }: SongListProps) => {
     playPreviousSong,
     togglePlayNextSong,
     togglePlayPreviousSong
-  ] = usePlaybackStore((state: any) => [
-    state.setIsPlaying,
-    state.playbackSong,
-    state.setPlaybackSong,
-    state.playNextSong,
-    state.setSongList,
-    state.playPreviousSong,
-    state.togglePlayNextSong,
-    state.togglePlayPreviousSong
-  ])
+  } = usePlaybackStore()
 
   useEffect(() => {
     setSongList(songs)
-  }, [songs])
+  }, [songs, setSongList])
 
   useEffect(() => {
     setLocalSongs(songs)
@@ -125,7 +111,7 @@ useEffect(() => {
   if (!isAddToPlaylistModalOpen && !isConfirmDeleteModalOpen) {
     setLocalSongs([...songs])
   }
-}, [isAddToPlaylistModalOpen, isConfirmDeleteModalOpen])
+}, [isAddToPlaylistModalOpen, isConfirmDeleteModalOpen, songs])
 
 
   useEffect(() => {
@@ -134,43 +120,29 @@ useEffect(() => {
       const newSong = songs[(index + 1) % songs.length]
       setPlaybackSong(newSong)
       setIsPlaying(true)
-      togglePlayNextSong(false)
+      togglePlayNextSong()
     } else if (playPreviousSong && songs.length > 0) {
       const newSong = songs[(index - 1 + songs.length) % songs.length]
       setPlaybackSong(newSong)
       setIsPlaying(true)
-      togglePlayPreviousSong(false)
+      togglePlayPreviousSong()
     }
-  }, [playNextSong, playPreviousSong, playbackSong, songs])
+  }, [
+    playNextSong,
+    playPreviousSong,
+    playbackSong,
+    songs,
+    setIsPlaying,
+    setPlaybackSong,
+    togglePlayNextSong,
+    togglePlayPreviousSong
+  ])
 
   useEffect(() => {
     const local = localStorage.getItem('playlists')
     if (local) setPlaylists(JSON.parse(local))
   }, [])
 
-
-  useEffect(() => {
-    (async () => {
-      const { publicKey } = await wallet.getPublicKey({
-        protocolID: [2, 'tmtsp'],
-        keyID: '1',
-        counterparty: 'anyone',
-        forSelf: true
-      })
-
-        const keyString = publicKey.toString()
-        setDerivedKey(keyString)
-
-      songs.forEach(song => {
-        console.log('[SongList Debug]', {
-          title: song.title,
-          artistIdentityKey: song.artistIdentityKey,
-          derivedKey: keyString,
-          isOwner: song.artistIdentityKey === keyString
-        })
-      })
-    })()
-  }, [songs])
 
   /**
    * Handle double-clicking a song row to start playback.
@@ -187,6 +159,7 @@ const handleDeleteSong = async () => {
     if (!selectedSong) return
     setIsDeletingSong(true)
     try {
+      const { default: deleteSong } = await import('../../utils/deleteSong')
       await deleteSong(selectedSong)
     } catch (e) {
       toast.error(`Error deleting song: ${e}`)
@@ -233,7 +206,7 @@ const handleDeleteSong = async () => {
         }
 
         return (
-          <div className="songListArtworkContainer" onClick={handlePlay}>
+          <button className="songListArtworkContainer" onClick={handlePlay} aria-label={`Play ${song.title} by ${song.artist}`}>
             <FaPlay className="artworkThumbnailPlayIcon" />
             <ArtworkImage
               src={song.artworkURL || placeholderImage}
@@ -243,7 +216,7 @@ const handleDeleteSong = async () => {
             {isPreviewOnly && (
               <div className="previewFlag">Preview</div>
             )}
-          </div>
+          </button>
         )
       }
     }),
@@ -266,9 +239,6 @@ const handleDeleteSong = async () => {
       id: 'actions',
       header: '',
       cell: info => {
-    const song = info.row.original
-    const isOwner = derivedKey !== null && song.artistIdentityKey === derivedKey
-
     return (
       <ActionsDropdown
         info={info}
@@ -281,7 +251,7 @@ const handleDeleteSong = async () => {
           setIsConfirmDeleteModalOpen(true)
         }}
         onRemoveFromPlaylist={onRemoveFromPlaylist}
-        isMySongsOnly={isOwner}
+        isMySongsOnly={isMySongsOnly}
       />
       )
     }

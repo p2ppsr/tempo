@@ -1,44 +1,86 @@
 {
+  "name": "Tempo Music",
   "short_name": "Tempo",
-  "name": "Tempo — Feel the Beat",
-  "icons": [
-    {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    }
-  ],
-  "start_url": ".",
+  "description": "Publish, discover, purchase, and listen to music with a BRC-100 wallet.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-   "metanet": {
+  "orientation": "any",
+  "background_color": "#080b12",
+  "theme_color": "#6d5dfc",
+  "categories": ["music", "entertainment"],
+  "icons": [
+    { "src": "/logo192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/logo512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Discover music", "short_name": "Discover", "url": "/" },
+    { "name": "Publish a song", "short_name": "Publish", "url": "/PublishSong" },
+    { "name": "My songs", "short_name": "My songs", "url": "/MySongs" }
+  ],
+  "metanet": {
+    "schemaVersion": 1,
+    "originator": "tempomusic.net",
+    "appName": "Tempo Music",
+    "appIdentity": "tempomusic.net",
+    "brcs": ["BRC-100", "BRC-29", "BRC-73", "BRC-103", "BRC-116"],
+    "repositoryUrl": "https://github.com/p2ppsr/tempo",
+    "supportUrl": "https://tempomusic.net/",
     "groupPermissions": {
+      "description": "Publish songs, manage your Tempo catalogue, and approve music purchases in one grouped permission grant.",
       "protocolPermissions": [
-        {
-          "protocolID": [2, "Tempo"],
-          "counterparty": "self",
-          "description": "for fetching user songs"
-        },
-         {
-          "protocolID": [2, "tmtsp"],
-          "counterparty": "anyone",
-          "description": "for uploading and deleting songs"
-        },
-         {
-          "protocolID": [2, "tempo"],
-          "counterparty": "self",
-          "description": "for publishing keys"
-        },
-         {
-          "protocolID": [1, "identity key retrieval"],
-          "counterparty": "self",
-          "description": "for fetching user identities"
-        },
-         {
-          "protocolID": [2, "server hmac"],
-          "counterparty": "self",
-          "description": "for deriving keys related to hmac"
-        }
-      ] 
+        { "protocolID": [2, "tmtsp"], "counterparty": "anyone", "description": "Publish and manage Tempo song tokens." },
+        { "protocolID": [1, "tempo"], "counterparty": "self", "description": "Sign Tempo key-publication requests." },
+        { "protocolID": [1, "identity key retrieval"], "description": "Use your identity for your artist library and authenticated actions." }
+      ],
+      "basketAccess": [
+        { "basket": "tmtsp", "description": "Manage your published Tempo song tokens." }
+      ],
+      "certificateAccess": [],
+      "spendingAuthorization": {
+        "amount": 100000,
+        "duration": 2592000,
+        "description": "Publish song tokens and purchase tracks without repeated spend prompts."
+      }
+    },
+    "counterpartyPermissions": {
+      "description": "Trust Tempo's active key server for authenticated purchase, key publication, and royalty flows.",
+      "protocols": [
+        { "protocolName": "auth message signature", "description": "Authenticate Tempo key-server requests." },
+        { "protocolName": "server hmac", "description": "Derive authenticated server-session keys." },
+        { "protocolName": "3241645161d8", "description": "Derive direct-payment keys for purchases and royalties." },
+        { "protocolName": "wallet payment", "description": "Approve and internalize Tempo payments." }
+      ]
+    }
+  },
+  "babbage": {
+    "originator": "tempomusic.net",
+    "groupPermissions": {
+      "description": "Publish songs, manage your Tempo catalogue, and approve music purchases in one grouped permission grant.",
+      "protocolPermissions": [
+        { "protocolID": [2, "tmtsp"], "counterparty": "anyone", "description": "Publish and manage Tempo song tokens." },
+        { "protocolID": [1, "tempo"], "counterparty": "self", "description": "Sign Tempo key-publication requests." },
+        { "protocolID": [1, "identity key retrieval"], "description": "Use your identity for your artist library and authenticated actions." }
+      ],
+      "basketAccess": [
+        { "basket": "tmtsp", "description": "Manage your published Tempo song tokens." }
+      ],
+      "certificateAccess": [],
+      "spendingAuthorization": {
+        "amount": 100000,
+        "duration": 2592000,
+        "description": "Publish song tokens and purchase tracks without repeated spend prompts."
+      }
+    },
+    "counterpartyPermissions": {
+      "description": "Trust Tempo's active key server for authenticated purchase, key publication, and royalty flows.",
+      "protocols": [
+        { "protocolName": "auth message signature", "description": "Authenticate Tempo key-server requests." },
+        { "protocolName": "server hmac", "description": "Derive authenticated server-session keys." },
+        { "protocolName": "3241645161d8", "description": "Derive direct-payment keys for purchases and royalties." },
+        { "protocolName": "wallet payment", "description": "Approve and internalize Tempo payments." }
+      ]
     }
   }
 }

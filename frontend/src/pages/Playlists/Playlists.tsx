@@ -31,9 +31,9 @@ const Playlists = () => {
   const navigate = useNavigate()
 
   // ================ State Management =================
-  const [playlists, setPlaylists] = useState(() => {
+  const [playlists, setPlaylists] = useState<Playlist[]>(() => {
     const storagePlaylists = localStorage.getItem('playlists')
-    return storagePlaylists ? JSON.parse(storagePlaylists) : []
+    return storagePlaylists ? JSON.parse(storagePlaylists) as Playlist[] : []
   })
 
   // Persist playlists to localStorage whenever they change
@@ -46,29 +46,25 @@ const Playlists = () => {
 
   // ================ Click Outside Handler =================
 
-  /**
-   * Click outside handler to finish editing a playlist name when clicking away.
-   */
-  const handleClickOutside = (event: MouseEvent) => {
-    if (editingInputRef.current && !editingInputRef.current.contains(event.target as Node)) {
-      if (editingPlaylist.text.trim()) {
-        updatePlaylistName(editingPlaylist.index, editingPlaylist.text)
-      } else if (editingPlaylist.index > -1) {
-        setPlaylists(playlists.filter((_: any, idx: number) => idx !== editingPlaylist.index))
-      }
-      setEditingPlaylist({ index: -1, text: '' })
-    }
-  }
-
   // Add event listener for click outside when editing a playlist
   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!editingInputRef.current || editingInputRef.current.contains(event.target as Node)) return
+
+      const { index, text } = editingPlaylist
+      setPlaylists(current => text.trim()
+        ? current.map((playlist, idx) => idx === index ? { ...playlist, name: text.trim() } : playlist)
+        : current.filter((_, idx) => idx !== index))
+      setEditingPlaylist({ index: -1, text: '' })
+    }
+
     if (editingPlaylist.index !== -1) {
       document.addEventListener('mousedown', handleClickOutside)
       return () => {
         document.removeEventListener('mousedown', handleClickOutside)
       }
     }
-  }, [editingPlaylist.index, editingPlaylist.text, playlists])
+  }, [editingPlaylist])
 
   // ================ Playlist Handlers =================
 
@@ -114,7 +110,7 @@ const Playlists = () => {
    */
   const handleDelete = (event: React.MouseEvent<SVGElement, MouseEvent>, index: number) => {
     event.stopPropagation()
-    const updatedPlaylists = playlists.filter((_: any, idx: number) => idx !== index)
+    const updatedPlaylists = playlists.filter((_, idx) => idx !== index)
     setPlaylists(updatedPlaylists)
   }
 

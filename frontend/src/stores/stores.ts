@@ -5,10 +5,14 @@ import type { Song } from '../types/interfaces'
 interface AuthStore {
   userHasMetanetClient: boolean
   setUserHasMetanetClient: (state: boolean) => void
+  userName: string
+  profilePictureUrl: string
 }
 export const useAuthStore = create<AuthStore>(set => ({
   userHasMetanetClient: false,
-  setUserHasMetanetClient: (state) => set({ userHasMetanetClient: state })
+  setUserHasMetanetClient: (state) => set({ userHasMetanetClient: state }),
+  userName: 'Tempo listener',
+  profilePictureUrl: ''
 }))
 
 /** PLAYBACK STORE **/

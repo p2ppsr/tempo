@@ -34,6 +34,43 @@ export interface Song {
   sats?: number
   decryptedSongURL?: string
   artistIdentityKey?: string
+  availability?: SongAvailability
+  publicationReceipt?: PublicationReceipt
+}
+
+export interface SongAvailability {
+  status: 'playable' | 'expired' | 'invalid' | 'unknown'
+  checkedAt: string
+  reason?: string
+  audioHosts: number
+  previewHosts: number
+  hasKey: boolean
+  priceSatoshis?: number
+}
+
+export interface PublicationAssetReceipt {
+  uhrpURL: string
+  expiryTime?: number
+  hostedBy: string[]
+  available: boolean
+}
+
+export interface PublicationReceipt {
+  publicationId: string
+  createdAt: string
+  updatedAt: string
+  stage: string
+  failedAtStage?: string
+  error?: string
+  txid?: string
+  assets: {
+    audio?: PublicationAssetReceipt
+    artwork?: PublicationAssetReceipt
+    preview?: PublicationAssetReceipt
+  }
+  keyPublished: boolean
+  overlayAdmitted: boolean
+  playable: boolean
 }
 
 export interface SearchFilter {
@@ -80,7 +117,7 @@ export interface TSPAttributes {
 }
 
 export interface TSPQuery {
-  $and: Array<{ [key: string]: any }>
+  $and: Array<{ [key: string]: unknown }>
 }
 
 // Overlay-compatible structured lookup query types
@@ -125,4 +162,3 @@ export type TSPLookupQuery =
   | FindBySongIDsQuery
   | FindBySongFileURLQuery
   | FindAllQuery 
-

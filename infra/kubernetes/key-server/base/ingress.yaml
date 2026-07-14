@@ -7,6 +7,10 @@ metadata:
     app.kubernetes.io/component: ingress
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "30m"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "balanced"
+    nginx.ingress.kubernetes.io/session-cookie-name: "tempo-key-server"
+    nginx.ingress.kubernetes.io/session-cookie-samesite: "Lax"
 spec:
   ingressClassName: nginx
   tls:

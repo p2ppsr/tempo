@@ -1,7 +1,8 @@
 import { Transaction, PushDrop, Utils } from '@bsv/sdk'
 import type { Song } from '../types/interfaces'
+import { normalizeUhrpReference } from './catalogAvailability'
 
-export interface DecodedSong extends Song {}
+export type DecodedSong = Song
 
 export async function decodeOutput(
   beef: number[],
@@ -16,17 +17,16 @@ export async function decodeOutput(
   const data = decoded.fields
   const sats = output.satoshis ?? 0;
 
-  const previewRaw = data.length > 10 ? Utils.toUTF8(data[8]) : ''
-  const isValidUhrpHash = /^[a-zA-Z0-9_-]{30,}$/.test(previewRaw)
-  const previewURL = isValidUhrpHash ? `https://uhrp.babbage.systems/${previewRaw}` : undefined
+  const previewRaw = data.length > 8 ? Utils.toUTF8(data[8]) : ''
+  const previewURL = normalizeUhrpReference(previewRaw)
 
   const song: DecodedSong = {
     title: Utils.toUTF8(data[2]),
     artist: Utils.toUTF8(data[3]),
     description: Utils.toUTF8(data[4]),
     duration: parseInt(Utils.toUTF8(data[5])),
-    songURL: Utils.toUTF8(data[6]),
-    artworkURL: Utils.toUTF8(data[7]),
+    songURL: normalizeUhrpReference(Utils.toUTF8(data[6])) || Utils.toUTF8(data[6]),
+    artworkURL: normalizeUhrpReference(Utils.toUTF8(data[7])) || Utils.toUTF8(data[7]),
     previewURL,
     sats: output.satoshis,
     isPublished: true,

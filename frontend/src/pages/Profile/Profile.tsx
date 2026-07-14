@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import { useAuthStore } from '../../stores/stores'
 
 const Profile = () => {
-  const [userName, profilePictureUrl] = useAuthStore((state: any) => [
+  const [userName, profilePictureUrl] = useAuthStore(state => [
     state.userName,
     state.profilePictureUrl
   ])

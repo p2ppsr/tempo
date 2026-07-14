@@ -1,4 +1,4 @@
-@import '../styles/styleVariables.scss';
+@use '../styles/styleVariables.scss' as *;
 
 .modal {
   border: 1px solid $transparentBorder;

@@ -1,0 +1,59 @@
+.feedbackDock {
+  position: fixed;
+  right: 1rem;
+  bottom: 6.2rem;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.65rem;
+}
+
+.feedbackToggle,
+.feedbackSubmit {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.72rem 1rem;
+  background: linear-gradient(135deg, #8b7cff, #35d6c3);
+  color: #071018;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 12px 32px rgba(12, 14, 32, 0.35);
+}
+
+.feedbackCard {
+  width: min(25rem, calc(100vw - 2rem));
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  background: rgba(12, 16, 27, 0.98);
+  color: #f7f8ff;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.52);
+  display: grid;
+  gap: 0.8rem;
+
+  label { display: grid; gap: 0.35rem; font-size: 0.82rem; color: #c7cdde; }
+  textarea, input, select {
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 10px;
+    background: #171d2b;
+    color: #fff;
+    padding: 0.72rem;
+  }
+  .consentRow { display: flex; grid-template-columns: auto 1fr; align-items: center; }
+  .consentRow input { width: auto; }
+}
+
+.feedbackHeader {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  p { margin: 0 0 0.2rem; font-size: 1.05rem; font-weight: 800; }
+  span { color: #aeb6ca; font-size: 0.78rem; }
+  button { border: 0; background: transparent; color: #fff; font-size: 1.6rem; cursor: pointer; }
+}
+
+@media (max-width: 920px) {
+  .feedbackDock { right: 0.65rem; bottom: calc(var(--shell-footer-height) + 0.55rem); }
+}

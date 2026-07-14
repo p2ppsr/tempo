@@ -1,6 +1,11 @@
-@import './styles/styleVariables.scss';
+@use './styles/styleVariables.scss' as *;
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+.routeLoading {
+  padding: 2rem 1rem;
+  color: $textMutedColor;
+}
 
 :root {
   --tempo-bg: #08111d;
@@ -253,7 +258,7 @@ textarea {
 @media screen and (max-width: 768px) {
   :root {
     --shell-topbar-height: 64px;
-    --shell-footer-height: 146px;
+    --shell-footer-height: 170px;
   }
 
   .appLayout {

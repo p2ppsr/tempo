@@ -3,6 +3,8 @@ import { LookupResolver } from '@bsv/sdk'
 import { decodeOutputs } from '../../utils/decodeOutput'
 import constants from '../constants'
 import type { TSPLookupQuery, FindAllQuery } from '../../types/interfaces.js'
+import { filterPlayableSongs } from '../catalogAvailability'
+import { captureError } from '../usercom'
 
 const fetchSongs = async (
   query: TSPLookupQuery = { type: 'findAll' } as FindAllQuery
@@ -11,24 +13,22 @@ const fetchSongs = async (
     networkPreset: constants.overlayNetworkPreset
   })
 
-  let lookupResult: any[] = []
+  let lookupResult: Array<{ beef: number[]; outputIndex: number }> = []
 
   try {
-    console.log('[fetchSongs] Sending query:', query)
     const response = await resolver.query({
       service: constants.overlayLookupService,
       query
     })
-    console.log('[fetchSongs] Received response:', response)
 
     if (response.type !== 'output-list') {
       throw new Error(`Unexpected response type: ${response.type}`)
     }
 
     lookupResult = response.outputs
-    console.log('[fetchSongs] Raw outputs:', lookupResult)
   } catch (e) {
     console.error('[fetchSongs] Error fetching song data:', e)
+    captureError('catalog.lookup_failed', e, { queryType: query.type })
     return []
   }
 
@@ -37,26 +37,7 @@ const fetchSongs = async (
     lookupResult.map((o) => ({ beef: o.beef, outputIndex: o.outputIndex }))
   )
 
-  // Detect MetaNet Client availability
-  const userHasMetanetClient = typeof window !== 'undefined' && !!(window as any).metaid
-
-  parsedSongs.forEach((song, idx) => {
-  // Assign preview URL as decryptedSongURL if no MNC available
-  if (!userHasMetanetClient && song.previewURL && !song.decryptedSongURL) {
-    song.decryptedSongURL = song.previewURL
-  }
-
-  console.log(`[fetchSongs] Song #${idx + 1} URLs:`, {
-    artworkURL: song.artworkURL,
-    songURL: song.songURL,
-    previewURL: song.previewURL,
-    decryptedSongURL: song.decryptedSongURL
-  })
-})
-
-
-  console.log('[fetchSongs] Returning parsed songs:', parsedSongs)
-  return parsedSongs
+  return await filterPlayableSongs(parsedSongs)
 }
 
 export default fetchSongs

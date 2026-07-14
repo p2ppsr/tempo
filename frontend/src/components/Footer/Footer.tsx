@@ -1,35 +1,16 @@
-/**
- * @file Footer.tsx
- * @description
- * React component providing the audio playback controls and song info display
- * for the Tempo app’s footer. Integrates with global playback state, handles
- * decryption of songs, album art display, and user interactions like next/prev
- * or automatic progression when songs end.
- */
-
 import { CircularProgress } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
+import { toast } from 'react-toastify'
 import AudioPlayer from 'react-h5-audio-player'
-import { useAuthStore, usePlaybackStore, useModals } from '../../stores/stores'
-import decryptSong from '../../utils/decryptSong'
-import { Source } from '@bsv/uhrp-react'
+import { usePlaybackStore } from '../../stores/stores'
+import { downloadPlayableFile, isBundledAsset } from '../../utils/catalogAvailability'
+import { captureError, captureSignal } from '../../utils/usercom'
 import ArtworkImage from '../ArtworkImage/ArtworkImage'
 
 import 'react-h5-audio-player/lib/styles.css'
 import './Footer.scss'
-import checkForMetaNetClient from '../../utils/checkForMetaNetClient'
 
-/**
- * Footer Component
- *
- * Displays an audio player with playback controls, artwork, and song metadata.
- * - Uses global playback store (`usePlaybackStore`) to synchronize playing state.
- * - Handles song decryption and URL management.
- * - Integrates invitation modal if playback advances when user lacks Metanet client.
- * - Manages album artwork display, fallback image on error, and object URL revocation.
- */
 const Footer = () => {
-  // ========== GLOBAL STATE ==========
   const [
     isLoading,
     setIsLoading,
@@ -50,192 +31,140 @@ const Footer = () => {
     state.songList
   ])
 
-  const [userHasMetanetClient] = useAuthStore((state) => [
-    state.userHasMetanetClient
-  ])
-
-  const [setInvitationModalOpen, setInvitationModalContent] = useModals((state) => [
-    state.setInvitationModalOpen,
-    state.setInvitationModalContent
-  ])
-
-  // ========== COMPONENT STATE ==========
-  const [footerSongURL, setFooterSongURL] = useState<string | undefined>(undefined)
-  const audioPlayerRef = useRef<AudioPlayer>(null)
+  const [footerSongURL, setFooterSongURL] = useState<string>()
   const [isPreviewOnly, setIsPreviewOnly] = useState(false)
+  const [playbackError, setPlaybackError] = useState('')
+  const audioPlayerRef = useRef<AudioPlayer>(null)
 
-  // ========== EFFECTS ==========
-  // Load and decrypt song on playback change
   useEffect(() => {
-    const handlePlaybackChange = async () => {
-      if (playbackSong) {
-        console.log('[Footer] New Playback Song Detected:', playbackSong.title)
-        setIsLoading(true)
-        setFooterSongURL(undefined)
-        setIsPreviewOnly(false)
+    let active = true
+    let objectUrl: string | undefined
 
-        try {
-          const hasMnc = await checkForMetaNetClient()
-          console.log('[Footer] MetaNet Client Present:', hasMnc)
+    const loadSelectedAudio = async () => {
+      if (!playbackSong?.songURL) return
+      setIsLoading(true)
+      setFooterSongURL(undefined)
+      setPlaybackError('')
 
-          if (audioPlayerRef.current?.audio?.current) {
-            audioPlayerRef.current.audio.current.pause()
-            audioPlayerRef.current.audio.current.currentTime = 0
-          }
+      const preview = playbackSong.previewURL
+      const selected = playbackSong.decryptedSongURL || preview
+      const previewOnly = Boolean(preview && selected === preview)
+      setIsPreviewOnly(previewOnly)
 
-          const previewElement = document.getElementById('preview-audio') as HTMLAudioElement | null
-          if (previewElement) {
-            previewElement.pause()
-            previewElement.currentTime = 0
-          }
+      if (!selected) {
+        setIsLoading(false)
+        return
+      }
 
-          let url: string | undefined
-
-          console.log(['Footer] URL Check for Playback Song:', playbackSong.songURL])
-          if (playbackSong.songURL?.startsWith('/assets/')) {
-            // Always allow static preview files
-            url = playbackSong.songURL
-            setIsPreviewOnly(false)
-          } else if (hasMnc) {
-            url = await decryptSong(playbackSong)
-            setIsPreviewOnly(false)
-          } else if (playbackSong.previewURL) {
-            const hashOnly = playbackSong.previewURL.split('/').pop() || ''
-            url = hashOnly
-            setIsPreviewOnly(true)
-          } else {
-            url = ''
-            console.warn('[Footer] No playable URL found')
-          }
-
-          if (url) {
-            setFooterSongURL(url)
-            setIsPlaying(true)
-          } else {
-            setFooterSongURL(undefined)
-          }
-        } catch (err) {
-          console.error('[Footer] Error processing playback:', err)
-          setFooterSongURL(undefined)
-        } finally {
-          setIsLoading(false)
+      try {
+        const url = await downloadPlayableFile(selected)
+        if (!active) {
+          if (url.startsWith('blob:')) URL.revokeObjectURL(url)
+          return
         }
+        objectUrl = url.startsWith('blob:') ? url : undefined
+        setFooterSongURL(url)
+        setIsPlaying(true)
+        captureSignal('playback.started', {
+          surface: 'player',
+          tags: [previewOnly ? 'mode:preview' : 'mode:bundled'],
+          context: { title: playbackSong.title, bundled: isBundledAsset(selected) }
+        })
+      } catch (error) {
+        const message = 'This track stopped being available. It has been removed from playback.'
+        setPlaybackError(message)
+        toast.error(message)
+        captureError('playback.load_failed', error, { title: playbackSong.title })
+      } finally {
+        if (active) setIsLoading(false)
       }
     }
-    handlePlaybackChange()
-  }, [playbackSong])
 
-  // Ensure first song plays if play clicked with no current song
+    void loadSelectedAudio()
+    return () => {
+      active = false
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
+  }, [
+    playbackSong.songURL,
+    playbackSong.decryptedSongURL,
+    playbackSong.previewURL,
+    playbackSong.title,
+    setIsLoading,
+    setIsPlaying
+  ])
+
+  const unlockFullTrack = async () => {
+    if (!playbackSong.songURL || isLoading) return
+    setIsLoading(true)
+    setPlaybackError('')
+    captureSignal('purchase.started', { surface: 'player', context: { title: playbackSong.title } })
+    try {
+      const { default: decryptSong } = await import('../../utils/decryptSong')
+      const url = await decryptSong(playbackSong)
+      if (!url) throw new Error('The key server returned no playable audio.')
+      setFooterSongURL(url)
+      setIsPreviewOnly(false)
+      setIsPlaying(true)
+      captureSignal('purchase.succeeded', { surface: 'player', context: { title: playbackSong.title } })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Tempo could not unlock this track.'
+      setPlaybackError(message)
+      toast.error(message)
+      captureError('purchase.failed', error, { title: playbackSong.title }, ['purchase:failed'])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   useEffect(() => {
     const handlePlayButtonClick = () => {
-      if (!playbackSong || !playbackSong.songURL) {
-        if (songList.length > 0) {
-          const firstSong = songList[0]
-          setPlaybackSong(firstSong)
-          setIsPlaying(true)
-        }
+      if (!playbackSong?.songURL && songList.length > 0) {
+        setPlaybackSong(songList[0])
+        setIsPlaying(true)
       }
     }
-
-    const playButton = audioPlayerRef?.current?.audio?.current?.parentNode?.querySelector(
-      '.rhap_play-pause-button'
-    )
-
+    const playButton = audioPlayerRef.current?.audio.current?.parentNode?.querySelector('.rhap_play-pause-button')
     playButton?.addEventListener('click', handlePlayButtonClick)
-
-    return () => {
-      playButton?.removeEventListener('click', handlePlayButtonClick)
-    }
-  }, [playbackSong, songList, setPlaybackSong, setIsPlaying])
-
-  // ========== RENDER ==========
-  console.log('[Footer] Final src being passed into AudioPlayer:', footerSongURL)
+    return () => playButton?.removeEventListener('click', handlePlayButtonClick)
+  }, [playbackSong.songURL, songList, setPlaybackSong, setIsPlaying])
 
   return (
-    <div className="footerContainer">
+    <div className="footerContainer" aria-label="Tempo player">
       <div className="playbackInfoContainer">
-        {isLoading ? (
-          <CircularProgress />
-        ) : (
-          <>
-            {playbackSong?.title && (
-              <ArtworkImage
-                src={playbackSong.artworkURL}
-                className="playerAlbumArt"
-                alt={`${playbackSong.title} Album Art`}
-              />
-            )}
-          </>
-        )}
+        {isLoading ? <CircularProgress size={34} /> : playbackSong?.title ? (
+          <ArtworkImage
+            src={playbackSong.artworkURL}
+            className="playerAlbumArt"
+            alt={`${playbackSong.title} album art`}
+          />
+        ) : null}
         <div className="titleArtistContainer">
           <p className="songTitle">{playbackSong?.title || 'Nothing playing'}</p>
-          <p className="artistName">{playbackSong?.artist || 'Choose a song to start playback'}</p>
+          <p className="artistName">{playbackSong?.artist || 'Choose a verified song to start playback'}</p>
+          {playbackError && <p className="playerError" role="alert">{playbackError}</p>}
         </div>
+        {playbackSong.songURL && !isBundledAsset(playbackSong.songURL) && (
+          <button className="unlockButton" onClick={unlockFullTrack} disabled={isLoading || !isPreviewOnly && Boolean(footerSongURL)}>
+            {isPreviewOnly ? `Unlock full track · ${playbackSong.availability?.priceSatoshis || 1000} sats` : footerSongURL ? 'Full track unlocked' : `Buy & play · ${playbackSong.availability?.priceSatoshis || 1000} sats`}
+          </button>
+        )}
       </div>
 
-      {isPreviewOnly && footerSongURL ? (
-        <audio
-          className="previewPlayer"
-          key={playbackSong?.title}
-          controls
-          autoPlay
-          onCanPlayThrough={(e) => {
-          try {
-            (e.currentTarget as HTMLAudioElement).play()
-          } catch (err) {
-            console.warn('[Footer] onCanPlayThrough error:', err)
-          }
-        }}
-          onEnded={() => {
-            if (userHasMetanetClient) {
-              togglePlayNextSong()
-            } else {
-              setInvitationModalOpen(true)
-              setInvitationModalContent('songEnd')
-            }
-          }}
-        >
-          <Source
-            src={footerSongURL}
-            type="audio/mpeg"
-          />
-          Your browser does not support the audio element.
-        </audio>
-        ) : (
-        <AudioPlayer
-          key={playbackSong?.title}
-          ref={audioPlayerRef}
-          src={
-            footerSongURL &&
-            (footerSongURL.startsWith('blob:') ||
-              footerSongURL.startsWith('http') ||
-              footerSongURL.startsWith('/assets/'))
-              ? footerSongURL
-              : undefined
-          }
-          autoPlayAfterSrcChange
-          progressUpdateInterval={10}
-          showSkipControls
-          showJumpControls={false}
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
-          onEnded={() => {
-            if (userHasMetanetClient) {
-              togglePlayNextSong()
-            } else {
-              setInvitationModalOpen(true)
-              setInvitationModalContent('songEnd')
-            }
-          }}
-          onClickPrevious={togglePlayPreviousSong}
-          onClickNext={togglePlayNextSong}
-          onListen={(event) => {
-            const target = event.target as HTMLAudioElement
-            console.log('Current time:', target.currentTime)
-          }}
-          listenInterval={1000}
-        />
-      )}
+      <AudioPlayer
+        key={`${playbackSong.songURL}-${isPreviewOnly ? 'preview' : 'full'}`}
+        ref={audioPlayerRef}
+        src={footerSongURL}
+        autoPlayAfterSrcChange
+        progressUpdateInterval={250}
+        showSkipControls
+        showJumpControls={false}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+        onEnded={togglePlayNextSong}
+        onClickPrevious={togglePlayPreviousSong}
+        onClickNext={togglePlayNextSong}
+      />
     </div>
   )
 }

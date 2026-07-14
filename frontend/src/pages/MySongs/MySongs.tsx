@@ -24,6 +24,8 @@ import fetchUserSongs from '../../utils/fetchSongs/fetchUserSongs'
  */
 const MySongs = () => {
   const [songs, setSongs] = useState<Song[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     ;(async () => {
@@ -32,6 +34,9 @@ const MySongs = () => {
         setSongs(userSongs ?? [])
       } catch (e) {
         console.error('Failed to fetch user songs:', e)
+        setError('Connect your Metanet wallet to inspect your published songs.')
+      } finally {
+        setLoading(false)
       }
     })()
   }, [])
@@ -40,7 +45,11 @@ const MySongs = () => {
     <div className="container songsPage">
       <h1>My Songs</h1>
       <div className="songsPageContent">
-        {songs.length === 0 ? <CircularProgress /> : <SongList songs={songs} isMySongsOnly />}
+        {loading ? <CircularProgress /> : error ? (
+          <div className="emptyPageState" role="alert">{error}</div>
+        ) : songs.length === 0 ? (
+          <div className="emptyPageState">You have not published any playable songs yet.</div>
+        ) : <SongList songs={songs} isMySongsOnly />}
       </div>
     </div>
   )

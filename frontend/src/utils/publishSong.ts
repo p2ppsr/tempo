@@ -1,17 +1,20 @@
 import {
   PushDrop,
-  WalletClient,
   Utils,
   Hash,
   TopicBroadcaster,
-  Transaction
+  Transaction,
+  LookupResolver
 } from '@bsv/sdk'
 import constants from './constants'
 import getFileUploadInfo from './getFileUploadInfo'
 import publishKey from './publishKey'
-import type { Song } from '../../src/types/interfaces'
+import type { PublicationReceipt, Song } from '../types/interfaces'
+import { getInteractiveWallet } from './wallet'
+import { captureError, captureSignal } from './usercom'
+import { inspectSongAvailability } from './catalogAvailability'
 
-const wallet = new WalletClient('auto', 'localhost')
+const wallet = getInteractiveWallet()
 const pushdrop = new PushDrop(wallet)
 
 export type PublishProgressStage =
@@ -19,6 +22,7 @@ export type PublishProgressStage =
   | 'creating_token'
   | 'broadcasting'
   | 'publishing_key'
+  | 'verifying'
   | 'completed'
 
 type PublishProgressCallback = (stage: PublishProgressStage, message: string) => void
@@ -30,106 +34,173 @@ const broadcaster = new TopicBroadcaster(
   }
 )
 
+const resolver = new LookupResolver({ networkPreset: constants.overlayNetworkPreset })
+
+async function waitForOverlayAdmission(songURL: string): Promise<boolean> {
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    const answer = await resolver.query({
+      service: constants.overlayLookupService,
+      query: { type: 'findBySongIDs', value: { songIDs: [songURL] } }
+    })
+    if (answer.type === 'output-list' && answer.outputs.length > 0) return true
+    await new Promise(resolve => window.setTimeout(resolve, 1500 * (attempt + 1)))
+  }
+  return false
+}
+
 const publishSong = async (
   song: Song,
   retentionPeriod?: number,
   onProgress?: PublishProgressCallback
 ): Promise<Song> => {
-  onProgress?.('uploading_files', 'Uploading audio, artwork, and preview files...')
-  console.log('[Publish] Uploading files...')
+  captureSignal('publish.started', { surface: 'publish-flow', context: { retentionMinutes: retentionPeriod ?? constants.RETENTION_PERIOD } })
 
-  const fileUploadInfo = await getFileUploadInfo({
-    selectedArtwork: song.selectedArtwork,
-    selectedMusic: song.selectedMusic,
-    selectedPreview: song.selectedPreview,
-    retentionPeriod: retentionPeriod ?? constants.RETENTION_PERIOD
-  })
-
-  console.log('[Publish] Upload Complete')
-  console.log('[Publish] songURL:', fileUploadInfo.songURL)
-  console.log('[Publish] artworkURL:', fileUploadInfo.artworkURL)
-  console.log('[Publish] previewURL:', fileUploadInfo.previewURL)
-  console.log('[Publish] songDuration:', fileUploadInfo.songDuration)
-
-  onProgress?.('creating_token', 'Creating your song token...')
-  console.log('[Publish] Creating PushDrop token...')
-
-  const uniqueID = Utils.toHex(
-    Hash.sha256(Utils.toArray(Math.random().toString(), 'utf8'))
-  )
-
-  const lockingScript = await pushdrop.lock(
-    [
-      Utils.toArray(constants.tempoTopic, 'utf8'),
-      Utils.toArray(constants.tspProtocolID, 'utf8'),
-      Utils.toArray(song.title, 'utf8'),
-      Utils.toArray(song.artist, 'utf8'),
-      Utils.toArray('Default description', 'utf8'),
-      Utils.toArray(String(fileUploadInfo.songDuration), 'utf8'),
-      Utils.toArray(fileUploadInfo.songURL, 'utf8'),
-      Utils.toArray(fileUploadInfo.artworkURL, 'utf8'),
-      Utils.toArray(fileUploadInfo.previewURL || '', 'utf8'),
-      Utils.toArray(uniqueID, 'utf8')
-    ],
-    [2, 'tmtsp'],
-    '1',
-    'anyone',
-    true
-  )
-
-  const { tx } = await wallet.createAction({
-    outputs: [
-      {
-        lockingScript: lockingScript.toHex(),
-        satoshis: 1,
-        outputDescription: 'Tempo Song Token',
-        basket: 'tmtsp'
-      }
-    ],
-    description: 'Publish a song',
-    options: {
-      acceptDelayedBroadcast: false,
-      randomizeOutputs: false
-    }
-  })
-
-  if (!tx) throw new Error('Transaction creation failed')
-
-  const transaction = Transaction.fromAtomicBEEF(tx)
-  const txid = transaction.id('hex')
-  const outputIndex = 0
-
-  onProgress?.('broadcasting', 'Broadcasting your song to the overlay...')
-  console.log('[Publish] Broadcasting to overlay...')
-  await broadcaster.broadcast(transaction)
-
-  if (fileUploadInfo.encryptionKey) {
-    onProgress?.('publishing_key', 'Publishing your encryption key...')
-    console.log('[Publish] Publishing encryption key...')
-    await publishKey({
-      wallet,
-      key: fileUploadInfo.encryptionKey,
-      songURL: fileUploadInfo.songURL
-    })
-  } else {
-    console.log('[Publish] No encryption key to publish.')
+  let activeStage: PublishProgressStage = 'uploading_files'
+  const receipt: PublicationReceipt = {
+    publicationId: globalThis.crypto?.randomUUID?.() || `tempo-${Date.now().toString(36)}`,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    stage: 'started',
+    assets: {},
+    keyPublished: false,
+    overlayAdmitted: false,
+    playable: false
   }
+  const saveReceipt = (stage: string) => {
+    receipt.stage = stage
+    receipt.updatedAt = new Date().toISOString()
+    localStorage.setItem('tempo:last-publication', JSON.stringify(receipt))
+  }
+  saveReceipt('started')
 
-  onProgress?.('completed', 'Publish complete.')
+  try {
+    onProgress?.('uploading_files', 'Uploading redundant audio, artwork, and preview copies...')
 
-  return {
-    ...song,
-    sats: 1,
-    token: {
-      txid,
-      vout: outputIndex,
-      outputScript: lockingScript,
-      satoshis: 1,
-      inputs: {},
-      mapiResponses: {},
-      proof: {},
-      rawTX: Utils.toBase64(Array.from(tx))
+    const fileUploadInfo = await getFileUploadInfo({
+      selectedArtwork: song.selectedArtwork,
+      selectedMusic: song.selectedMusic,
+      selectedPreview: song.selectedPreview,
+      retentionPeriod: retentionPeriod ?? constants.RETENTION_PERIOD
+    })
+
+    if (!fileUploadInfo.assets.audio?.available || !fileUploadInfo.assets.artwork?.available ||
+      (fileUploadInfo.previewURL && !fileUploadInfo.assets.preview?.available)) {
+      throw new Error('Storage verification failed before publication. No catalogue token was created.')
     }
+    receipt.assets = fileUploadInfo.assets
+    saveReceipt('storage_verified')
+
+    activeStage = 'creating_token'
+    onProgress?.('creating_token', 'Creating your song token...')
+
+    const uniqueID = Utils.toHex(
+      Hash.sha256(Utils.toArray(Math.random().toString(), 'utf8'))
+    )
+
+    const lockingScript = await pushdrop.lock(
+      [
+        Utils.toArray(constants.tempoTopic, 'utf8'),
+        Utils.toArray(constants.tspProtocolID, 'utf8'),
+        Utils.toArray(song.title, 'utf8'),
+        Utils.toArray(song.artist, 'utf8'),
+        Utils.toArray('Default description', 'utf8'),
+        Utils.toArray(String(fileUploadInfo.songDuration), 'utf8'),
+        Utils.toArray(fileUploadInfo.songURL, 'utf8'),
+        Utils.toArray(fileUploadInfo.artworkURL, 'utf8'),
+        Utils.toArray(fileUploadInfo.previewURL || '', 'utf8'),
+        Utils.toArray(uniqueID, 'utf8')
+      ],
+      [2, 'tmtsp'],
+      '1',
+      'anyone',
+      true
+    )
+
+    const { tx } = await wallet.createAction({
+      outputs: [
+        {
+          lockingScript: lockingScript.toHex(),
+          satoshis: 1,
+          outputDescription: 'Tempo Song Token',
+          basket: 'tmtsp'
+        }
+      ],
+      description: 'Publish a song',
+      options: {
+        acceptDelayedBroadcast: false,
+        randomizeOutputs: false
+      }
+    })
+
+    if (!tx) throw new Error('Transaction creation failed')
+
+    const transaction = Transaction.fromAtomicBEEF(tx)
+    const txid = transaction.id('hex')
+    const outputIndex = 0
+    receipt.txid = txid
+    saveReceipt('token_created')
+
+    if (!fileUploadInfo.encryptionKey) throw new Error('The encrypted audio key was not created.')
+    activeStage = 'publishing_key'
+    onProgress?.('publishing_key', 'Publishing the purchase key...')
+    await publishKey({ wallet, key: fileUploadInfo.encryptionKey, songURL: fileUploadInfo.songURL })
+    receipt.keyPublished = true
+    saveReceipt('key_published')
+
+    activeStage = 'broadcasting'
+    onProgress?.('broadcasting', 'Broadcasting your song to the overlay...')
+    const broadcastResult = await broadcaster.broadcast(transaction)
+    if (broadcastResult.status === 'error') {
+      throw new Error('The Tempo overlay did not accept the song token.')
+    }
+    saveReceipt('broadcast_accepted')
+
+    activeStage = 'verifying'
+    onProgress?.('verifying', 'Verifying storage, key server, overlay admission, and playback readiness...')
+    const overlayAdmitted = await waitForOverlayAdmission(fileUploadInfo.songURL)
+    const publishedSong: Song = {
+      ...song,
+      songURL: fileUploadInfo.songURL,
+      artworkURL: fileUploadInfo.artworkURL,
+      previewURL: fileUploadInfo.previewURL || undefined,
+      duration: fileUploadInfo.songDuration,
+      sats: 1,
+      token: {
+        txid,
+        vout: outputIndex,
+        outputScript: lockingScript,
+        satoshis: 1,
+        inputs: {},
+        mapiResponses: {},
+        proof: {},
+        rawTX: Utils.toBase64(Array.from(tx))
+      }
+    }
+    const availability = await inspectSongAvailability(publishedSong)
+    receipt.keyPublished = availability.hasKey
+    receipt.overlayAdmitted = overlayAdmitted
+    receipt.playable = overlayAdmitted && availability.status === 'playable'
+    publishedSong.availability = availability
+    saveReceipt(receipt.playable ? 'verified' : 'verification_failed')
+    publishedSong.publicationReceipt = { ...receipt }
+
+    if (!receipt.playable) {
+      throw new Error(`Publication verification failed (${availability.reason || 'overlay_not_admitted'}). Your receipt was saved for recovery.`)
+    }
+
+    onProgress?.('completed', 'Published and verified playable.')
+    captureSignal('publish.succeeded', {
+      surface: 'publish-flow',
+      context: { publicationId: txid.slice(0, 12), overlayAdmitted, playable: receipt.playable }
+    })
+    return publishedSong
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    receipt.failedAtStage = activeStage
+    receipt.error = message
+    saveReceipt('failed')
+    captureError('publish.failed', error, { publicationId: receipt.publicationId, failedAtStage: activeStage }, ['publish:failed'])
+    throw error
   }
 }
 

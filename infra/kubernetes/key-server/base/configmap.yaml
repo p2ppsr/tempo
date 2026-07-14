@@ -9,4 +9,6 @@ data:
   NODE_ENV: "production"
   HTTP_PORT: "8081"
   BSV_NETWORK: "mainnet"
+  CHAINTRACKS_URL: "https://mainnet-chaintracks.babbage.systems"
+  SONG_PRICE_SATOSHIS: "1000"
   WALLET_STORAGE_URL: "http://wallet-storage.wallet-storage-prod.svc.cluster.local:8080"

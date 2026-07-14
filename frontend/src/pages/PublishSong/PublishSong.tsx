@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import publishSong, { type PublishProgressStage } from '../../utils/publishSong'
 import './PublishSong.scss'
-import type { Song } from '../../types/interfaces'
+import type { PublicationReceipt, Song } from '../../types/interfaces'
 
 /**
  * Retention period constant
@@ -33,12 +33,15 @@ const PublishSong = () => {
   const [isPublishing, setIsPublishing] = useState(false)
   const [publishStage, setPublishStage] = useState<PublishProgressStage | 'idle'>('idle')
   const [publishStatus, setPublishStatus] = useState('')
+  const [publicationError, setPublicationError] = useState('')
+  const [failedReceipt, setFailedReceipt] = useState<PublicationReceipt | null>(null)
 
   const publishSteps: Array<{ id: PublishProgressStage; label: string }> = [
     { id: 'uploading_files', label: 'Uploading files' },
     { id: 'creating_token', label: 'Creating token' },
-    { id: 'broadcasting', label: 'Broadcasting' },
     { id: 'publishing_key', label: 'Publishing key' },
+    { id: 'broadcasting', label: 'Broadcasting' },
+    { id: 'verifying', label: 'Verifying playback' },
     { id: 'completed', label: 'Complete' }
   ]
 
@@ -106,26 +109,30 @@ const PublishSong = () => {
     setIsPublishing(true)
     setPublishStage('uploading_files')
     setPublishStatus('Uploading audio, artwork, and preview files...')
+    setPublicationError('')
+    setFailedReceipt(null)
 
     try {
-      const publishPromise = publishSong(
+      const publishedSong = await publishSong(
         songValues,
         RETENTION_PERIOD,
         (stage, message) => {
           setPublishStage(stage)
           setPublishStatus(message)
         }
-      ).then((publishedSong) => {
-        if (publishedSong) navigate('/PublishSong/Success')
-      })
-
-      await toast.promise(publishPromise, {
-        pending: 'Publishing song...',
-        success: 'Song published! 👌',
-        error: 'Failed to publish song! 🤯'
-      })
+      )
+      toast.success('Song published and verified playable.')
+      if (publishedSong) navigate('/PublishSong/Success')
     } catch (e) {
-      console.error('Unexpected error during publish:', e)
+      const message = e instanceof Error ? e.message : 'Tempo could not complete this publication.'
+      setPublicationError(message)
+      try {
+        const value = localStorage.getItem('tempo:last-publication')
+        setFailedReceipt(value ? JSON.parse(value) as PublicationReceipt : null)
+      } catch {
+        setFailedReceipt(null)
+      }
+      toast.error(message)
     } finally {
       setIsPublishing(false)
     }
@@ -138,7 +145,7 @@ const PublishSong = () => {
       <div className="publishHeader">
         <h1>Publish</h1>
         <p>Upload your track, attach artwork, and mint your song token in one flow.</p>
-        <span className="publishHeaderHint">Audio is encrypted and royalties are handled automatically.</span>
+        <span className="publishHeaderHint">Tempo stores two verified copies for seven years, encrypts the master, and only finishes after the overlay, key server, and playback checks pass.</span>
       </div>
 
       <div id="piracyBannerContainer">
@@ -163,19 +170,19 @@ const PublishSong = () => {
 
           <div className="fieldContainer">
             <label>Music</label>
-            <input type="file" className="uploadInput" {...register('selectedMusic')} required />
+            <input type="file" accept="audio/mpeg,audio/wav,audio/x-wav" className="uploadInput" {...register('selectedMusic')} required />
             <small className="fieldHint">Use a high-quality master file (MP3/WAV).</small>
           </div>
 
           <div className="fieldContainer">
             <label>Artwork</label>
-            <input type="file" className="uploadInput" {...register('selectedArtwork')} required />
+            <input type="file" accept="image/jpeg,image/png,image/webp" className="uploadInput" {...register('selectedArtwork')} required />
             <small className="fieldHint">Square cover art works best.</small>
           </div>
 
           <div className="fieldContainer">
             <label>15-Second Preview (optional)</label>
-            <input type="file" className="uploadInput" {...register('selectedPreview')} />
+            <input type="file" accept="audio/mpeg,audio/wav,audio/x-wav" className="uploadInput" {...register('selectedPreview')} />
           </div>
 
           {values.selectedMusic && (
@@ -202,6 +209,24 @@ const PublishSong = () => {
           </button>
         </fieldset>
       </form>
+
+      {publicationError && (
+        <div className="publicationFailure" role="alert">
+          <h2>Publication paused safely</h2>
+          <p>{publicationError}</p>
+          {failedReceipt && (
+            <dl>
+              <div><dt>Receipt</dt><dd>{failedReceipt.publicationId}</dd></div>
+              <div><dt>Failed stage</dt><dd>{failedReceipt.failedAtStage || failedReceipt.stage}</dd></div>
+              <div><dt>Transaction</dt><dd>{failedReceipt.txid || 'Not created'}</dd></div>
+              <div><dt>Storage</dt><dd>{Object.values(failedReceipt.assets).filter(asset => asset?.available).length} assets verified</dd></div>
+              <div><dt>Key server</dt><dd>{failedReceipt.keyPublished ? 'Verified' : 'Not published'}</dd></div>
+              <div><dt>Overlay</dt><dd>{failedReceipt.overlayAdmitted ? 'Admitted' : 'Not admitted'}</dd></div>
+            </dl>
+          )}
+          <p className="fieldHint">This receipt is stored in this browser as <code>tempo:last-publication</code> for support and recovery.</p>
+        </div>
+      )}
 
       {isPublishing && (
         <div className="publishLoadingOverlay" role="status" aria-live="polite">

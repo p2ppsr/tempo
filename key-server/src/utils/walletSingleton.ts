@@ -17,11 +17,14 @@ import {
   WalletSigner,
   WalletStorageManager,
   Services,
-  StorageClient
+  StorageClient,
+  ChaintracksServiceClient,
+  createDefaultWalletServicesOptions
 } from '@bsv/wallet-toolbox-client'
 
-const walletInstance: WalletInterface | null = null
+let walletInstance: WalletInterface | null = null
 let storageClientInstance: StorageClient | null = null
+let chaintracksInstance: ChaintracksServiceClient | null = null
 
 /**
  * Initializes (if necessary) and retrieves the server wallet configured with
@@ -36,6 +39,7 @@ export async function getWallet(): Promise<WalletInterface> {
   const SERVER_PRIVATE_KEY = process.env.SERVER_PRIVATE_KEY
   const WALLET_STORAGE_URL = process.env.WALLET_STORAGE_URL
   const BSV_NETWORK = process.env.BSV_NETWORK as 'mainnet' | 'testnet'
+  const CHAINTRACKS_URL = process.env.CHAINTRACKS_URL
 
   if (!SERVER_PRIVATE_KEY || !WALLET_STORAGE_URL) {
     throw new Error('Missing SERVER_PRIVATE_KEY or WALLET_STORAGE_URL in environment')
@@ -46,7 +50,20 @@ export async function getWallet(): Promise<WalletInterface> {
     const keyDeriver = new CachedKeyDeriver(new PrivateKey(SERVER_PRIVATE_KEY, 'hex'))
     const storageManager = new WalletStorageManager(keyDeriver.identityKey)
     const signer = new WalletSigner(chain, keyDeriver, storageManager)
-    const services = new Services(chain)
+    const chaintracksUrl = CHAINTRACKS_URL ||
+      `https://${chain}net-chaintracks.babbage.systems`
+    chaintracksInstance = new ChaintracksServiceClient(chain, chaintracksUrl)
+    const servicesOptions = createDefaultWalletServicesOptions(
+      chain,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      chaintracksInstance
+    )
+    const services = new Services(servicesOptions)
     const wallet = new Wallet(signer, services)
 
     const client = new StorageClient(wallet, WALLET_STORAGE_URL)
@@ -54,10 +71,10 @@ export async function getWallet(): Promise<WalletInterface> {
     await storageManager.addWalletStorageProvider(client)
 
     storageClientInstance = client
-    return wallet
+    walletInstance = wallet
   }
 
-  return walletInstance
+  return walletInstance!
 }
 
 /**
@@ -69,4 +86,10 @@ export async function getWallet(): Promise<WalletInterface> {
 export async function getStorageClient(): Promise<StorageClient> {
   if (!storageClientInstance) await getWallet()
   return storageClientInstance!
+}
+
+/** Verifies that the configured production ChainTracks service is answering. */
+export async function getChaintracksHeight(): Promise<number> {
+  if (!chaintracksInstance) await getWallet()
+  return await chaintracksInstance!.getPresentHeight()
 }

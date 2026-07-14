@@ -2,6 +2,7 @@ import type { Song } from '../types/interfaces'
 import { LookupResolver } from '@bsv/sdk'
 import { decodeOutputs } from '../utils/decodeOutput'
 import constants from './constants'
+import { filterPlayableSongs } from './catalogAvailability'
 
 const resolver = new LookupResolver({
   networkPreset: constants.overlayNetworkPreset
@@ -10,7 +11,8 @@ const resolver = new LookupResolver({
 /**
  * loadDemoSongs
  * - Queries the overlay for publicly available preview songs.
- * - Returns an array of songs that include a previewURL (unencrypted).
+ * - Returns only songs whose required storage and purchase key are live.
+ * - Uses a wallet-free preview when the publisher supplied one.
  */
 export default async function loadDemoSongs(): Promise<Song[]> {
   console.log('[loadDemoSongs] Querying overlay for previews...')
@@ -20,8 +22,6 @@ export default async function loadDemoSongs(): Promise<Song[]> {
       service: constants.overlayLookupService,
       query: { type: 'findAll', value: {} }
     })
-
-    console.log('[loadDemoSongs] Resolver response:', response)
 
     if (response.type !== 'output-list') {
       console.warn('[loadDemoSongs] Unexpected response type:', response)
@@ -33,25 +33,17 @@ export default async function loadDemoSongs(): Promise<Song[]> {
       return []
     }
 
-    console.log(`[loadDemoSongs] Decoding ${response.outputs.length} outputs...`)
     const parsedOverlaySongs = await decodeOutputs(
       response.outputs.map((o) => ({ beef: o.beef, outputIndex: o.outputIndex }))
     )
 
-    console.log('[loadDemoSongs] Decoded songs:', parsedOverlaySongs)
+    const playableSongs = await filterPlayableSongs(parsedOverlaySongs)
 
-    const overlayPreviews = parsedOverlaySongs.filter((song, index) => {
-      const hasPreview = !!song.previewURL
-      console.log(`[loadDemoSongs] [#${index}] Title: ${song.title}, Has Preview: ${hasPreview}, Preview URL:`, song.previewURL)
-      return hasPreview
+    playableSongs.forEach((song) => {
+      if (song.previewURL) song.decryptedSongURL = song.previewURL
     })
 
-    overlayPreviews.forEach((song) => {
-      song.decryptedSongURL = song.previewURL
-    })
-
-    console.log('[loadDemoSongs] Overlay previews found:', overlayPreviews.length)
-    return overlayPreviews
+    return playableSongs
   } catch (err) {
     console.error('[loadDemoSongs] Failed to load overlay previews:', err)
     return []

@@ -5,6 +5,10 @@ metadata:
   labels:
     app.kubernetes.io/name: tempo-key-server
     app.kubernetes.io/component: api
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "8081"
 spec:
   type: ClusterIP
   selector:

@@ -1,0 +1,122 @@
+proofrunVersion: 1
+id: tempo-wallet-onboarding
+name: Tempo Babbage Go and grouped Metanet permissions onboarding
+surface:
+  repo: p2ppsr/tempo
+  workspace: /Users/tyeverett/projects/tempo
+  dossier: /Users/tyeverett/projects/network-ops/docs/repos/p2ppsr/tempo.md
+  category: onboard
+  audience: "A listener or artist connecting Metanet Desktop for the first time."
+environment:
+  kind: production
+  baseUrl: https://tempomusic.net
+  healthEndpoints:
+    - https://tempo-keyserver.babbage.systems/readyz
+  deployment:
+    system: cars
+    workflow: Deploy Tempo Production
+    namespace: cars-project-50247d539b678476a0b00db7bd5584e8
+    workload: frontend
+    releaseSource: master
+safety:
+  stateChanging: true
+  spendCap:
+    amount: 0
+    unit: sats
+  testIdentities:
+    - purpose: operator
+      source: "Operator-held Metanet Desktop mainnet profile; never record private material."
+  cleanup:
+    required: false
+    instructions: "Retain the app permission grant unless a clean-profile rerun is required."
+matrix:
+  desktopBrowsers:
+    - chrome
+  mobileBrowsers: []
+  mobileSimulators: []
+  desktopWallets:
+    - metanet-desktop
+  mobileWallets: []
+  serverWallets: []
+  networks:
+    - mainnet
+preflight:
+  commands:
+    - description: Check live BRC-116 manifest
+      command: curl -fsS https://tempomusic.net/manifest.json
+      cwd: /Users/tyeverett/projects/tempo
+  requiredState:
+    - "Metanet Desktop is running and its Tempo permission baseline is recorded."
+    - "The live manifest has matching metanet and babbage groupPermissions and counterpartyPermissions."
+    - "No payment is made by this flow."
+flow:
+  steps:
+    - id: passive-open
+      actor: listener
+      action: "Open Tempo and wait for the catalogue to settle without clicking Connect."
+      expected:
+        ui:
+          - "No Metanet Desktop approval window opens."
+      timing:
+        thresholdMs: 5000
+    - id: connect
+      actor: listener
+      action: "Click Connect wallet and inspect the Babbage Go or Metanet handoff."
+      expected:
+        ui:
+          - "The user sees one app-level explanation instead of a sequence of low-level permission prompts."
+          - "The connected state is explicit after approval or an existing grant."
+        telemetry:
+          - "wallet.connect_started and wallet.connect_succeeded are emitted."
+      timing:
+        thresholdMs: 10000
+    - id: inspect-permissions
+      actor: operator
+      action: "Inspect the resulting Tempo permission state in Metanet Desktop."
+      expected:
+        domain:
+          - "BRC-116 protocol, basket, spending, and PACT counterparty permissions match the manifest."
+          - "No redundant per-call permission grants were created."
+      timing:
+        thresholdMs: 10000
+assertions:
+  uiAppearance:
+    - "Connect and connected states are usable at desktop width."
+  audienceIntuition:
+    - "The app explains why a wallet is needed before asking for permission."
+  customerTrust:
+    - "Passive browsing stays prompt-free and permission requests are consolidated."
+  flowSuccess:
+    - "Tempo reaches Wallet connected and Metanet Desktop records the grouped grant."
+  telemetryObservability:
+    - "Connect start/success or failure is queryable without identity keys."
+  reliabilityRepeatability:
+    - "A second connect check reuses standing approval without a prompt storm."
+  performance:
+    - "Connect feedback appears immediately and completes within 10 seconds when already approved."
+evidence:
+  publicSafe:
+    - "Live manifest and run record."
+  privateArtifacts:
+    - "network-ops/artifacts/proofrun/p2ppsr/tempo/<timestamp>-tempo-wallet-onboarding/"
+telemetry:
+  expectedEvents:
+    - name: wallet.connect_started
+      required: true
+    - name: wallet.connect_succeeded
+      required: true
+    - name: wallet.connect_failed
+      required: false
+  queryInstructions: "Query UserCom source tempomusic.net around the recorded connect timestamp."
+performanceThresholds:
+  firstMeaningfulContentMs: 2000
+  uiFeedbackAfterActionMs: 500
+  walletPromptShownMs: 5000
+  approvalToConfirmationMs: 10000
+  fullFlowMs: 30000
+  telemetryVisibleMs: 60000
+recording:
+  runRecordTemplate: /Users/tyeverett/projects/network-ops/docs/runbooks/proofrun-run-record-template.md
+  productRunPath: docs/proofrun/runs/<YYYYMMDDTHHMMSSZ>-tempo-wallet-onboarding.md
+  updateDossier: true
+  updateReadinessRegistry: true

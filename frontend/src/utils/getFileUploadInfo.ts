@@ -1,5 +1,8 @@
-import { SymmetricKey, StorageUploader, WalletClient } from '@bsv/sdk'
+import { SymmetricKey, StorageUploader } from '@bsv/sdk'
 import constants from './constants'
+import { getInteractiveWallet } from './wallet'
+import type { PublicationAssetReceipt } from '../types/interfaces'
+import { buildAssetReceipt } from './publicationReceipt'
 
 interface GetFileUploadInfoParams {
   selectedArtwork: File | FileList | null
@@ -14,9 +17,9 @@ const getFileUploadInfo = async ({
   selectedPreview = null,
   retentionPeriod = constants.RETENTION_PERIOD
 }: Partial<GetFileUploadInfoParams> = {}) => {
-  const wallet = new WalletClient('auto', 'localhost')
+  const wallet = getInteractiveWallet()
 
-  const storageUploader = new StorageUploader({ storageURL: constants.uploadURL, wallet })
+  const storageUploader = new StorageUploader({ wallet, resilienceLevel: 2 })
 
   const filesToUpload: File[] = []
   let songURL = ''
@@ -24,6 +27,23 @@ const getFileUploadInfo = async ({
   let previewURL = ''
   let songDuration = 0
   let encryptionKey: SymmetricKey | undefined
+  const assets: {
+    audio?: PublicationAssetReceipt
+    artwork?: PublicationAssetReceipt
+    preview?: PublicationAssetReceipt
+  } = {}
+
+  const receiptFor = async (uhrpURL: string, hostedBy: string[]): Promise<PublicationAssetReceipt> => {
+    const checks = await Promise.all(hostedBy.map(async host => {
+      try {
+        const record = await storageUploader.findFile(uhrpURL, { hostedBy: [host] })
+        return { host, expiryTime: record.expiryTime }
+      } catch {
+        return null
+      }
+    }))
+    return buildAssetReceipt(uhrpURL, checks)
+  }
 
   // Upload artwork (unencrypted)
   if (selectedArtwork) {
@@ -46,17 +66,10 @@ const getFileUploadInfo = async ({
       })
 
       artworkURL = uploadedArtwork.uhrpURL
+      assets.artwork = await receiptFor(uploadedArtwork.uhrpURL, uploadedArtwork.hostedBy)
       filesToUpload.push(artworkFile)
-    } catch (err: any) {
+    } catch (err) {
       console.error('[Upload Artwork Error]', err)
-
-      if (err && typeof err === 'object' && 'response' in err) {
-        const response = (err as any).response
-        if (response?.text) {
-          const text = await response.text()
-          console.error('[Server Response]', text)
-        }
-      }
       throw new Error('Failed to upload artwork.')
     }
   }
@@ -80,6 +93,7 @@ const getFileUploadInfo = async ({
         })
 
         previewURL = uploadedPreview.uhrpURL
+        assets.preview = await receiptFor(uploadedPreview.uhrpURL, uploadedPreview.hostedBy)
         filesToUpload.push(previewFile)
       } catch (err) {
         console.error('[Upload Preview Error]', err)
@@ -114,6 +128,7 @@ const getFileUploadInfo = async ({
       })
 
       songURL = uploadedMusic.uhrpURL
+      assets.audio = await receiptFor(uploadedMusic.uhrpURL, uploadedMusic.hostedBy)
 
       const blob = new Blob([Uint8Array.from(encrypted as number[])], {
         type: 'application/octet-stream'
@@ -135,7 +150,8 @@ const getFileUploadInfo = async ({
     previewURL,
     filesToUpload,
     encryptionKey,
-    songDuration
+    songDuration,
+    assets
   }
 }
 

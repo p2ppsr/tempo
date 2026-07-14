@@ -26,26 +26,17 @@ const ViewArtist: React.FC = () => {
   const [songs, setSongs] = useState<Song[]>([])
   const [artistName, setArtistName] = useState('')
 
-  /**
-   * loadSongs
-   * Fetches songs for the artist using the provided identity key.
-   * Updates the state with the fetched songs.
-   */
-  const loadSongs = async () => {
-    if (!artistIdentityKey) return
-    try {
-      const fetchedSongs = await fetchSongsByArtist(artistIdentityKey)
-      setSongs(fetchedSongs)
-    } catch (error) {
-      console.error('Failed to fetch songs for artist: ', error)
-    }
-  }
-
   useEffect(() => {
     const load = async () => {
-      await loadSongs()
+      if (!artistIdentityKey) return
+      try {
+        const fetchedSongs = await fetchSongsByArtist(artistIdentityKey)
+        setSongs(fetchedSongs)
+      } catch (error) {
+        console.error('Failed to fetch songs for artist: ', error)
+      }
     }
-    load()
+    void load()
   }, [artistIdentityKey])
 
   useEffect(() => {

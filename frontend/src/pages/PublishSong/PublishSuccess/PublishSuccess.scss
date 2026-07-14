@@ -1,4 +1,4 @@
-@import '../../../styles/styleVariables.scss';
+@use '../../../styles/styleVariables.scss' as *;
 
 .publishSuccessPage {
   border: 1px solid rgba(163, 189, 217, 0.35);
@@ -16,3 +16,17 @@
     font-weight: 500;
   }
 }
+.publicationReceipt {
+  margin: 1.3rem 0;
+  padding: 1rem;
+  border: 1px solid rgba(53, 214, 195, 0.35);
+  border-radius: 16px;
+  background: rgba(12, 20, 33, 0.78);
+
+  dl { display: grid; gap: 0.55rem; margin-top: 0.8rem; }
+  dl div { display: grid; grid-template-columns: minmax(110px, 0.3fr) 1fr; gap: 0.7rem; }
+  dt { color: #98a5ba; }
+  dd { margin: 0; overflow-wrap: anywhere; }
+}
+
+.successActions { display: flex; gap: 0.7rem; flex-wrap: wrap; }

@@ -44,7 +44,7 @@ const ArtistProfile = () => {
       <img alt={`Image of ${song.artist}`} src={placeholderArtistImage} />
       <div>
         <h1>{song.artist}</h1>
-        <p className="about">{(song as any)?.artist?.bio || 'No artist bio available.'}</p>
+        <p className="about">{song.description || 'No artist bio available.'}</p>
         <Link className="button tipBtn" to="#">TIP ARTIST</Link>
         <button className="button" onClick={() => setFollowStatus('Following')}>
           {followStatus}

@@ -31,7 +31,7 @@ describe('TSPTopicManager', () => {
     jest.clearAllMocks()
   })
 
-  it('should admit outputs with valid signature and protocol address', async () => {
+  it('should admit outputs with the current Tempo song protocol fields', async () => {
     const txMock = {
       outputs: [
         { lockingScript: 'script1' },
@@ -39,22 +39,20 @@ describe('TSPTopicManager', () => {
       ]
     }
 
-    const mockPubKey = {
-      verify: jest.fn().mockReturnValue(true)
-    }
-
     const mockDecoded = {
       fields: [
-        Buffer.from('1LQtKKK7c1TN3UcRfsp8SqGjWtzGskze36'),
+        Buffer.from('tsp'),
+        Buffer.from('tmtsp'),
         Buffer.from('title'),
         Buffer.from('artist'),
         Buffer.from('desc'),
         Buffer.from('dur'),
         Buffer.from('songUrl'),
         Buffer.from('artUrl'),
-        Buffer.from('sig')
+        Buffer.from('previewUrl'),
+        Buffer.from('uniqueId')
       ],
-      lockingPublicKey: mockPubKey
+      lockingPublicKey: { toString: () => 'artist-key' }
     }
 
     require('@bsv/sdk').Transaction.fromBEEF.mockReturnValue(txMock)
@@ -67,18 +65,14 @@ describe('TSPTopicManager', () => {
     expect(result.coinsToRetain).toEqual([0])
   })
 
-  it('should skip outputs with invalid signature', async () => {
+  it('should skip outputs with the wrong protocol', async () => {
     const txMock = {
       outputs: [{ lockingScript: 'badScript' }]
     }
 
-    const mockPubKey = {
-      verify: jest.fn().mockReturnValue(false)
-    }
-
     const mockDecoded = {
-      fields: Array(8).fill(Buffer.from('a')),
-      lockingPublicKey: mockPubKey
+      fields: [Buffer.from('tsp'), Buffer.from('wrong'), ...Array(8).fill(Buffer.from('a'))],
+      lockingPublicKey: { toString: () => 'artist-key' }
     }
 
     require('@bsv/sdk').Transaction.fromBEEF.mockReturnValue(txMock)
@@ -112,15 +106,14 @@ describe('TSPTopicManager', () => {
   })
 
 
-  it('should skip outputs with invalid protocol address', async () => {
+  it('should skip outputs with an invalid topic', async () => {
     const txMock = {
       outputs: [{ lockingScript: 'wrongAddressScript' }]
     }
 
-    const mockPubKey = { verify: () => true }
     const mockDecoded = {
-      fields: Array(8).fill(Buffer.from('a')),
-      lockingPublicKey: mockPubKey
+      fields: [Buffer.from('wrong'), Buffer.from('tmtsp'), ...Array(8).fill(Buffer.from('a'))],
+      lockingPublicKey: { toString: () => 'artist-key' }
     }
 
     require('@bsv/sdk').Transaction.fromBEEF.mockReturnValue(txMock)

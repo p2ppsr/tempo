@@ -1,29 +1,16 @@
-import { useEffect } from 'react'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useMediaQuery, useTheme } from '@mui/material'
-import { WalletClient } from '@bsv/sdk'
+import { lazy, Suspense, useEffect } from 'react'
 
 import Footer from './components/Footer/Footer'
-import InvitationModal from './components/InvitationModal/InvitationModal'
 import LeftMenu from './components/LeftMenu/LeftMenu'
 import SocialShareModal from './components/SocialShareModal/SocialShareModal'
 import TopMenu from './components/TopMenu/TopMenu'
 import PageMetadata from './components/PageMetadata'
 
-import EditSong from './pages/EditSong/EditSong'
 import Home from './pages/Home/Home'
-import Likes from './pages/Likes/Likes'
-import MySongs from './pages/MySongs/MySongs'
-import CreatePlaylist from './pages/Playlists/Create/CreatePlaylist'
-import Playlists from './pages/Playlists/Playlists'
-import ViewPlaylist from './pages/Playlists/ViewPlaylist'
-import Profile from './pages/Profile/Profile'
-import PublishSong from './pages/PublishSong/PublishSong'
-import SuccessPage from './pages/PublishSong/PublishSuccess/PublishSuccess'
-import ViewSong from './pages/ViewSong/ViewSong'
-import ViewArtist from './pages/ViewArtist/ViewArtist'
 
 import './App.scss'
 import './styles/forms.scss'
@@ -33,53 +20,41 @@ import './styles/utils.scss'
 
 import backgroundImage from './assets/Images/background.jpg'
 
-import { useAuthStore } from './stores/stores'
-import checkForMetaNetClient from './utils/checkForMetaNetClient'
+import { captureError, captureSignal } from './utils/usercom'
+import FeedbackPanel from './components/FeedbackPanel/FeedbackPanel'
+
+const EditSong = lazy(() => import('./pages/EditSong/EditSong'))
+const Likes = lazy(() => import('./pages/Likes/Likes'))
+const MySongs = lazy(() => import('./pages/MySongs/MySongs'))
+const CreatePlaylist = lazy(() => import('./pages/Playlists/Create/CreatePlaylist'))
+const Playlists = lazy(() => import('./pages/Playlists/Playlists'))
+const ViewPlaylist = lazy(() => import('./pages/Playlists/ViewPlaylist'))
+const Profile = lazy(() => import('./pages/Profile/Profile'))
+const PublishSong = lazy(() => import('./pages/PublishSong/PublishSong'))
+const SuccessPage = lazy(() => import('./pages/PublishSong/PublishSuccess/PublishSuccess'))
+const ViewSong = lazy(() => import('./pages/ViewSong/ViewSong'))
+const ViewArtist = lazy(() => import('./pages/ViewArtist/ViewArtist'))
 
 const App = () => {
-  const [setUserHasMetanetClient] = useAuthStore((state) => [state.setUserHasMetanetClient])
-
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   useEffect(() => {
-    let isMounted = true
-
-    const run = async () => {
-      try {
-        const walletClient = new WalletClient('auto', 'localhost')
-        const status = await checkForMetaNetClient()
-        const hasMetaNetClient = status !== 0
-
-        if (!isMounted) return
-
-        setUserHasMetanetClient(hasMetaNetClient)
-
-        if (!hasMetaNetClient) {
-          return
-        }
-
-        await walletClient.waitForAuthentication()
-      } catch (error) {
-        console.warn('MetaNet initialization failed:', error)
-        if (!isMounted) return
-
-        setUserHasMetanetClient(false)
-      }
-    }
-
-    run()
-
+    captureSignal('app.opened', { surface: 'web-app' })
+    const handleError = (event: ErrorEvent) => captureError('app.unhandled_error', event.error || event.message)
+    const handleRejection = (event: PromiseRejectionEvent) => captureError('app.unhandled_rejection', event.reason)
+    window.addEventListener('error', handleError)
+    window.addEventListener('unhandledrejection', handleRejection)
     return () => {
-      isMounted = false
+      window.removeEventListener('error', handleError)
+      window.removeEventListener('unhandledrejection', handleRejection)
     }
-  }, [setUserHasMetanetClient])
+  }, [])
 
   return (
     <>
       <img src={backgroundImage} className="backgroundImage" alt="" aria-hidden />
 
-      <InvitationModal />
       <SocialShareModal />
 
       <Router>
@@ -96,23 +71,26 @@ const App = () => {
           </div>
 
           <main className="mainContent">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/Playlists/*" element={<Playlists />} />
-              <Route path="/Playlists/:id" element={<ViewPlaylist />} />
-              <Route path="/Playlists/Create" element={<CreatePlaylist />} />
-              <Route path="/Profile" element={<Profile />} />
-              <Route path="/MySongs" element={<MySongs />} />
-              <Route path="/EditSong" element={<EditSong />} />
-              <Route path="/PublishSong" element={<PublishSong />} />
-              <Route path="/PublishSong/Success" element={<SuccessPage />} />
-              <Route path="/Likes" element={<Likes />} />
-              <Route path="/Song/:songURL" element={<ViewSong />} />
-              <Route path="/Artist/:artistIdentityKey" element={<ViewArtist />} />
-            </Routes>
+            <Suspense fallback={<div className="routeLoading" role="status">Loading Tempo…</div>}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/Playlists/*" element={<Playlists />} />
+                <Route path="/Playlists/:id" element={<ViewPlaylist />} />
+                <Route path="/Playlists/Create" element={<CreatePlaylist />} />
+                <Route path="/Profile" element={<Profile />} />
+                <Route path="/MySongs" element={<MySongs />} />
+                <Route path="/EditSong" element={<EditSong />} />
+                <Route path="/PublishSong" element={<PublishSong />} />
+                <Route path="/PublishSong/Success" element={<SuccessPage />} />
+                <Route path="/Likes" element={<Likes />} />
+                <Route path="/Song/:songURL" element={<ViewSong />} />
+                <Route path="/Artist/:artistIdentityKey" element={<ViewArtist />} />
+              </Routes>
+            </Suspense>
           </main>
 
           <Footer />
+          <FeedbackPanel />
         </div>
       </Router>
 

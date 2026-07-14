@@ -1,4 +1,4 @@
-@import '../../styles/styleVariables.scss';
+@use '../../styles/styleVariables.scss' as *;
 
 .footerContainer {
   position: fixed;
@@ -60,6 +60,27 @@
   }
 }
 
+.unlockButton {
+  margin-left: 0.4rem;
+  border: 1px solid rgba(139, 124, 255, 0.65);
+  border-radius: 999px;
+  background: rgba(109, 93, 252, 0.18);
+  color: #f7f8ff;
+  padding: 0.62rem 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover:not(:disabled) { background: rgba(109, 93, 252, 0.32); }
+  &:disabled { cursor: default; opacity: 0.72; }
+}
+
+.playerError {
+  color: #ffaaa4;
+  font-size: 0.75rem;
+  margin: 0.15rem 0 0;
+}
+
 .previewPlayer {
   width: 100%;
   border-radius: 12px;
@@ -104,6 +125,12 @@
     .artistName {
       max-width: 100%;
     }
+  }
+
+  .unlockButton {
+    margin-left: auto;
+    font-size: 0.78rem;
+    padding: 0.52rem 0.7rem;
   }
 
   .previewPlayer,

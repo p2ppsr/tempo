@@ -1,13 +1,16 @@
-import { PublicKey, WalletClient } from '@bsv/sdk'
+import { PublicKey } from '@bsv/sdk'
 import fetchSongs from './fetchSongs'
 import type { TSPLookupQuery } from '../../types/interfaces.js'
+import { getInteractiveWallet } from '../wallet'
 
 const fetchUserSongs = async () => {
-  const wallet = new WalletClient('auto', 'localhost')
+  const wallet = getInteractiveWallet()
 
   const { publicKey: pubKeyString } = await wallet.getPublicKey({
-    protocolID: [2, 'Tempo'],
-    keyID: '1'
+    protocolID: [2, 'tmtsp'],
+    keyID: '1',
+    counterparty: 'anyone',
+    forSelf: true
   })
 
   const artistIdentityKey = PublicKey.fromString(pubKeyString).toString()

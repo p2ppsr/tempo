@@ -15,7 +15,6 @@
  * - Detects swipe events with a hasSwiped flag.
  *
  * @param sliderRef - React ref pointing to the horizontal scroll container.
- * @param reliants - array of dependencies that re-initialize the hook.
  * @param momentumVelocity - multiplier controlling deceleration of momentum.
  *
  * @returns { hasSwiped } - boolean flag indicating if user has swiped.
@@ -26,14 +25,12 @@ import type { RefObject } from 'react'
 
 interface UseSwipeScrollParams {
   sliderRef: RefObject<HTMLElement | null>
-  reliants?: any[]
   momentumVelocity?: number
 }
 
 
 function useSwipeScroll({
 	sliderRef,
-	reliants = [],
 	momentumVelocity = 0.5
 }: UseSwipeScrollParams) {
 	const [hasSwiped, setHasSwiped] = useState<boolean>(false)
@@ -78,7 +75,7 @@ function useSwipeScroll({
 			const prevScrollLeft = slider.scrollLeft
 			slider.scrollLeft = scrollLeft - walk
 			velX = slider.scrollLeft - prevScrollLeft
-			if (slider.scrollLeft - prevScrollLeft && !hasSwiped) {
+			if (slider.scrollLeft - prevScrollLeft) {
 				setHasSwiped(true)
 			}
 		}
@@ -120,7 +117,7 @@ function useSwipeScroll({
 			slider.removeEventListener('wheel', onWheel)
 			cancelMomentumTracking()
 		}
-	}, [...reliants, sliderRef])
+	}, [momentumVelocity, sliderRef])
 
 	useEffect(() => {
 		const cleanup = init()

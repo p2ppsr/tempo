@@ -8,10 +8,12 @@
     "start": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest run"
   },
   "dependencies": {
-    "@bsv/sdk": "^2.0.13",
+    "@babbage/go": "^0.1.17",
+    "@bsv/sdk": "^2.1.6",
     "@bsv/uhrp-react": "^1.0.6",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
@@ -27,13 +29,15 @@
     "react-hook-form": "^7.51.4",
     "react-icons": "^5.2.1",
     "react-markdown": "^9.0.3",
-    "react-router-dom": "^7.1.5",
+    "react-router-dom": "^7.18.1",
     "react-share": "^5.2.2",
     "react-toastify": "^11.0.3",
     "uuid4": "^2.0.2",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^22.15.29",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
@@ -42,9 +46,16 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "jsdom": "^29.1.1",
     "sass-embedded": "^1.89.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vitest": "^4.1.10"
+  },
+  "overrides": {
+    "satoshi-shop-client": {
+      "@bsv/sdk": "2.1.6"
+    }
   }
 }

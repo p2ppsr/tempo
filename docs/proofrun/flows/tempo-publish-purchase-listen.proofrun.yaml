@@ -1,0 +1,145 @@
+proofrunVersion: 1
+id: tempo-publish-purchase-listen
+name: Tempo verified publication, catalogue admission, purchase, and listening
+surface:
+  repo: p2ppsr/tempo
+  workspace: /Users/tyeverett/projects/tempo
+  dossier: /Users/tyeverett/projects/network-ops/docs/repos/p2ppsr/tempo.md
+  category: publish
+  audience: "An independent musician publishing a track and a listener purchasing it."
+environment:
+  kind: production
+  baseUrl: https://tempomusic.net
+  healthEndpoints:
+    - https://tempo-keyserver.babbage.systems/readyz
+    - https://tempo-keyserver.babbage.systems/metrics
+  deployment:
+    system: cars
+    workflow: Deploy Tempo Production and Deploy Key Server Production Local
+    namespace: cars-project-50247d539b678476a0b00db7bd5584e8 and tempo-key-server-prod
+    workload: Tempo frontend/backend and tempo-key-server
+    releaseSource: master
+safety:
+  stateChanging: true
+  spendCap:
+    amount: 25000
+    unit: sats
+  testIdentities:
+    - purpose: author-and-listener
+      source: "Operator-held Metanet Desktop mainnet profile with bounded test funds."
+  cleanup:
+    required: true
+    instructions: "Delete the readiness-test catalogue token after purchase/playback proof; retain only public-safe IDs and the sanitized publication receipt."
+matrix:
+  desktopBrowsers:
+    - chrome
+  mobileBrowsers: []
+  mobileSimulators: []
+  desktopWallets:
+    - metanet-desktop
+  mobileWallets: []
+  serverWallets:
+    - tempo-key-server-wallet-toolbox
+  networks:
+    - mainnet
+preflight:
+  commands:
+    - description: Check key-server readiness
+      command: curl -fsS https://tempo-keyserver.babbage.systems/readyz
+      cwd: /Users/tyeverett/projects/tempo
+    - description: Check key-server ready metric
+      command: curl -fsS https://tempo-keyserver.babbage.systems/metrics
+      cwd: /Users/tyeverett/projects/tempo
+  requiredState:
+    - "The fixture is original/generated, short, and safe to publish."
+    - "Two-provider seven-year quote plus song purchase remains under 25000 sats."
+    - "Metanet Desktop permission baseline and spend authorization are recorded."
+    - "Key server reports MongoDB and production ChainTracks ready."
+flow:
+  steps:
+    - id: upload-and-verify
+      actor: artist
+      action: "Publish the generated audio and artwork fixture from the production form."
+      expected:
+        ui:
+          - "The staged progress UI advances through upload, token, key, broadcast, verification, and complete."
+          - "Any failure preserves a visible recovery receipt rather than claiming success."
+        domain:
+          - "Both storage providers independently report future expiry for required assets."
+        telemetry:
+          - "publish.started and publish.succeeded are emitted."
+      timing:
+        thresholdMs: 90000
+    - id: inspect-receipt
+      actor: artist
+      action: "Inspect the publication receipt and reload the catalogue."
+      expected:
+        domain:
+          - "Receipt has a transaction ID, two-provider storage, purchase key, overlay admission, and playable=true."
+          - "The song appears only after all admission checks pass."
+      timing:
+        thresholdMs: 20000
+    - id: purchase-and-listen
+      actor: listener
+      action: "Buy and play the full readiness track."
+      expected:
+        ui:
+          - "The 1000-sat price is clear before approval and full-track playback starts after payment."
+        domain:
+          - "Invoice and royalty records use the same 1000-sat price."
+        telemetry:
+          - "purchase.started and purchase.succeeded are emitted."
+      timing:
+        thresholdMs: 30000
+    - id: cleanup
+      actor: artist
+      action: "Delete the readiness-test catalogue token and confirm it leaves the catalogue."
+      expected:
+        domain:
+          - "The test song no longer appears after overlay convergence."
+      timing:
+        thresholdMs: 30000
+assertions:
+  uiAppearance:
+    - "Publication, receipt, purchase, player, and failure states are coherent."
+  audienceIntuition:
+    - "An artist can understand each publication stage and a listener sees the purchase price."
+  customerTrust:
+    - "Success is withheld until storage, key, overlay, and playback checks agree."
+    - "A saved receipt supports recovery without exposing encryption keys."
+  flowSuccess:
+    - "The same published URL is admitted, purchased, decrypted, and played before cleanup."
+  telemetryObservability:
+    - "Publish/purchase events and key-server counters change without secret leakage."
+  reliabilityRepeatability:
+    - "Idempotent key publication and catalogue filtering prevent duplicate or broken visible state."
+  performance:
+    - "Publication completes within 90 seconds and purchase confirmation within 30 seconds."
+evidence:
+  publicSafe:
+    - "Sanitized publication ID, transaction ID, release IDs, and run record."
+  privateArtifacts:
+    - "network-ops/artifacts/proofrun/p2ppsr/tempo/<timestamp>-tempo-publish-purchase-listen/"
+telemetry:
+  expectedEvents:
+    - name: publish.started
+      required: true
+    - name: publish.succeeded
+      required: true
+    - name: purchase.started
+      required: true
+    - name: purchase.succeeded
+      required: true
+  queryInstructions: "Query UserCom source tempomusic.net and key-server metrics/logs by the bounded run window."
+performanceThresholds:
+  firstMeaningfulContentMs: 2000
+  uiFeedbackAfterActionMs: 500
+  walletPromptShownMs: 5000
+  approvalToConfirmationMs: 10000
+  fullFlowMs: 120000
+  telemetryVisibleMs: 60000
+recording:
+  runRecordTemplate: /Users/tyeverett/projects/network-ops/docs/runbooks/proofrun-run-record-template.md
+  productRunPath: docs/proofrun/runs/<YYYYMMDDTHHMMSSZ>-tempo-publish-purchase-listen.md
+  updateDossier: true
+  updateReadinessRegistry: true

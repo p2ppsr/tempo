@@ -1,0 +1,109 @@
+name: Deploy Tempo Production
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - frontend/**
+      - backend/**
+      - deployment-info.json
+      - package.json
+      - package-lock.json
+      - .github/workflows/deploy-cars-production.yml
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Source SHA to deploy
+        required: false
+
+concurrency:
+  group: tempo-cars-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CARS_REQUEST_TIMEOUT_MS: "300000"
+      CARS_WALLET_STORAGE: "https://storage.babbage.systems"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_sha || github.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+            backend/package-lock.json
+
+      - name: Install release dependencies
+        run: |
+          npm ci
+          npm --prefix frontend ci
+          npm --prefix backend ci
+
+      - name: Verify release inputs
+        run: |
+          npm --prefix frontend run lint
+          npm --prefix frontend test
+          npm --prefix frontend run build
+          npm --prefix backend test
+
+      - name: Check CARS transport and project balance
+        env:
+          CARS_PRIVATE_KEY: ${{ secrets.CARS_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CARS_PRIVATE_KEY:-}" ]; then
+            echo "CARS_PRIVATE_KEY repository secret is required." >&2
+            exit 1
+          fi
+          npx cars doctor 1 \
+            --key "$CARS_PRIVATE_KEY" \
+            --network mainnet \
+            --storage "$CARS_WALLET_STORAGE"
+          npx cars project ensure-balance 1 \
+            --key "$CARS_PRIVATE_KEY" \
+            --network mainnet \
+            --storage "$CARS_WALLET_STORAGE" \
+            --min 1 \
+            --topup-to 250000
+
+      - name: Build CARS artifact
+        run: npx cars build 1
+
+      - name: Release CARS artifact
+        env:
+          CARS_PRIVATE_KEY: ${{ secrets.CARS_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            log_file="cars-release-attempt-${attempt}.log"
+            set +e
+            npx cars release now 1 \
+              --key "$CARS_PRIVATE_KEY" \
+              --network mainnet \
+              --storage "$CARS_WALLET_STORAGE" 2>&1 | tee "$log_file"
+            status=${PIPESTATUS[0]}
+            set -e
+            if [ "$status" -eq 0 ] && grep -q "CARS_RELEASE_SUCCESS" "$log_file"; then
+              exit 0
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              if [ "$status" -eq 0 ]; then
+                echo "CARS release exited without CARS_RELEASE_SUCCESS." >&2
+                exit 1
+              fi
+              exit "$status"
+            fi
+            sleep "$((attempt * 20))"
+          done
