@@ -28,10 +28,12 @@
     "repositoryUrl": "https://github.com/p2ppsr/tempo",
     "supportUrl": "https://tempomusic.net/",
     "groupPermissions": {
-      "description": "Publish songs, manage your Tempo catalogue, and approve music purchases in one grouped permission grant.",
+      "description": "Publish songs to redundant UHRP storage, manage your Tempo catalogue, and approve music purchases in one grouped permission grant.",
       "protocolPermissions": [
         { "protocolID": [2, "tmtsp"], "counterparty": "anyone", "description": "Publish and manage Tempo song tokens." },
         { "protocolID": [1, "tempo"], "counterparty": "self", "description": "Sign Tempo key-publication requests." },
+        { "protocolID": [2, "messagebox"], "counterparty": "self", "description": "Exchange authenticated storage and wallet messages without separate prompts." },
+        { "protocolID": [2, "server hmac"], "counterparty": "self", "description": "Create private nonces for authenticated storage and key-server sessions." },
         { "protocolID": [1, "identity key retrieval"], "description": "Use your identity for your artist library and authenticated actions." }
       ],
       "basketAccess": [
@@ -57,10 +59,12 @@
   "babbage": {
     "originator": "tempomusic.net",
     "groupPermissions": {
-      "description": "Publish songs, manage your Tempo catalogue, and approve music purchases in one grouped permission grant.",
+      "description": "Publish songs to redundant UHRP storage, manage your Tempo catalogue, and approve music purchases in one grouped permission grant.",
       "protocolPermissions": [
         { "protocolID": [2, "tmtsp"], "counterparty": "anyone", "description": "Publish and manage Tempo song tokens." },
         { "protocolID": [1, "tempo"], "counterparty": "self", "description": "Sign Tempo key-publication requests." },
+        { "protocolID": [2, "messagebox"], "counterparty": "self", "description": "Exchange authenticated storage and wallet messages without separate prompts." },
+        { "protocolID": [2, "server hmac"], "counterparty": "self", "description": "Create private nonces for authenticated storage and key-server sessions." },
         { "protocolID": [1, "identity key retrieval"], "description": "Use your identity for your artist library and authenticated actions." }
       ],
       "basketAccess": [

@@ -11,6 +11,10 @@ describe('BRC-116 permissions', () => {
     expect(manifest.babbage.groupPermissions).toEqual(manifest.metanet.groupPermissions)
     expect(manifest.metanet.groupPermissions.spendingAuthorization.duration).toBe(2592000)
     expect(manifest.metanet.groupPermissions.basketAccess).toContainEqual(expect.objectContaining({ basket: 'tmtsp' }))
+    expect(manifest.metanet.groupPermissions.protocolPermissions).toEqual(expect.arrayContaining([
+      expect.objectContaining({ protocolID: [2, 'messagebox'], counterparty: 'self' }),
+      expect.objectContaining({ protocolID: [2, 'server hmac'], counterparty: 'self' })
+    ]))
   })
 
   it('declares PACT protocols used by AuthFetch payments', () => {
