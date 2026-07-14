@@ -86,6 +86,7 @@ jobs:
           CARS_PRIVATE_KEY: ${{ secrets.CARS_PRIVATE_KEY }}
         run: |
           set -euo pipefail
+          deployment_id=""
           for attempt in 1 2 3; do
             log_file="cars-release-attempt-${attempt}.log"
             set +e
@@ -96,7 +97,8 @@ jobs:
             status=${PIPESTATUS[0]}
             set -e
             if [ "$status" -eq 0 ] && grep -q "CARS_RELEASE_SUCCESS" "$log_file"; then
-              exit 0
+              deployment_id="$(sed -n 's/.*CARS_RELEASE_SUCCESS deploymentId=//p' "$log_file" | tail -1)"
+              break
             fi
             if [ "$attempt" -eq 3 ]; then
               if [ "$status" -eq 0 ]; then
@@ -107,3 +109,32 @@ jobs:
             fi
             sleep "$((attempt * 20))"
           done
+
+          if [ -z "$deployment_id" ]; then
+            echo "CARS release was not accepted." >&2
+            exit 1
+          fi
+
+          for poll in $(seq 1 80); do
+            status_file="cars-release-status-${poll}.log"
+            set +e
+            npx cars release logs "$deployment_id" 1 \
+              --key "$CARS_PRIVATE_KEY" \
+              --network mainnet \
+              --storage "$CARS_WALLET_STORAGE" >"$status_file" 2>&1
+            status=$?
+            set -e
+            sed -n '/Release Logs:/,$p' "$status_file" | tail -30
+            if [ "$status" -eq 0 ] && grep -q "rolled out successfully" "$status_file"; then
+              echo "CARS_DEPLOYMENT_READY deploymentId=$deployment_id"
+              exit 0
+            fi
+            if grep -q "Error handling upload:" "$status_file"; then
+              echo "CARS deployment failed asynchronously: $deployment_id" >&2
+              exit 1
+            fi
+            sleep 15
+          done
+
+          echo "Timed out waiting for CARS deployment: $deployment_id" >&2
+          exit 1
