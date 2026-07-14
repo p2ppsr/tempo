@@ -47,7 +47,7 @@
       }
     },
     "counterpartyPermissions": {
-      "description": "Trust Tempo's active key server for authenticated purchase, key publication, and royalty flows.",
+      "description": "Trust Tempo's active storage providers and key server for authenticated publication, purchase, and royalty flows.",
       "protocols": [
         { "protocolName": "messagebox", "description": "Exchange authenticated messages with each active storage provider." },
         { "protocolName": "auth message signature", "description": "Authenticate Tempo key-server requests." },
@@ -79,7 +79,7 @@
       }
     },
     "counterpartyPermissions": {
-      "description": "Trust Tempo's active key server for authenticated purchase, key publication, and royalty flows.",
+      "description": "Trust Tempo's active storage providers and key server for authenticated publication, purchase, and royalty flows.",
       "protocols": [
         { "protocolName": "messagebox", "description": "Exchange authenticated messages with each active storage provider." },
         { "protocolName": "auth message signature", "description": "Authenticate Tempo key-server requests." },
