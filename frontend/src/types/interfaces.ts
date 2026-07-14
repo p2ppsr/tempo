@@ -51,6 +51,7 @@ export interface SongAvailability {
 export interface PublicationAssetReceipt {
   uhrpURL: string
   expiryTime?: number
+  acceptedBy?: string[]
   hostedBy: string[]
   available: boolean
 }

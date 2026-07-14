@@ -88,9 +88,12 @@ const publishSong = async (
       }
     })
 
+    const unavailableAssets = Object.entries(fileUploadInfo.assets)
+      .filter(([, asset]) => !asset?.available)
+      .map(([name, asset]) => `${name} (${asset?.acceptedBy?.length ?? 0} upload receipts, ${asset?.hostedBy.length ?? 0} active UHRP locations)`)
     if (!fileUploadInfo.assets.audio?.available || !fileUploadInfo.assets.artwork?.available ||
       (fileUploadInfo.previewURL && !fileUploadInfo.assets.preview?.available)) {
-      throw new Error('Storage verification failed before publication. No catalogue token was created.')
+      throw new Error(`Storage verification failed for ${unavailableAssets.join(', ')} before publication. No catalogue token was created.`)
     }
     receipt.assets = fileUploadInfo.assets
     saveReceipt('storage_verified')

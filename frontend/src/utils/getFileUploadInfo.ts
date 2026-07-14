@@ -59,13 +59,16 @@ const getFileUploadInfo = async ({
     uhrpURL: string,
     hostedBy: string[]
   ): Promise<PublicationAssetReceipt> => {
-    const requiredHosts = 2
+    const requiredAcceptedProviders = 2
+    const requiredActiveLocations = 1
+    const acceptedBy = [...new Set(hostedBy)]
     let activeHosts: string[] = []
 
     // Provider /find calls are authenticated, billable, and historically
     // capable of hanging after payment. The UHRP overlay is the authoritative
     // public catalogue: resolve() omits expired records and needs no extra
-    // wallet request. Poll it until every required replica is admitted.
+    // wallet request. Poll until the upload is publicly playable; the signed
+    // uploader result separately proves that two providers accepted it.
     for (let attempt = 0; attempt < 6; attempt += 1) {
       onProgress?.(`Verifying ${asset} storage replicas (${attempt + 1}/6)...`)
       try {
@@ -77,7 +80,7 @@ const getFileUploadInfo = async ({
             return url
           }
         }))]
-        if (activeHosts.length >= requiredHosts) break
+        if (activeHosts.length >= requiredActiveLocations) break
       } catch {
         activeHosts = []
       }
@@ -86,8 +89,9 @@ const getFileUploadInfo = async ({
 
     return {
       uhrpURL,
+      acceptedBy,
       hostedBy: activeHosts,
-      available: hostedBy.length >= requiredHosts && activeHosts.length >= requiredHosts
+      available: acceptedBy.length >= requiredAcceptedProviders && activeHosts.length >= requiredActiveLocations
     }
   }
 

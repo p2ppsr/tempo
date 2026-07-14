@@ -65,7 +65,7 @@ flow:
           - "The staged progress UI advances through upload, token, key, broadcast, verification, and complete."
           - "Any failure preserves a visible recovery receipt rather than claiming success."
         domain:
-          - "Both storage providers independently report future expiry for required assets."
+          - "Two providers accept every required asset and the public UHRP overlay reports at least one active, nonexpired download location."
         telemetry:
           - "publish.started and publish.succeeded are emitted."
       timing:
@@ -112,7 +112,7 @@ assertions:
   telemetryObservability:
     - "Publish/purchase events and key-server counters change without secret leakage."
   reliabilityRepeatability:
-    - "Idempotent key publication and catalogue filtering prevent duplicate or broken visible state."
+    - "Idempotent key publication, public UHRP admission polling, and catalogue filtering prevent duplicate or broken visible state."
   performance:
     - "Publication completes within 90 seconds and purchase confirmation within 30 seconds."
 evidence:

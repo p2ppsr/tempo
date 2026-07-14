@@ -56,6 +56,8 @@ describe('publication recovery contract', () => {
   it('verifies uploads through the expiry-aware public UHRP overlay without billable find calls', () => {
     const source = readFileSync(resolve(process.cwd(), 'src/utils/getFileUploadInfo.ts'), 'utf8')
     expect(source).toContain('storageDownloader.resolve(uhrpURL)')
+    expect(source).toContain('acceptedBy.length >= requiredAcceptedProviders')
+    expect(source).toContain('activeHosts.length >= requiredActiveLocations')
     expect(source).toContain('onAssetReceipt?.')
     expect(source).not.toContain('storageUploader.findFile')
   })
