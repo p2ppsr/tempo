@@ -49,6 +49,7 @@
     "counterpartyPermissions": {
       "description": "Trust Tempo's active key server for authenticated purchase, key publication, and royalty flows.",
       "protocols": [
+        { "protocolName": "messagebox", "description": "Exchange authenticated messages with each active storage provider." },
         { "protocolName": "auth message signature", "description": "Authenticate Tempo key-server requests." },
         { "protocolName": "server hmac", "description": "Derive authenticated server-session keys." },
         { "protocolName": "3241645161d8", "description": "Derive direct-payment keys for purchases and royalties." },
@@ -80,6 +81,7 @@
     "counterpartyPermissions": {
       "description": "Trust Tempo's active key server for authenticated purchase, key publication, and royalty flows.",
       "protocols": [
+        { "protocolName": "messagebox", "description": "Exchange authenticated messages with each active storage provider." },
         { "protocolName": "auth message signature", "description": "Authenticate Tempo key-server requests." },
         { "protocolName": "server hmac", "description": "Derive authenticated server-session keys." },
         { "protocolName": "3241645161d8", "description": "Derive direct-payment keys for purchases and royalties." },

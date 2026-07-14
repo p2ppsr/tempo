@@ -20,6 +20,7 @@ describe('BRC-116 permissions', () => {
   it('declares PACT protocols used by AuthFetch payments', () => {
     const protocols = manifest.metanet.counterpartyPermissions.protocols.map((entry: { protocolName: string }) => entry.protocolName)
     expect(protocols).toEqual(expect.arrayContaining([
+      'messagebox',
       'auth message signature',
       'server hmac',
       '3241645161d8',
