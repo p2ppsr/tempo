@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import type { PublicationReceipt } from '../../../types/interfaces'
+import { earliestAssetExpiry } from '../../../utils/publicationReceipt'
 import './PublishSuccess.scss'
 
 const readReceipt = (): PublicationReceipt | null => {
@@ -13,6 +14,7 @@ const readReceipt = (): PublicationReceipt | null => {
 
 const SuccessPage = () => {
   const receipt = readReceipt()
+  const earliestExpiry = receipt ? earliestAssetExpiry(Object.values(receipt.assets)) : undefined
   return (
     <div className="container publishSuccessPage">
       <p className="sectionEyebrow">Publication verified</p>
@@ -25,7 +27,7 @@ const SuccessPage = () => {
             <div><dt>Publication ID</dt><dd>{receipt.publicationId}</dd></div>
             <div><dt>Transaction</dt><dd>{receipt.txid}</dd></div>
             <div><dt>Storage</dt><dd>{Object.values(receipt.assets).filter(asset => asset?.available).length} assets verified on two providers</dd></div>
-            <div><dt>Earliest expiry</dt><dd>{new Date(Math.min(...Object.values(receipt.assets).flatMap(asset => asset?.expiryTime ? [asset.expiryTime * 1000] : []))).toLocaleString()}</dd></div>
+            <div><dt>Storage retained through</dt><dd>{earliestExpiry ? new Date(earliestExpiry * 1000).toLocaleString() : 'Not recorded'}</dd></div>
             <div><dt>Key server</dt><dd>{receipt.keyPublished ? 'Verified' : 'Failed'}</dd></div>
             <div><dt>Overlay</dt><dd>{receipt.overlayAdmitted ? 'Admitted' : 'Not admitted'}</dd></div>
             <div><dt>Playable</dt><dd>{receipt.playable ? 'Yes' : 'No'}</dd></div>

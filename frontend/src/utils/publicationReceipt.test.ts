@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildAssetReceipt } from './publicationReceipt'
+import { buildAssetReceipt, earliestAssetExpiry, expiryFromRetention } from './publicationReceipt'
 
 describe('publication asset verification', () => {
   it('requires two independently active providers and records the earliest expiry', () => {
@@ -22,5 +22,19 @@ describe('publication asset verification', () => {
 
     expect(receipt.available).toBe(false)
     expect(receipt.hostedBy).toEqual(['https://three.example'])
+  })
+
+  it('records the paid retention window in seconds', () => {
+    expect(expiryFromRetention(60, 1_000)).toBe(4_600)
+    expect(expiryFromRetention(0, 1_000)).toBeUndefined()
+  })
+
+  it('formats receipts safely when expiry metadata is absent', () => {
+    expect(earliestAssetExpiry([
+      undefined,
+      { uhrpURL: 'uhrp:one', expiryTime: 5_000, hostedBy: [], available: true },
+      { uhrpURL: 'uhrp:two', expiryTime: 4_000, hostedBy: [], available: true }
+    ])).toBe(4_000)
+    expect(earliestAssetExpiry([undefined])).toBeUndefined()
   })
 })

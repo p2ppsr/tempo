@@ -2,6 +2,7 @@ import { SymmetricKey, StorageDownloader, StorageUploader } from '@bsv/sdk'
 import constants from './constants'
 import { getInteractiveWallet } from './wallet'
 import type { PublicationAssetReceipt } from '../types/interfaces'
+import { expiryFromRetention } from './publicationReceipt'
 
 interface GetFileUploadInfoParams {
   selectedArtwork: File | FileList | null
@@ -109,6 +110,9 @@ const getFileUploadInfo = async ({
 
     return {
       uhrpURL,
+      // Each accepted upload was quoted and paid for this retention window.
+      // Public resolution above independently proves it is currently active.
+      expiryTime: expiryFromRetention(retentionPeriod),
       acceptedBy,
       hostedBy: activeHosts,
       available: acceptedBy.length >= requiredAcceptedProviders && activeHosts.length >= requiredActiveLocations
