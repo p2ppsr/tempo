@@ -30,6 +30,7 @@ export function sanitizeUsercomContext(value: unknown, depth = 0): unknown {
   if (depth > 3) return '[truncated]'
   if (typeof value === 'string') {
     return value
+      .replace(/\b(?:02|03)[0-9a-f]{64}\b/gi, '[redacted]')
       .replace(/\b[0-9a-f]{64}\b/gi, '[redacted]')
       .replace(/\b[A-Za-z0-9+/]{43}=\b/g, '[redacted]')
       .slice(0, 1000)

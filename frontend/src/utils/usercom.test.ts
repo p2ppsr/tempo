@@ -13,9 +13,11 @@ describe('UserCom context sanitization', () => {
   it('redacts wallet and transaction-bearing fields recursively', () => {
     expect(sanitizeUsercomContext({
       artistIdentityKey: 'public-value',
+      server: `02${'a'.repeat(64)}`,
       nested: { transaction: 'raw-transaction', password: 'nope' }
     })).toEqual({
       artistIdentityKey: '[redacted]',
+      server: '[redacted]',
       nested: { transaction: '[redacted]', password: '[redacted]' }
     })
   })

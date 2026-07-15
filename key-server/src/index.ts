@@ -4,6 +4,7 @@ import crypto, { randomBytes } from 'crypto'
 import { MongoClient, Db } from 'mongodb'
 import { getChaintracksHeight, getWallet } from './utils/walletSingleton.js'
 import { KeyStorage } from './KeyStorage.js'
+import { MongoAuthSessionManager } from './MongoAuthSessionManager.js'
 import { createAuthMiddleware } from '@bsv/auth-express-middleware'
 import { createPaymentMiddleware } from '@bsv/payment-express-middleware'
 import { P2PKH, PublicKey, PrivateKey, WalletInterface } from '@bsv/sdk'
@@ -77,9 +78,12 @@ async function initializeDependencies(): Promise<void> {
     const keyStorage = new KeyStorage(db)
     const wallet = await getWallet()
     await getChaintracksHeight()
+    const authSessionManager = new MongoAuthSessionManager(db.collection('authSessions'))
+    await authSessionManager.initialize()
 
     const authMiddleware = createAuthMiddleware({
       wallet,
+      sessionManager: authSessionManager,
       allowUnauthenticated: false,
       logger: console,
       logLevel: 'warn'

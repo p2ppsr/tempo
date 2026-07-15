@@ -19,7 +19,10 @@ const purchaseStageMessage: Record<PurchaseStage, string> = {
 
 function listenerPurchaseError(error: unknown): string {
   const detail = error instanceof Error ? error.message : String(error)
-  if (/maximum number of retries|paid request|session not found|failed to authenticate/i.test(detail)) {
+  if (/paid request.*failed|sent \d+ satoshis/i.test(detail)) {
+    return 'Tempo did not receive the song key after the wallet payment attempt. Check wallet activity before tapping Try again.'
+  }
+  if (/maximum number of retries|session not found|failed to authenticate/i.test(detail)) {
     return 'The wallet session expired before Tempo received the song key. Keep Metanet open, then tap Try again.'
   }
   if (/insufficient|fund|balance/i.test(detail)) {

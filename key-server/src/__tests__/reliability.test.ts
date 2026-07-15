@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 
 const walletSource = readFileSync(resolve(process.cwd(), 'src/utils/walletSingleton.ts'), 'utf8')
 const serverSource = readFileSync(resolve(process.cwd(), 'src/index.ts'), 'utf8')
+const sessionSource = readFileSync(resolve(process.cwd(), 'src/MongoAuthSessionManager.ts'), 'utf8')
 
 describe('key-server reliability invariants', () => {
   it('pins ChainTracks through an explicit production-aware client and caches the wallet', () => {
@@ -28,5 +29,13 @@ describe('key-server reliability invariants', () => {
     expect(serverSource.indexOf("app.get('/healthz'")).toBeLessThan(serverSource.indexOf('void maintainDependencies()'))
     expect(serverSource).toContain('while (!dependencies && !shuttingDown)')
     expect(serverSource).toContain("app.get('/readyz'")
+  })
+
+  it('shares BRC-103 handshake sessions across load-balanced replicas', () => {
+    expect(serverSource).toContain("db.collection('authSessions')")
+    expect(serverSource).toContain('sessionManager: authSessionManager')
+    expect(sessionSource).toContain('implements AsyncSessionManager')
+    expect(sessionSource).toContain('expireAfterSeconds: 0')
+    expect(sessionSource).toContain('peerIdentityKey: identifier')
   })
 })
