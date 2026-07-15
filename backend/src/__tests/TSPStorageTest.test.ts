@@ -11,6 +11,7 @@ describe('TSPStorage', () => {
     collectionMock = {
       createIndex: jest.fn(),
       insertOne: jest.fn(),
+      updateOne: jest.fn(),
       deleteOne: jest.fn(),
       find: jest.fn().mockReturnValue({
         project: jest.fn().mockReturnThis(),
@@ -28,9 +29,13 @@ describe('TSPStorage', () => {
 
   it('should create index on initialization', () => {
     expect(collectionMock.createIndex).toHaveBeenCalledWith({ searchableAttributes: 'text' })
+    expect(collectionMock.createIndex).toHaveBeenCalledWith(
+      { txid: 1, outputIndex: 1 },
+      { name: 'uniq_tsp_outpoint', unique: true }
+    )
   })
 
-  it('should insert a record correctly', async () => {
+  it('should upsert a record by outpoint', async () => {
     await storage.storeRecord('txid1', 0, {
       artistIdentityKey: 'key1',
       songTitle: 'song',
@@ -40,7 +45,11 @@ describe('TSPStorage', () => {
       songFileURL: 'url1',
       artFileURL: 'url2'
     })
-    expect(collectionMock.insertOne).toHaveBeenCalled()
+    expect(collectionMock.updateOne).toHaveBeenCalledWith(
+      { txid: 'txid1', outputIndex: 0 },
+      { $set: expect.objectContaining({ txid: 'txid1', outputIndex: 0, songFileURL: 'url1' }) },
+      { upsert: true }
+    )
   })
 
   it('should call deleteOne on deleteRecord', async () => {
@@ -70,6 +79,17 @@ describe('TSPStorage', () => {
     collectionMock.countDocuments.mockResolvedValue(1)
     const result = await storage.isSongFileURLInDatabase('url1')
     expect(result).toBe(true)
+    expect(collectionMock.countDocuments).toHaveBeenCalledWith({
+      songFileURL: { $in: ['url1', 'dXJsMQ=='] }
+    })
+  })
+
+  it('should query current and legacy base64 song IDs', async () => {
+    await storage.findBySongIDs(['XUexample'])
+
+    expect(collectionMock.find).toHaveBeenCalledWith({
+      songFileURL: { $in: ['XUexample', 'WFVleGFtcGxl'] }
+    })
   })
 
   it('should match fuzzy artist name', async () => {

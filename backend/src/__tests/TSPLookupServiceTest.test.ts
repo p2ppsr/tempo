@@ -1,7 +1,7 @@
 import { TSPLookupService } from '../lookup-services/TSPLookupServiceFactory'
 import { LookupQuestion } from '@bsv/overlay'
 import { TSPStorage } from '../lookup-services/TSPStorage'
-import { LookupAnswer } from '@bsv/overlay'
+import { PushDrop, Utils } from '@bsv/sdk'
 
 describe('TSPLookupService', () => {
   let mockStorage: jest.Mocked<TSPStorage>
@@ -30,6 +30,44 @@ describe('TSPLookupService', () => {
     }
     const result = await service.lookup(question)
     expect(result).toEqual([{ txid: 'x', outputIndex: 1 }])
+  })
+
+  it('indexes decoded song fields in their queryable form', async () => {
+    const decode = jest.spyOn(PushDrop, 'decode').mockReturnValue({
+      fields: [
+        Utils.toArray('tsp', 'utf8'),
+        Utils.toArray('tmtsp', 'utf8'),
+        Utils.toArray('Fresh Song', 'utf8'),
+        Utils.toArray('Tempo Artist', 'utf8'),
+        Utils.toArray('Description', 'utf8'),
+        Utils.toArray('180', 'utf8'),
+        Utils.toArray('XUfresh', 'utf8'),
+        Utils.toArray('XUart', 'utf8'),
+        Utils.toArray('XUpreview', 'utf8')
+      ],
+      lockingPublicKey: { toString: () => 'artist-identity-key' }
+    } as any)
+
+    await service.outputAdmittedByTopic({
+      mode: 'locking-script',
+      topic: 'tm_tsp',
+      txid: 'txid',
+      outputIndex: 0,
+      satoshis: 1,
+      lockingScript: {} as any
+    })
+
+    expect(mockStorage.storeRecord).toHaveBeenCalledWith('txid', 0, {
+      artistIdentityKey: 'artist-identity-key',
+      songTitle: 'Fresh Song',
+      artistName: 'Tempo Artist',
+      description: 'Description',
+      duration: '180',
+      songFileURL: 'XUfresh',
+      artFileURL: 'XUart',
+      previewURL: 'XUpreview'
+    })
+    decode.mockRestore()
   })
 
   it('handles findByArtistName query', async () => {

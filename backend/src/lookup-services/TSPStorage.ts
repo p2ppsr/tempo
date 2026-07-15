@@ -5,6 +5,7 @@
  */
 
 import { Collection, Db } from "mongodb"
+import { Utils } from "@bsv/sdk"
 import { UTXOReference, TSPAttributes, TSPQuery, TSPRecord } from "../types";
 
 export class TSPStorage {
@@ -18,6 +19,10 @@ export class TSPStorage {
   constructor(private db: Db) {
     this.records = db.collection<TSPRecord>("tspRecords")
     this.records.createIndex({ "searchableAttributes": "text" })
+    this.records.createIndex(
+      { txid: 1, outputIndex: 1 },
+      { name: "uniq_tsp_outpoint", unique: true }
+    )
   }
 
   /**
@@ -39,7 +44,8 @@ export class TSPStorage {
       previewURL = ""
     } = record
 
-    // Insert new record
+    // Upsert by outpoint so propagation from multiple overlay peers remains
+    // idempotent and cannot grow duplicate catalogue rows.
     const newRecord: TSPRecord = {
       txid,
       outputIndex,
@@ -64,7 +70,11 @@ export class TSPStorage {
       ].filter(value => value !== undefined && value !== "").join(' ')
     }
 
-    await this.records.insertOne(newRecord)
+    await this.records.updateOne(
+      { txid, outputIndex },
+      { $set: newRecord },
+      { upsert: true }
+    )
   }
 
   /**
@@ -180,8 +190,11 @@ export class TSPStorage {
     }
 
     // Construct the query to search for any of the song IDs
+    const legacySongIDs = songIDs.map(songID =>
+      Utils.toBase64(Utils.toArray(songID, 'utf8'))
+    )
     const query = {
-      'songFileURL': { $in: songIDs }
+      'songFileURL': { $in: [...new Set([...songIDs, ...legacySongIDs])] }
     }
 
     // Find matching results from the DB
@@ -229,7 +242,10 @@ export class TSPStorage {
    * @returns {Promise<boolean>} - Returns true if a matching record exists, false otherwise.
    */
   async isSongFileURLInDatabase(songFileURL: string): Promise<boolean> {
-    const count = await this.records.countDocuments({ songFileURL })
+    const legacySongFileURL = Utils.toBase64(Utils.toArray(songFileURL, 'utf8'))
+    const count = await this.records.countDocuments({
+      songFileURL: { $in: [songFileURL, legacySongFileURL] }
+    })
     return count > 0
   }
 }

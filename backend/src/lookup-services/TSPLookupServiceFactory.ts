@@ -1,7 +1,6 @@
 import {
   LookupService,
   LookupQuestion,
-  LookupAnswer,
   LookupFormula,
   AdmissionMode,
   SpendNotificationMode,
@@ -44,14 +43,14 @@ export class TSPLookupService implements LookupService {
       const decoded = PushDrop.decode(lockingScript)
       const [_, __, songTitleBuf, artistNameBuf, descriptionBuf, durationBuf, songFileURLBuf, artFileURLBuf, previewURLBuf] = decoded.fields
 
-      const artistIdentityKey = Utils.toHex(payload.lockingScript.chunks[0].data!)
-      const songTitle = Utils.toBase64(songTitleBuf)
-      const artistName = Utils.toBase64(artistNameBuf)
-      const description = Utils.toBase64(descriptionBuf)
-      const duration = Utils.toBase64(durationBuf)
-      const songFileURL = Utils.toBase64(songFileURLBuf)
-      const artFileURL = Utils.toBase64(artFileURLBuf)
-      const previewURL = Utils.toBase64(previewURLBuf)
+      const artistIdentityKey = decoded.lockingPublicKey.toString()
+      const songTitle = Utils.toUTF8(songTitleBuf)
+      const artistName = Utils.toUTF8(artistNameBuf)
+      const description = Utils.toUTF8(descriptionBuf)
+      const duration = Utils.toUTF8(durationBuf)
+      const songFileURL = Utils.toUTF8(songFileURLBuf)
+      const artFileURL = Utils.toUTF8(artFileURLBuf)
+      const previewURL = Utils.toUTF8(previewURLBuf)
 
       console.log(`[TSPLookupService] Decoded song "${songTitle}" by "${artistName}"`)
       console.log('[TSPLookupService] Storing TSP record with:', {
@@ -191,4 +190,3 @@ function isSongFileCheckQuery(query: TSPLookupQuery): query is FindBySongFileURL
 export default (db: Db): TSPLookupService => {
   return new TSPLookupService(new TSPStorage(db))
 }
-
