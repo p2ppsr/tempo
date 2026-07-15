@@ -26,6 +26,11 @@ interface PlaybackStore {
   playbackSong: Omit<Song, 'token'>
   setPlaybackSong: (song: Partial<Song>) => void
 
+  autoUnlockRequest: { id: number; songURL: string } | null
+  autoUnlockSequence: number
+  requestAutoUnlock: (song: Partial<Song>) => void
+  consumeAutoUnlock: (id: number) => void
+
   playNextSong: boolean
   togglePlayNextSong: () => void
 
@@ -56,8 +61,27 @@ export const usePlaybackStore = create<PlaybackStore>((set, get) => ({
       playbackSong: {
         ...get().playbackSong,
         ...song
-      }
+      },
+      autoUnlockRequest: null
     }),
+
+  autoUnlockRequest: null,
+  autoUnlockSequence: 0,
+  requestAutoUnlock: (song) => {
+    const nextId = get().autoUnlockSequence + 1
+    set({
+      playbackSong: {
+        ...get().playbackSong,
+        ...song
+      },
+      isPlaying: false,
+      autoUnlockSequence: nextId,
+      autoUnlockRequest: { id: nextId, songURL: song.songURL || '' }
+    })
+  },
+  consumeAutoUnlock: (id) => set((state) => ({
+    autoUnlockRequest: state.autoUnlockRequest?.id === id ? null : state.autoUnlockRequest
+  })),
 
   playNextSong: false,
   togglePlayNextSong: () => set({ playNextSong: !get().playNextSong }),

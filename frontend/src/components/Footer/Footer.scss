@@ -81,6 +81,12 @@
   margin: 0.15rem 0 0;
 }
 
+.purchaseStatus {
+  color: #9df9e4;
+  font-size: 0.75rem;
+  margin: 0.15rem 0 0;
+}
+
 .previewPlayer {
   width: 100%;
   border-radius: 12px;
@@ -136,5 +142,48 @@
   .previewPlayer,
   .rhap_container {
     width: 100%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .footerContainer {
+    gap: 0.34rem;
+    min-height: 0;
+    padding: 0.4rem 0.55rem 0.45rem;
+  }
+
+  .playbackInfoContainer {
+    gap: 0.52rem;
+
+    .playerAlbumArt {
+      width: 2.45rem;
+      height: 2.45rem;
+      border-radius: 7px;
+    }
+
+    .songTitle {
+      font-size: 0.88rem;
+    }
+
+    .artistName {
+      font-size: 0.72rem;
+    }
+  }
+
+  .unlockButton {
+    max-width: 9.6rem;
+    overflow: hidden;
+    padding: 0.44rem 0.58rem;
+    text-overflow: ellipsis;
+  }
+
+  .rhap_container {
+    min-height: 0;
+    padding: 0.2rem 0.4rem !important;
+  }
+
+  .rhap_additional-controls,
+  .rhap_volume-controls {
+    display: none !important;
   }
 }

@@ -84,13 +84,36 @@
     }
 
     .tempoHero {
-      padding: 1.2rem !important;
-      h1 { font-size: 2.5rem; }
+      padding: 0.9rem !important;
+      border-radius: 16px !important;
+
+      h1 {
+        font-size: 1.85rem;
+        line-height: 1.04;
+        margin: 0.35rem 0 0.58rem;
+      }
+
+      > p:not(.heroEyebrow) {
+        font-size: 0.88rem;
+        line-height: 1.42;
+      }
     }
 
-    .heroActions { display: grid; }
-    .heroActions .button { width: 100%; text-align: center; }
-    .catalogueHeading { display: block; }
+    .heroActions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+      margin-top: 0.78rem;
+    }
+
+    .heroActions .button {
+      width: 100%;
+      padding: 0.58rem 0.45rem;
+      text-align: center;
+      font-size: 0.78rem;
+    }
+
+    .catalogueHeading { display: block; margin-top: 1rem; }
     .catalogStatus { text-align: left; margin-top: 0.55rem; }
 
     .previewHeading {

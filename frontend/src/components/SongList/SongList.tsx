@@ -23,6 +23,7 @@ import { usePlaybackStore } from '../../stores/stores'
 import ActionsDropdown from './ActionsDropdown'
 import placeholderImage from '../../assets/Images/placeholder-image.png'
 import ArtworkImage from '../ArtworkImage/ArtworkImage'
+import { prepareSongPlayback } from '../../utils/playbackSelection'
 
 import type { Playlist, Song } from '../../types/interfaces'
 
@@ -79,7 +80,8 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly = false }:
     setSongList,
     playPreviousSong,
     togglePlayNextSong,
-    togglePlayPreviousSong
+    togglePlayPreviousSong,
+    requestAutoUnlock
   } = usePlaybackStore()
 
   useEffect(() => {
@@ -147,8 +149,13 @@ useEffect(() => {
   /**
    * Handle double-clicking a song row to start playback.
    */
-  const handleDoubleClick = (song: Song) => {
-    setPlaybackSong({ ...song })
+  const playSelectedSong = (song: Song) => {
+    const prepared = prepareSongPlayback(song, playbackSong)
+    if (prepared.autoUnlock) {
+      requestAutoUnlock(prepared.song)
+      return
+    }
+    setPlaybackSong(prepared.song)
     setIsPlaying(true)
   }
 
@@ -194,27 +201,25 @@ const handleDeleteSong = async () => {
       header: 'Play',
       cell: ({ row }) => {
         const song = row.original
-        const isPreviewOnly = !song.decryptedSongURL && !!song.previewURL
-
-        const handlePlay = () => {
-          const songToPlay = { ...song }
-          if (isPreviewOnly) {
-            songToPlay.decryptedSongURL = song.previewURL
-          }
-          setPlaybackSong(songToPlay)
-          setIsPlaying(true)
-        }
+        const isIndependent = song.isPublished
 
         return (
-          <button className="songListArtworkContainer" onClick={handlePlay} aria-label={`Play ${song.title} by ${song.artist}`}>
+          <button
+            className="songListArtworkContainer"
+            onClick={(event) => {
+              event.stopPropagation()
+              playSelectedSong(song)
+            }}
+            aria-label={`${isIndependent ? 'Buy and play' : 'Play'} ${song.title} by ${song.artist}`}
+          >
             <FaPlay className="artworkThumbnailPlayIcon" />
             <ArtworkImage
               src={song.artworkURL || placeholderImage}
               alt={`${song.title} artwork`}
               className="songListArtworkThumbnail"
             />
-            {isPreviewOnly && (
-              <div className="previewFlag">Preview</div>
+            {isIndependent && (
+              <div className="previewFlag">{song.availability?.priceSatoshis || 1000} sats</div>
             )}
           </button>
         )
@@ -222,14 +227,24 @@ const handleDeleteSong = async () => {
     }),
     createColumnHelper<Song>().accessor('title', {
       header: 'Title',
-      cell: info => info.getValue()
+      cell: ({ row, getValue }) => (
+        <div className="songTitleContent">
+          <span>{getValue()}</span>
+          {row.original.isPublished && (
+            <span className="songPrice">Buy &amp; play · {row.original.availability?.priceSatoshis || 1000} sats</span>
+          )}
+        </div>
+      )
     }),
     createColumnHelper<Song>().accessor('artist', {
       header: 'Artist',
       cell: ({ row, getValue }) => (
         <span
           className="artistName"
-          onClick={() => navigate(`/Artist/${row.original.artistIdentityKey}`)}
+          onClick={(event) => {
+            event.stopPropagation()
+            navigate(`/Artist/${row.original.artistIdentityKey}`)
+          }}
         >
           {getValue()}
         </span>
@@ -346,8 +361,10 @@ const handleDeleteSong = async () => {
               <tr
                 key={row.id}
                 className={`songRow ${selectedSongIndex === row.id ? 'selectedRow' : ''}`}
-                onClick={() => setSelectedSongIndex(row.id)}
-                onDoubleClick={() => handleDoubleClick(row.original)}
+                onClick={() => {
+                  setSelectedSongIndex(row.id)
+                  playSelectedSong(row.original)
+                }}
               >
                 {row.getVisibleCells().map(cell => {
                   const headerValue = cell.column.columnDef.header
@@ -359,7 +376,7 @@ const handleDeleteSong = async () => {
                         : ''
 
                   return (
-                    <td key={cell.id} data-label={label}>
+                    <td key={cell.id} data-label={label} data-column={cell.column.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   )

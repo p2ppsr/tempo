@@ -19,6 +19,7 @@ import fetchSongs from '../../utils/fetchSongs/fetchSongs'
 import SongList from '../SongList/SongList'
 import ArtworkImage from '../ArtworkImage/ArtworkImage'
 import loadDemoSongs from '../../utils/loadDemoSongs.js'
+import { prepareSongPlayback } from '../../utils/playbackSelection'
 import './NewReleases.scss'
 
 /**
@@ -43,9 +44,11 @@ interface NewReleasesProps {
  * - Falls back to demo songs if no real songs are available.
  */
 const NewReleases: React.FC<NewReleasesProps> = ({ className }) => {
-  const [setIsPlaying, setPlaybackSong] = usePlaybackStore((state) => [
+  const [setIsPlaying, playbackSong, setPlaybackSong, requestAutoUnlock] = usePlaybackStore((state) => [
     state.setIsPlaying,
-    state.setPlaybackSong
+    state.playbackSong,
+    state.setPlaybackSong,
+    state.requestAutoUnlock
   ])
 
   const [songs, setSongs] = useState<Song[]>([])
@@ -98,7 +101,7 @@ const NewReleases: React.FC<NewReleasesProps> = ({ className }) => {
         <>
           <div className="horizontalArtworkScroller" ref={ref} {...bind()}>
             {songs.map((newRelease, i) => {
-              const isPreviewOnly = !newRelease.decryptedSongURL && !!newRelease.previewURL
+              const isIndependent = newRelease.isPublished
 
               return (
                 <motion.div
@@ -111,20 +114,19 @@ const NewReleases: React.FC<NewReleasesProps> = ({ className }) => {
                     className="newReleaseCard"
                     src={newRelease.artworkURL || placeholderImage}
                     onClick={() => {
-                      const songToPlay = { ...newRelease }
-
-                      if (!songToPlay.decryptedSongURL && songToPlay.previewURL) {
-                        songToPlay.decryptedSongURL = songToPlay.previewURL
+                      const prepared = prepareSongPlayback(newRelease, playbackSong)
+                      if (prepared.autoUnlock) {
+                        requestAutoUnlock(prepared.song)
+                        return
                       }
-
-                      setPlaybackSong(songToPlay)
+                      setPlaybackSong(prepared.song)
                       setIsPlaying(true)
                     }}
                     alt={`${newRelease.title} artwork`}
                   />
 
-                  {isPreviewOnly && (
-                    <div className="previewChip">Preview</div>
+                  {isIndependent && (
+                    <div className="previewChip">{newRelease.availability?.priceSatoshis || 1000} sats</div>
                   )}
                 </motion.div>
               )

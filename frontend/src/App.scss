@@ -257,8 +257,8 @@ textarea {
 
 @media screen and (max-width: 768px) {
   :root {
-    --shell-topbar-height: 64px;
-    --shell-footer-height: 170px;
+    --shell-topbar-height: 58px;
+    --shell-footer-height: 138px;
   }
 
   .appLayout {
@@ -278,7 +278,7 @@ textarea {
 
   .mainContent {
     margin-left: 0;
-    padding: calc(var(--shell-topbar-height) + 0.45rem) 0.85rem calc(var(--shell-footer-height) + 0.65rem);
+    padding: calc(var(--shell-topbar-height) + 0.38rem) 0.68rem calc(var(--shell-footer-height) + 0.5rem);
   }
 
   .container {

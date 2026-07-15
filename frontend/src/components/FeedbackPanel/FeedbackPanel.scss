@@ -57,3 +57,27 @@
 @media (max-width: 920px) {
   .feedbackDock { right: 0.65rem; bottom: calc(var(--shell-footer-height) + 0.55rem); }
 }
+
+@media (max-width: 768px) {
+  .feedbackDock {
+    top: 0.65rem;
+    right: 7.75rem;
+    bottom: auto;
+    flex-direction: column-reverse;
+  }
+
+  .feedbackToggle {
+    padding: 0.46rem 0.62rem;
+    font-size: 0.7rem;
+    box-shadow: none;
+  }
+
+  .feedbackCard {
+    position: fixed;
+    top: calc(var(--shell-topbar-height) + 0.4rem);
+    right: 0.5rem;
+    width: min(25rem, calc(100vw - 1rem));
+    max-height: calc(100vh - var(--shell-topbar-height) - 1rem);
+    overflow-y: auto;
+  }
+}

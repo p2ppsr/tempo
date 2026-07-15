@@ -123,7 +123,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
       </button>
 
       {dropdownVisible === info.row.id && (
-        <div className="dropdownMenu" ref={dropdownRef}>
+        <div className="dropdownMenu" ref={dropdownRef} onClick={(event) => event.stopPropagation()}>
           <div onClick={toggleSongLike}>{isLiked ? 'Unlike' : 'Like'}</div>
 
           <div

@@ -1,14 +1,35 @@
 import { CircularProgress } from '@mui/material'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-toastify'
 import AudioPlayer from 'react-h5-audio-player'
 import { usePlaybackStore } from '../../stores/stores'
 import { downloadPlayableFile, isBundledAsset } from '../../utils/catalogAvailability'
 import { captureError, captureSignal } from '../../utils/usercom'
 import ArtworkImage from '../ArtworkImage/ArtworkImage'
+import type { PurchaseStage } from '../../utils/decryptSong'
 
 import 'react-h5-audio-player/lib/styles.css'
 import './Footer.scss'
+
+const purchaseStageMessage: Record<PurchaseStage, string> = {
+  downloading_audio: 'Preparing the encrypted track…',
+  requesting_wallet_payment: 'Confirming the wallet payment…',
+  decrypting_audio: 'Unlocking the full track…'
+}
+
+function listenerPurchaseError(error: unknown): string {
+  const detail = error instanceof Error ? error.message : String(error)
+  if (/maximum number of retries|paid request|session not found|failed to authenticate/i.test(detail)) {
+    return 'The wallet session expired before Tempo received the song key. Keep Metanet open, then tap Try again.'
+  }
+  if (/insufficient|fund|balance/i.test(detail)) {
+    return 'This wallet needs more sats for the track. Add funds in Metanet, then tap Try again.'
+  }
+  if (/denied|declined|rejected|cancel/i.test(detail)) {
+    return 'The wallet did not approve this purchase. Tap Try again when you are ready.'
+  }
+  return detail || 'Tempo could not unlock this track.'
+}
 
 const Footer = () => {
   const [
@@ -19,7 +40,9 @@ const Footer = () => {
     setPlaybackSong,
     togglePlayNextSong,
     togglePlayPreviousSong,
-    songList
+    songList,
+    autoUnlockRequest,
+    consumeAutoUnlock
   ] = usePlaybackStore((state) => [
     state.isLoading,
     state.setIsLoading,
@@ -28,13 +51,18 @@ const Footer = () => {
     state.setPlaybackSong,
     state.togglePlayNextSong,
     state.togglePlayPreviousSong,
-    state.songList
+    state.songList,
+    state.autoUnlockRequest,
+    state.consumeAutoUnlock
   ])
 
   const [footerSongURL, setFooterSongURL] = useState<string>()
   const [isPreviewOnly, setIsPreviewOnly] = useState(false)
   const [playbackError, setPlaybackError] = useState('')
+  const [purchaseErrorSongURL, setPurchaseErrorSongURL] = useState('')
+  const [purchaseStatus, setPurchaseStatus] = useState('')
   const audioPlayerRef = useRef<AudioPlayer>(null)
+  const purchaseInFlightRef = useRef(false)
 
   useEffect(() => {
     let active = true
@@ -42,9 +70,17 @@ const Footer = () => {
 
     const loadSelectedAudio = async () => {
       if (!playbackSong?.songURL) return
+      if (autoUnlockRequest?.songURL === playbackSong.songURL) {
+        setFooterSongURL(undefined)
+        setPlaybackError('')
+        setIsPreviewOnly(false)
+        setIsLoading(false)
+        return
+      }
+
       setIsLoading(true)
       setFooterSongURL(undefined)
-      setPlaybackError('')
+      if (purchaseErrorSongURL !== playbackSong.songURL) setPlaybackError('')
 
       const preview = playbackSong.previewURL
       const selected = playbackSong.decryptedSongURL || preview
@@ -90,32 +126,60 @@ const Footer = () => {
     playbackSong.decryptedSongURL,
     playbackSong.previewURL,
     playbackSong.title,
+    autoUnlockRequest?.id,
+    autoUnlockRequest?.songURL,
+    purchaseErrorSongURL,
     setIsLoading,
     setIsPlaying
   ])
 
-  const unlockFullTrack = async () => {
-    if (!playbackSong.songURL || isLoading) return
+  const unlockFullTrack = useCallback(async (requestId?: number) => {
+    if (!playbackSong.songURL || purchaseInFlightRef.current) return
+    const selectedSong = { ...playbackSong }
+    purchaseInFlightRef.current = true
     setIsLoading(true)
     setPlaybackError('')
-    captureSignal('purchase.started', { surface: 'player', context: { title: playbackSong.title } })
+    setPurchaseErrorSongURL('')
+    setPurchaseStatus(purchaseStageMessage.downloading_audio)
+    captureSignal('purchase.started', { surface: 'player', context: { title: selectedSong.title, trigger: requestId ? 'song_click' : 'player_button' } })
+    let failedAt: PurchaseStage = 'downloading_audio'
     try {
       const { default: decryptSong } = await import('../../utils/decryptSong')
-      const url = await decryptSong(playbackSong)
+      const url = await decryptSong(selectedSong, (stage) => {
+        failedAt = stage
+        setPurchaseStatus(purchaseStageMessage[stage])
+        captureSignal('purchase.stage', { surface: 'player', context: { title: selectedSong.title, stage } })
+      })
       if (!url) throw new Error('The key server returned no playable audio.')
+      if (usePlaybackStore.getState().playbackSong.songURL !== selectedSong.songURL) {
+        URL.revokeObjectURL(url)
+        captureSignal('purchase.completed_in_background', { surface: 'player', context: { title: selectedSong.title } })
+        return
+      }
       setFooterSongURL(url)
       setIsPreviewOnly(false)
+      setPurchaseErrorSongURL('')
+      setPlaybackSong({ decryptedSongURL: url })
       setIsPlaying(true)
-      captureSignal('purchase.succeeded', { surface: 'player', context: { title: playbackSong.title } })
+      captureSignal('purchase.succeeded', { surface: 'player', context: { title: selectedSong.title } })
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Tempo could not unlock this track.'
+      const message = listenerPurchaseError(error)
       setPlaybackError(message)
+      setPurchaseErrorSongURL(selectedSong.songURL)
       toast.error(message)
-      captureError('purchase.failed', error, { title: playbackSong.title }, ['purchase:failed'])
+      captureError('purchase.failed', error, { title: selectedSong.title, failedAt }, ['purchase:failed'])
     } finally {
+      purchaseInFlightRef.current = false
+      setPurchaseStatus('')
       setIsLoading(false)
+      if (requestId) consumeAutoUnlock(requestId)
     }
-  }
+  }, [consumeAutoUnlock, playbackSong, setIsLoading, setIsPlaying, setPlaybackSong])
+
+  useEffect(() => {
+    if (!autoUnlockRequest || isLoading || autoUnlockRequest.songURL !== playbackSong.songURL) return
+    void unlockFullTrack(autoUnlockRequest.id)
+  }, [autoUnlockRequest, isLoading, playbackSong.songURL, unlockFullTrack])
 
   useEffect(() => {
     const handlePlayButtonClick = () => {
@@ -142,11 +206,12 @@ const Footer = () => {
         <div className="titleArtistContainer">
           <p className="songTitle">{playbackSong?.title || 'Nothing playing'}</p>
           <p className="artistName">{playbackSong?.artist || 'Choose a verified song to start playback'}</p>
+          {purchaseStatus && <p className="purchaseStatus" role="status">{purchaseStatus}</p>}
           {playbackError && <p className="playerError" role="alert">{playbackError}</p>}
         </div>
         {playbackSong.songURL && !isBundledAsset(playbackSong.songURL) && (
-          <button className="unlockButton" onClick={unlockFullTrack} disabled={isLoading || !isPreviewOnly && Boolean(footerSongURL)}>
-            {isPreviewOnly ? `Unlock full track · ${playbackSong.availability?.priceSatoshis || 1000} sats` : footerSongURL ? 'Full track unlocked' : `Buy & play · ${playbackSong.availability?.priceSatoshis || 1000} sats`}
+          <button className="unlockButton" onClick={() => void unlockFullTrack()} disabled={isLoading || (!isPreviewOnly && Boolean(footerSongURL) && !playbackError)}>
+            {purchaseStatus || (playbackError ? 'Try again' : isPreviewOnly ? `Buy & play · ${playbackSong.availability?.priceSatoshis || 1000} sats` : footerSongURL ? 'Full track unlocked' : `Buy & play · ${playbackSong.availability?.priceSatoshis || 1000} sats`)}
           </button>
         )}
       </div>

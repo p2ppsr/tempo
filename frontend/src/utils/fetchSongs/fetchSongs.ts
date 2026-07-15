@@ -1,40 +1,70 @@
 import type { Song } from '../../types/interfaces'
-import { LookupResolver } from '@bsv/sdk'
+import { LookupResolver, Transaction } from '@bsv/sdk'
 import { decodeOutputs } from '../../utils/decodeOutput'
 import constants from '../constants'
 import type { TSPLookupQuery, FindAllQuery } from '../../types/interfaces.js'
 import { filterPlayableSongs } from '../catalogAvailability'
-import { captureError } from '../usercom'
+import { captureError, captureSignal } from '../usercom'
+
+const CATALOG_LOOKUP_ATTEMPTS = 3
+
+const wait = async (milliseconds: number) => await new Promise(resolve => window.setTimeout(resolve, milliseconds))
 
 const fetchSongs = async (
   query: TSPLookupQuery = { type: 'findAll' } as FindAllQuery
 ): Promise<Song[]> => {
-  const resolver = new LookupResolver({
-    networkPreset: constants.overlayNetworkPreset
-  })
+  const outputsByOutpoint = new Map<string, { beef: number[]; outputIndex: number }>()
+  const attemptCounts: number[] = []
+  let lastError: unknown
 
-  let lookupResult: Array<{ beef: number[]; outputIndex: number }> = []
+  for (let attempt = 0; attempt < CATALOG_LOOKUP_ATTEMPTS; attempt += 1) {
+    try {
+      // A fresh resolver avoids pinning all attempts to one stale discovery result.
+      const resolver = new LookupResolver({
+        networkPreset: constants.overlayNetworkPreset,
+        hostOverrides: { [constants.overlayLookupService]: constants.tspLookupHosts },
+        reputationStorage: { get: () => null, set: () => undefined }
+      })
+      const response = await resolver.query({
+        service: constants.overlayLookupService,
+        query
+      }, 5000, { graceMs: 500 })
 
-  try {
-    const response = await resolver.query({
-      service: constants.overlayLookupService,
-      query
-    })
+      if (response.type !== 'output-list') {
+        throw new Error(`Unexpected response type: ${response.type}`)
+      }
 
-    if (response.type !== 'output-list') {
-      throw new Error(`Unexpected response type: ${response.type}`)
+      attemptCounts.push(response.outputs.length)
+      for (const output of response.outputs) {
+        const txid = Transaction.fromBEEF(output.beef).id('hex')
+        outputsByOutpoint.set(`${txid}:${output.outputIndex}`, output)
+      }
+    } catch (error) {
+      lastError = error
+      attemptCounts.push(0)
     }
 
-    lookupResult = response.outputs
-  } catch (e) {
-    console.error('[fetchSongs] Error fetching song data:', e)
-    captureError('catalog.lookup_failed', e, { queryType: query.type })
+    if (attempt < CATALOG_LOOKUP_ATTEMPTS - 1) await wait(200 * (attempt + 1))
+  }
+
+  if (outputsByOutpoint.size === 0 && lastError) {
+    console.error('[fetchSongs] Error fetching song data:', lastError)
+    captureError('catalog.lookup_failed', lastError, { queryType: query.type, attemptCounts })
     return []
   }
 
+  captureSignal('catalog.lookup_completed', {
+    surface: 'catalog',
+    context: {
+      queryType: query.type,
+      attempts: CATALOG_LOOKUP_ATTEMPTS,
+      attemptCounts,
+      uniqueOutputs: outputsByOutpoint.size
+    }
+  })
 
   const parsedSongs = await decodeOutputs(
-    lookupResult.map((o) => ({ beef: o.beef, outputIndex: o.outputIndex }))
+    [...outputsByOutpoint.values()].map((o) => ({ beef: o.beef, outputIndex: o.outputIndex }))
   )
 
   return await filterPlayableSongs(parsedSongs)

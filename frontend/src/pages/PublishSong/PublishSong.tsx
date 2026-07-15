@@ -177,7 +177,7 @@ const PublishSong = () => {
           <div className="fieldContainer">
             <label>Artwork</label>
             <input type="file" accept="image/jpeg,image/png,image/webp" className="uploadInput" {...register('selectedArtwork')} required />
-            <small className="fieldHint">Square cover art works best.</small>
+            <small className="fieldHint">Square cover art works best. Tempo automatically converts it to a fast, catalogue-sized WebP.</small>
           </div>
 
           <div className="fieldContainer">

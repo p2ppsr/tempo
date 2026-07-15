@@ -1,8 +1,10 @@
-import { SymmetricKey, StorageDownloader, StorageUploader } from '@bsv/sdk'
+import { SymmetricKey, StorageUploader } from '@bsv/sdk'
 import constants from './constants'
 import { getInteractiveWallet } from './wallet'
 import type { PublicationAssetReceipt } from '../types/interfaces'
 import { expiryFromRetention } from './publicationReceipt'
+import { normalizeArtworkFile } from './artworkOptimization'
+import { resolveStorageLocations } from './storageReliability'
 
 interface GetFileUploadInfoParams {
   selectedArtwork: File | FileList | null
@@ -13,7 +15,6 @@ interface GetFileUploadInfoParams {
   onAssetReceipt?: (asset: 'audio' | 'artwork' | 'preview', receipt: PublicationAssetReceipt) => void
 }
 
-const storageDownloader = new StorageDownloader({ networkPreset: constants.overlayNetworkPreset })
 const STORAGE_PUBLISH_ATTEMPTS = 3
 
 const sleep = async (milliseconds: number) => await new Promise(resolve => window.setTimeout(resolve, milliseconds))
@@ -93,7 +94,7 @@ const getFileUploadInfo = async ({
     for (let attempt = 0; attempt < 6; attempt += 1) {
       onProgress?.(`Verifying ${asset} storage replicas (${attempt + 1}/6)...`)
       try {
-        const resolved = await withDeadline(storageDownloader.resolve(uhrpURL), `${asset} storage verification`, 10000)
+        const resolved = await withDeadline(resolveStorageLocations(uhrpURL), `${asset} storage verification`, 10000)
         activeHosts = [...new Set(resolved.map(url => {
           try {
             return new URL(url).origin
@@ -122,9 +123,11 @@ const getFileUploadInfo = async ({
   // Upload artwork (unencrypted)
   if (selectedArtwork) {
     try {
-      onProgress?.('Uploading artwork to two storage providers...')
-      const artworkFile =
+      onProgress?.('Optimizing artwork for fast catalogue playback...')
+      const selectedArtworkFile =
         selectedArtwork instanceof FileList ? selectedArtwork[0] : selectedArtwork
+      const artworkFile = await normalizeArtworkFile(selectedArtworkFile)
+      onProgress?.('Uploading optimized artwork to two storage providers...')
       const artworkBuffer = new Uint8Array(await artworkFile.arrayBuffer())
 
       console.log('[Uploading Artwork]', {

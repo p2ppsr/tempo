@@ -17,10 +17,16 @@ function storedId(storage: Storage | undefined, key: string): string {
 }
 
 function isSensitive(key: string): boolean {
-  return /(key|secret|signature|beef|token|password|transaction|tx)/i.test(key)
+  const normalized = key
+    .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
+    .replace(/[-\s]+/g, '_')
+    .toLowerCase()
+  return normalized === 'key' ||
+    normalized.endsWith('_key') ||
+    /(^|_)(secret|signature|beef|token|password|transaction|tx|txid)($|_)/.test(normalized)
 }
 
-function sanitize(value: unknown, depth = 0): unknown {
+export function sanitizeUsercomContext(value: unknown, depth = 0): unknown {
   if (depth > 3) return '[truncated]'
   if (typeof value === 'string') {
     return value
@@ -28,11 +34,11 @@ function sanitize(value: unknown, depth = 0): unknown {
       .replace(/\b[A-Za-z0-9+/]{43}=\b/g, '[redacted]')
       .slice(0, 1000)
   }
-  if (Array.isArray(value)) return value.slice(0, 20).map(item => sanitize(item, depth + 1))
+  if (Array.isArray(value)) return value.slice(0, 20).map(item => sanitizeUsercomContext(item, depth + 1))
   if (value && typeof value === 'object') {
     return Object.fromEntries(Object.entries(value as Context).slice(0, 40).map(([key, child]) => [
       key,
-      isSensitive(key) ? '[redacted]' : sanitize(child, depth + 1)
+      isSensitive(key) ? '[redacted]' : sanitizeUsercomContext(child, depth + 1)
     ]))
   }
   return value
@@ -49,7 +55,7 @@ function basePayload(name: string, options: SignalOptions = {}): Record<string, 
     anonymousId: storedId(typeof window === 'undefined' ? undefined : localStorage, 'tempo:usercom:anonymous'),
     sessionId: storedId(typeof window === 'undefined' ? undefined : sessionStorage, 'tempo:usercom:session'),
     tags: options.tags || [],
-    context: sanitize({
+    context: sanitizeUsercomContext({
       release: import.meta.env.VITE_RELEASE || 'development',
       viewport: typeof window === 'undefined' ? undefined : `${window.innerWidth}x${window.innerHeight}`,
       online: typeof navigator === 'undefined' ? undefined : navigator.onLine,

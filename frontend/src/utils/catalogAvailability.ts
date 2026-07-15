@@ -1,9 +1,9 @@
-import { StorageDownloader, StorageUtils } from '@bsv/sdk'
+import { StorageUtils } from '@bsv/sdk'
 import type { Song, SongAvailability } from '../types/interfaces'
 import constants from './constants'
 import { captureError, captureSignal } from './usercom'
+import { downloadStorageObject, resolveStorageLocations } from './storageReliability'
 
-const downloader = new StorageDownloader({ networkPreset: constants.overlayNetworkPreset })
 const CACHE_MS = 5 * 60 * 1000
 const cache = new Map<string, { checkedAt: number; availability: SongAvailability }>()
 
@@ -34,7 +34,10 @@ async function activeHosts(value?: string): Promise<string[]> {
   const reference = normalizeUhrpReference(value)
   if (!reference) return []
   try {
-    return await downloader.resolve(reference)
+    // One resolver call queries both independent primary overlays. Repeating an
+    // empty result here makes a dead song delay the entire catalogue; downloads
+    // retain their own content-verified retry loop in storageReliability.
+    return [...new Set(await resolveStorageLocations(reference))]
   } catch {
     return []
   }
@@ -101,40 +104,46 @@ export async function inspectSongAvailability(song: Song): Promise<SongAvailabil
 }
 
 export async function filterPlayableSongs(songs: Song[]): Promise<Song[]> {
-  const results: Song[] = []
+  const results: Array<Song | undefined> = new Array(songs.length)
   const excluded: Record<string, number> = {}
+  const exclusions: Array<{ title: string; reason: string }> = []
   let cursor = 0
 
   const worker = async () => {
     while (cursor < songs.length) {
-      const song = songs[cursor++]
+      const songIndex = cursor++
+      const song = songs[songIndex]
       const availability = await inspectSongAvailability(song)
       if (availability.status === 'playable') {
-        results.push({
+        results[songIndex] = {
           ...song,
           songURL: normalizeUhrpReference(song.songURL) || song.songURL,
           previewURL: normalizeUhrpReference(song.previewURL),
           availability
-        })
+        }
       } else {
         const reason = availability.reason || availability.status
         excluded[reason] = (excluded[reason] || 0) + 1
+        exclusions.push({ title: song.title, reason })
       }
     }
   }
 
-  await Promise.all(Array.from({ length: Math.min(4, songs.length) }, () => worker()))
+  // Two workers keep dual-host audio and preview checks below common browser
+  // per-origin connection limits; higher concurrency caused queued lookups to
+  // expire and temporarily hid otherwise-live releases.
+  await Promise.all(Array.from({ length: Math.min(2, songs.length) }, () => worker()))
+  const playableSongs = results.filter((song): song is Song => song !== undefined)
   captureSignal('catalog.availability_completed', {
     surface: 'catalog',
-    context: { candidates: songs.length, playable: results.length, excluded }
+    context: { candidates: songs.length, playable: playableSongs.length, excluded, exclusions }
   })
-  return results
+  return playableSongs
 }
 
 export async function downloadPlayableFile(value: string): Promise<string> {
+  if (value.startsWith('blob:')) return value
   if (isBundledAsset(value)) return value
-  const reference = normalizeUhrpReference(value)
-  if (!reference) throw new Error('This audio URL is invalid.')
-  const result = await downloader.download(reference)
+  const result = await downloadStorageObject(value)
   return URL.createObjectURL(new Blob([result.data], { type: result.mimeType || 'audio/mpeg' }))
 }

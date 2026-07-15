@@ -92,14 +92,6 @@
   }
 
   .horizontalArtworkScroller {
-    gap: 0.55rem;
-    padding: 0.45rem 0 0.7rem;
-  }
-
-  .newReleaseCardContainer {
-    .newReleaseCard {
-      width: 7.4rem;
-      height: 7.4rem;
-    }
+    display: none;
   }
 }

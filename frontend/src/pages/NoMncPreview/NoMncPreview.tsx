@@ -85,8 +85,8 @@ const NoMncPreview = () => {
         <p className="heroEyebrow">Direct music · live availability · wallet-approved payments</p>
         <h1>Hear it now. Own the release path.</h1>
         <p>
-          Preview music without a wallet prompt. When you publish or unlock a full track,
-          Babbage Go opens one clear Metanet permission flow.
+          Browse the verified catalogue without a wallet prompt. Pressing play buys and starts the full track
+          through one clear Babbage Go permission flow.
         </p>
         <div className="heroActions">
           <a className="button primaryAction" href="#live-catalogue">Browse playable music</a>
