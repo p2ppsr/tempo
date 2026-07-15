@@ -80,7 +80,7 @@
 ## Evidence
 
 - Public-safe IDs: publication and transaction IDs above; no keys or wallet material retained.
-- Playback screenshot: `/Users/tyeverett/projects/network-ops/artifacts/proofrun/p2ppsr/tempo/20260715T003400Z-tempo-publish-purchase-listen/tempo-full-track-playing.png`.
+- Rendered browser proof: the production player showed `Full track unlocked`, `00:01 / 00:04`, and an active Pause control; the final receipt showed `Playable: Yes` and no `Invalid Date` value.
 - Generated fixture: `/Users/tyeverett/projects/network-ops/artifacts/proofrun/p2ppsr/tempo/20260714T214541Z-tempo-publish-purchase-listen/`.
 
 ## Defects And Follow-Up
@@ -98,4 +98,3 @@
 - Registry update needed: `yes`
 - Dossier update needed: `yes`
 - Product repo update needed: `yes` (expiry receipt fix follows this tested release)
-
