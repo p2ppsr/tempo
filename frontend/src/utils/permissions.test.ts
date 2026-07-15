@@ -61,4 +61,12 @@ describe('publication recovery contract', () => {
     expect(source).toContain('onAssetReceipt?.')
     expect(source).not.toContain('storageUploader.findFile')
   })
+
+  it('retries transient provider failures without lowering the redundancy requirement', () => {
+    const source = readFileSync(resolve(process.cwd(), 'src/utils/getFileUploadInfo.ts'), 'utf8')
+    expect(source).toContain('new StorageUploader({ wallet, resilienceLevel: 2 })')
+    expect(source).toContain('const STORAGE_PUBLISH_ATTEMPTS = 3')
+    expect(source).toContain('publishWithRetry')
+    expect(source).toContain('failed to fetch|network|timed? out|http 429|http 5\\d\\d')
+  })
 })

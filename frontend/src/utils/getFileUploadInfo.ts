@@ -13,6 +13,7 @@ interface GetFileUploadInfoParams {
 }
 
 const storageDownloader = new StorageDownloader({ networkPreset: constants.overlayNetworkPreset })
+const STORAGE_PUBLISH_ATTEMPTS = 3
 
 const sleep = async (milliseconds: number) => await new Promise(resolve => window.setTimeout(resolve, milliseconds))
 
@@ -41,6 +42,25 @@ const getFileUploadInfo = async ({
   const wallet = getInteractiveWallet()
 
   const storageUploader = new StorageUploader({ wallet, resilienceLevel: 2 })
+  const publishWithRetry = async (
+    asset: 'audio' | 'artwork' | 'preview',
+    file: { data: number[]; type: string }
+  ) => {
+    let lastError: unknown
+    for (let attempt = 0; attempt < STORAGE_PUBLISH_ATTEMPTS; attempt += 1) {
+      try {
+        return await storageUploader.publishFile({ file, retentionPeriod })
+      } catch (error) {
+        lastError = error
+        const message = error instanceof Error ? error.message : String(error)
+        const retryable = /failed to fetch|network|timed? out|http 429|http 5\d\d/i.test(message)
+        if (!retryable || attempt === STORAGE_PUBLISH_ATTEMPTS - 1) throw error
+        onProgress?.(`Retrying ${asset} storage after a transient provider failure (${attempt + 2}/${STORAGE_PUBLISH_ATTEMPTS})...`)
+        await sleep(1000 * (attempt + 1))
+      }
+    }
+    throw lastError
+  }
 
   const filesToUpload: File[] = []
   let songURL = ''
@@ -108,12 +128,9 @@ const getFileUploadInfo = async ({
         type: artworkFile.type
       })
 
-      const uploadedArtwork = await storageUploader.publishFile({
-        file: {
-          data: Array.from(artworkBuffer),
-          type: artworkFile.type
-        },
-        retentionPeriod
+      const uploadedArtwork = await publishWithRetry('artwork', {
+        data: Array.from(artworkBuffer),
+        type: artworkFile.type
       })
 
       artworkURL = uploadedArtwork.uhrpURL
@@ -138,12 +155,9 @@ const getFileUploadInfo = async ({
         onProgress?.('Uploading the preview to two storage providers...')
         const previewBuffer = new Uint8Array(await previewFile.arrayBuffer())
 
-        const uploadedPreview = await storageUploader.publishFile({
-          file: {
-            data: Array.from(previewBuffer),
-            type: previewFile.type
-          },
-          retentionPeriod
+        const uploadedPreview = await publishWithRetry('preview', {
+          data: Array.from(previewBuffer),
+          type: previewFile.type
         })
 
         previewURL = uploadedPreview.uhrpURL
@@ -176,12 +190,9 @@ const getFileUploadInfo = async ({
         throw new Error('Encrypted data must be a number array, not a string')
       }
 
-      const uploadedMusic = await storageUploader.publishFile({
-        file: {
-          data: encrypted as number[],
-          type: 'application/octet-stream'
-        },
-        retentionPeriod
+      const uploadedMusic = await publishWithRetry('audio', {
+        data: encrypted as number[],
+        type: 'application/octet-stream'
       })
 
       songURL = uploadedMusic.uhrpURL
