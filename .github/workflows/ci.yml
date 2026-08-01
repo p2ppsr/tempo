@@ -14,19 +14,82 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.matrix.outputs.has_changes }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build affected-package matrix
+        id: matrix
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+
+          matrix='[]'
+          workflow_changed=false
+          frontend_changed=false
+          key_server_changed=false
+          backend_changed=false
+          if ! git diff --quiet "${BASE_SHA}" "${HEAD_SHA}" -- .github/workflows/ci.yml; then
+            workflow_changed=true
+          fi
+          if ! git diff --quiet "${BASE_SHA}" "${HEAD_SHA}" -- frontend/; then
+            frontend_changed=true
+          fi
+          if ! git diff --quiet "${BASE_SHA}" "${HEAD_SHA}" -- key-server/; then
+            key_server_changed=true
+          fi
+          if ! git diff --quiet "${BASE_SHA}" "${HEAD_SHA}" -- backend/; then
+            backend_changed=true
+          fi
+
+          # Validate CI-only changes across every package. When a workflow edit
+          # accompanies a scoped package change, retain that package scope.
+          if [[ "${workflow_changed}" == true && "${frontend_changed}" == false && "${key_server_changed}" == false && "${backend_changed}" == false ]]; then
+            frontend_changed=true
+            key_server_changed=true
+            backend_changed=true
+          fi
+
+          add_package() {
+            matrix=$(jq -c \
+              --arg package "$1" \
+              --arg commands "$2" \
+              '. + [{package: $package, commands: $commands}]' <<<"${matrix}")
+          }
+
+          if [[ "${frontend_changed}" == true ]]; then
+            add_package frontend 'npm run lint && npm test && npm run build'
+          fi
+          if [[ "${key_server_changed}" == true ]]; then
+            add_package key-server 'npm test && npm run build'
+          fi
+          if [[ "${backend_changed}" == true ]]; then
+            add_package backend 'npm test'
+          fi
+
+          if [[ "${matrix}" == '[]' ]]; then
+            echo 'has_changes=false' >> "${GITHUB_OUTPUT}"
+          else
+            echo 'has_changes=true' >> "${GITHUB_OUTPUT}"
+          fi
+          echo "matrix={\"include\":${matrix}}" >> "${GITHUB_OUTPUT}"
+
   verify:
+    needs: changes
+    if: needs.changes.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - package: frontend
-            commands: npm run lint && npm test && npm run build
-          - package: key-server
-            commands: npm test && npm run build
-          - package: backend
-            commands: npm test
+      fail-fast: true
+      matrix: ${{ fromJSON(needs.changes.outputs.matrix) }}
     defaults:
       run:
         working-directory: ${{ matrix.package }}
