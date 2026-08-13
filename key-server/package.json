@@ -35,5 +35,8 @@
     "tsx": "^4.23.1",
     "typescript": "^5.8.3",
     "vitest": "^4.1.10"
+  },
+  "overrides": {
+    "@bsv/sdk": "$@bsv/sdk"
   }
 }
