@@ -12,8 +12,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@babbage/go": "^0.1.17",
-    "@bsv/sdk": "^2.1.6",
+    "@babbage/go": "^0.1.19",
+    "@bsv/sdk": "^2.4.0",
     "@bsv/uhrp-react": "^1.0.6",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
