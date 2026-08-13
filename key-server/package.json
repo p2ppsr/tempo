@@ -13,11 +13,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@bsv/auth-express-middleware": "^2.1.7",
+    "@bsv/auth-express-middleware": "^2.2.1",
     "@bsv/payment-express-middleware": "^2.1.5",
     "@bsv/sdk": "^2.4.0",
-    "@bsv/wallet-toolbox": "^2.4.20",
-    "@bsv/wallet-toolbox-client": "^2.4.0",
+    "@bsv/wallet-toolbox": "^2.9.0",
+    "@bsv/wallet-toolbox-client": "^2.9.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongodb": "^7.5.0"
