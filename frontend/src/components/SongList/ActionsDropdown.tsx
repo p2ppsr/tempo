@@ -8,6 +8,7 @@
 
 import React, { useRef, useState } from 'react'
 import { HiOutlineDotsHorizontal } from 'react-icons/hi'
+import { useLocation } from 'react-router-dom'
 import useOutsideClick from '../../hooks/useOutsideClick'
 import { useModals } from '../../stores/stores'
 import { useLibraryStore } from '../../stores/libraryStore'
@@ -72,8 +73,9 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
 }) => {
   const [dropdownVisible, setDropdownVisible] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const currentLocation = useLocation()
 
-  const isInPlaylistsPage = location.pathname.includes('Playlists')
+  const isInPlaylistsPage = currentLocation.pathname.includes('Playlists')
 
   const likedSongIds = useLibraryStore(state => state.likedSongIds)
   const toggleSongLike = useLibraryStore(state => state.toggleSongLike)
