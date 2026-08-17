@@ -12,6 +12,7 @@ import SongList from '../../components/SongList/SongList'
 import fetchSongs from '../../utils/fetchSongs/fetchSongs'
 import bundledPreviewSongs from '../../utils/bundledPreviewSongs'
 import { useLibraryStore } from '../../stores/libraryStore'
+import LibrarySyncStatus from '../../components/LibrarySyncStatus/LibrarySyncStatus'
 import type { Song } from '../../types/interfaces'
 import { Utils } from '@bsv/sdk'
 import type { FindAllQuery } from '../../types/interfaces.js'
@@ -30,6 +31,11 @@ const Likes = () => {
   const [isLoaded, setIsLoaded] = useState(false)
 
   const likedSongIds = useLibraryStore(state => state.likedSongIds)
+  const initializeLibrary = useLibraryStore(state => state.initializeLibrary)
+
+  useEffect(() => {
+    void initializeLibrary()
+  }, [initializeLibrary])
 
   useEffect(() => {
     let cancelled = false
@@ -97,6 +103,7 @@ const Likes = () => {
   return (
     <div className="container songsPage">
       <h1>Likes</h1>
+      <LibrarySyncStatus />
       {!isLoaded && songs.length === 0 && (
         <div className="songsPageContent">
           <CircularProgress />

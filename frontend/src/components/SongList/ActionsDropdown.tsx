@@ -51,7 +51,7 @@ interface ActionsDropdownProps {
  *
  * - Displays a button (three-dot icon) that toggles a dropdown menu.
  * - The dropdown includes actions:
- *   - Like/Unlike song, updating local storage & likes store
+ *   - Like/Unlike song, updating the wallet-backed library store
  *   - Add to playlist
  *   - Remove from playlist (if viewing a playlist page)
  *   - Copy song link to clipboard
@@ -60,7 +60,7 @@ interface ActionsDropdownProps {
  *
  * Features:
  * - Closes automatically on outside click via `useOutsideClick`.
- * - Persists liked songs in localStorage for user session persistence.
+ * - Persists liked songs in the wallet with a local offline cache.
  * - Uses Zustand for likes state and modal controls.
  * - Uses React.memo to avoid unnecessary re-renders.
  */
@@ -72,6 +72,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
   openConfirmDeleteModal
 }) => {
   const [dropdownVisible, setDropdownVisible] = useState<string | null>(null)
+  const [isUpdatingLike, setIsUpdatingLike] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const currentLocation = useLocation()
 
@@ -79,6 +80,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
 
   const likedSongIds = useLibraryStore(state => state.likedSongIds)
   const toggleSongLike = useLibraryStore(state => state.toggleSongLike)
+  const initializeLibrary = useLibraryStore(state => state.initializeLibrary)
 
   const [, setSocialShareModalOpen, setSocialShareLink] = useModals((state) => [
     state.socialShareModalOpen,
@@ -101,7 +103,9 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
         aria-expanded={dropdownVisible === info.row.id}
         onClick={(e) => {
           e.stopPropagation()
-          setDropdownVisible(dropdownVisible === info.row.id ? null : info.row.id)
+          const opening = dropdownVisible !== info.row.id
+          setDropdownVisible(opening ? info.row.id : null)
+          if (opening) void initializeLibrary()
         }}
       >
         <HiOutlineDotsHorizontal style={{ fontSize: '2rem' }} />
@@ -109,7 +113,16 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
 
       {dropdownVisible === info.row.id && (
         <div className="dropdownMenu" role="menu" ref={dropdownRef} onClick={(event) => event.stopPropagation()}>
-          <button type="button" role="menuitem" onClick={() => toggleSongLike(song.songURL)}>
+          <button
+            type="button"
+            role="menuitem"
+            disabled={isUpdatingLike}
+            aria-busy={isUpdatingLike}
+            onClick={() => {
+              setIsUpdatingLike(true)
+              void toggleSongLike(song.songURL).finally(() => setIsUpdatingLike(false))
+            }}
+          >
             {isLiked ? 'Unlike' : 'Like'}
           </button>
 

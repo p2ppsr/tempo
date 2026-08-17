@@ -28,22 +28,24 @@
     "repositoryUrl": "https://github.com/p2ppsr/tempo",
     "supportUrl": "https://tempomusic.net/",
     "groupPermissions": {
-      "description": "Publish songs to redundant UHRP storage, manage your Tempo catalogue, and approve music purchases in one grouped permission grant.",
+      "description": "Publish songs, sync your private library across devices, and approve music purchases in one grouped permission grant.",
       "protocolPermissions": [
         { "protocolID": [2, "tmtsp"], "counterparty": "anyone", "description": "Publish and manage Tempo song tokens." },
         { "protocolID": [1, "tempo"], "counterparty": "self", "description": "Sign Tempo key-publication requests." },
         { "protocolID": [2, "messagebox"], "counterparty": "self", "description": "Exchange authenticated storage and wallet messages without separate prompts." },
         { "protocolID": [2, "server hmac"], "counterparty": "self", "description": "Create private nonces for authenticated storage and key-server sessions." },
+        { "protocolID": [2, "tempo library"], "counterparty": "self", "description": "Encrypt and authenticate your private Tempo likes and playlists." },
         { "protocolID": [1, "identity key retrieval"], "description": "Use your identity for your artist library and authenticated actions." }
       ],
       "basketAccess": [
-        { "basket": "tmtsp", "description": "Manage your published Tempo song tokens." }
+        { "basket": "tmtsp", "description": "Manage your published Tempo song tokens." },
+        { "basket": "tempo library", "description": "Sync your encrypted likes and playlists across wallet-connected devices." }
       ],
       "certificateAccess": [],
       "spendingAuthorization": {
         "amount": 100000,
         "duration": 2592000,
-        "description": "Publish song tokens and purchase tracks without repeated spend prompts."
+        "description": "Publish songs, sync your wallet library, and purchase tracks without repeated spend prompts."
       }
     },
     "counterpartyPermissions": {
@@ -60,22 +62,24 @@
   "babbage": {
     "originator": "tempomusic.net",
     "groupPermissions": {
-      "description": "Publish songs to redundant UHRP storage, manage your Tempo catalogue, and approve music purchases in one grouped permission grant.",
+      "description": "Publish songs, sync your private library across devices, and approve music purchases in one grouped permission grant.",
       "protocolPermissions": [
         { "protocolID": [2, "tmtsp"], "counterparty": "anyone", "description": "Publish and manage Tempo song tokens." },
         { "protocolID": [1, "tempo"], "counterparty": "self", "description": "Sign Tempo key-publication requests." },
         { "protocolID": [2, "messagebox"], "counterparty": "self", "description": "Exchange authenticated storage and wallet messages without separate prompts." },
         { "protocolID": [2, "server hmac"], "counterparty": "self", "description": "Create private nonces for authenticated storage and key-server sessions." },
+        { "protocolID": [2, "tempo library"], "counterparty": "self", "description": "Encrypt and authenticate your private Tempo likes and playlists." },
         { "protocolID": [1, "identity key retrieval"], "description": "Use your identity for your artist library and authenticated actions." }
       ],
       "basketAccess": [
-        { "basket": "tmtsp", "description": "Manage your published Tempo song tokens." }
+        { "basket": "tmtsp", "description": "Manage your published Tempo song tokens." },
+        { "basket": "tempo library", "description": "Sync your encrypted likes and playlists across wallet-connected devices." }
       ],
       "certificateAccess": [],
       "spendingAuthorization": {
         "amount": 100000,
         "duration": 2592000,
-        "description": "Publish song tokens and purchase tracks without repeated spend prompts."
+        "description": "Publish songs, sync your wallet library, and purchase tracks without repeated spend prompts."
       }
     },
     "counterpartyPermissions": {

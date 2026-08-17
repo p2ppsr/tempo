@@ -1,0 +1,50 @@
+@use '../../styles/styleVariables.scss' as *;
+
+.librarySyncStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0.7rem 0;
+  padding: 0.48rem 0.7rem;
+  border: 1px solid rgba(35, 198, 165, 0.34);
+  border-radius: 10px;
+  background: rgba(35, 198, 165, 0.08);
+  color: #cafff2;
+  font-size: 0.82rem;
+
+  button {
+    border: 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: inherit;
+    padding: 0.3rem 0.5rem;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+  }
+}
+
+.librarySyncDot {
+  width: 0.48rem;
+  height: 0.48rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: $accentColor;
+  box-shadow: 0 0 0 4px rgba(35, 198, 165, 0.12);
+}
+
+.librarySyncStatusOffline {
+  border-color: rgba(255, 189, 96, 0.38);
+  background: rgba(255, 189, 96, 0.08);
+  color: #ffe4b2;
+}
+
+@media (max-width: 768px) {
+  .librarySyncStatus {
+    width: 100%;
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
+}

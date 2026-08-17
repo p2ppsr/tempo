@@ -26,7 +26,6 @@ import FeedbackPanel from './components/FeedbackPanel/FeedbackPanel'
 const EditSong = lazy(() => import('./pages/EditSong/EditSong'))
 const Likes = lazy(() => import('./pages/Likes/Likes'))
 const MySongs = lazy(() => import('./pages/MySongs/MySongs'))
-const CreatePlaylist = lazy(() => import('./pages/Playlists/Create/CreatePlaylist'))
 const Playlists = lazy(() => import('./pages/Playlists/Playlists'))
 const ViewPlaylist = lazy(() => import('./pages/Playlists/ViewPlaylist'))
 const Profile = lazy(() => import('./pages/Profile/Profile'))
@@ -76,7 +75,6 @@ const App = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/Playlists/*" element={<Playlists />} />
                 <Route path="/Playlists/:id" element={<ViewPlaylist />} />
-                <Route path="/Playlists/Create" element={<CreatePlaylist />} />
                 <Route path="/Profile" element={<Profile />} />
                 <Route path="/MySongs" element={<MySongs />} />
                 <Route path="/EditSong" element={<EditSong />} />

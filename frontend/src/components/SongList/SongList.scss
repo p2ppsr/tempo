@@ -216,18 +216,43 @@
     outline: none;
   }
 
-  .modalCloseIcon {
-    font-size: 2.2rem;
-    font-weight: bolder;
-    align-self: flex-start;
+  .modalCloseButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
     cursor: pointer;
 
     &:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  .modalCloseIcon {
+    font-size: 2.2rem;
+    font-weight: bolder;
+
+    .modalCloseButton:hover & {
       fill: $accentColorWarm;
     }
   }
 
   .playlistName {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: left;
+    background: transparent;
     color: $textColor;
     margin-block: 0.5rem;
     border: 1px solid rgba(163, 189, 217, 0.34);
@@ -235,10 +260,85 @@
     border-radius: 12px;
     cursor: pointer;
 
+    span {
+      color: $textMutedColor;
+      font-size: 0.75rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
     &:hover {
       border-color: $accentColor;
       color: #c8fff2;
       background: rgba(35, 198, 165, 0.08);
+    }
+  }
+}
+
+.createPlaylistInModalButton {
+  width: 100%;
+  min-height: 2.9rem;
+  margin-bottom: 0.7rem;
+  border: 1px solid rgba(35, 198, 165, 0.55);
+  border-radius: 12px;
+  background: rgba(35, 198, 165, 0.13);
+  color: #d2fff4;
+  font: 700 0.95rem inherit;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(35, 198, 165, 0.22);
+  }
+}
+
+.createPlaylistInModalForm {
+  margin-bottom: 0.75rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: $textMutedColor;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  > div {
+    display: flex;
+    gap: 0.45rem;
+  }
+
+  input {
+    min-width: 0;
+    flex: 1;
+    border: 1px solid rgba(163, 189, 217, 0.42);
+    border-radius: 10px;
+    background: rgba(6, 12, 21, 0.8);
+    color: $textColor;
+    padding: 0.65rem 0.7rem;
+    font-family: inherit;
+    font-size: 1rem;
+
+    &:focus {
+      outline: none;
+      border-color: $accentColor;
+    }
+  }
+
+  button {
+    min-height: 2.75rem;
+    border: 0;
+    border-radius: 10px;
+    background: $accentColor;
+    color: #061411;
+    padding: 0.55rem 0.75rem;
+    font-family: inherit;
+    font-weight: 800;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+      filter: saturate(0.15);
+      opacity: 0.7;
     }
   }
 }

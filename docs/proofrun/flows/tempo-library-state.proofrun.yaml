@@ -19,7 +19,7 @@ environment:
 safety:
   stateChanging: true
   spendCap:
-    amount: 0
+    amount: 1000
     unit: sats
   testIdentities: []
   cleanup:
@@ -32,8 +32,10 @@ matrix:
     - ios-simulator-safari
   mobileSimulators:
     - ios-simulator
-  desktopWallets: []
-  mobileWallets: []
+  desktopWallets:
+    - metanet-client
+  mobileWallets:
+    - metanet-explorer-embedded-wallet
   serverWallets: []
   networks:
     - mainnet
@@ -47,7 +49,8 @@ preflight:
       cwd: /Users/tyeverett/projects/tempo
   requiredState:
     - "Production release identity and CARS deployment ID are recorded."
-    - "The browser profile starts with no Tempo likes or playlists."
+    - "The wallet-backed library fixture starts empty or uses uniquely named playlists that will not collide with user data."
+    - "The operator confirms wallet KV transaction fees remain below the 1000-sat flow cap before approving writes."
 flow:
   steps:
     - id: verify-unliked
@@ -77,6 +80,14 @@ flow:
         ui:
           - "Edit and Delete controls remain visible without hover or row selection."
           - "Controls have at least 44 by 44 CSS pixel targets on desktop and mobile."
+          - "The saved name is visible after reload and from a second wallet-connected device."
+    - id: create-from-song
+      actor: listener
+      action: "Open Add to Playlist for a song, create a new named playlist in the modal, and submit it."
+      expected:
+        ui:
+          - "Create new playlist is available whether or not any playlists exist."
+          - "The new playlist contains the selected song and shows its exact name."
     - id: use-playlist
       actor: listener
       action: "Add one song, open the playlist, remove the song, rename the playlist, then delete it."
@@ -92,7 +103,8 @@ assertions:
   flowSuccess:
     - "Like, unlike, create, add, remove, rename, and delete all complete in one pass."
   reliabilityRepeatability:
-    - "Reloading preserves the current library state, and a second tab receives storage changes."
+    - "Reloading preserves the current library state, a second tab receives cached changes, and a second wallet-connected device receives the encrypted wallet document."
+    - "Independent device changes merge by entity, while unlike, delete, and remove tombstones prevent stale-cache resurrection."
   performance:
     - "Local library actions update visibly within 500 ms."
 evidence:

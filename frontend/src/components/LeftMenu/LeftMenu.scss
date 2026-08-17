@@ -51,6 +51,12 @@
   transition: border-color 120ms ease, transform 120ms ease, background-color 120ms ease;
 }
 
+button.libraryToggle {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+}
+
 .mobileFeedbackLink {
   display: none;
   width: 100%;

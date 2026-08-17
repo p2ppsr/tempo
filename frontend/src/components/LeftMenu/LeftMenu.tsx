@@ -51,13 +51,18 @@ const LeftMenu = () => {
           <li className="link">Home</li>
         </NavLink>
 
-        <div className="link libraryToggle" onClick={() => setLibraryOpen(!libraryOpen)}>
+        <button
+          type="button"
+          className="link libraryToggle"
+          aria-expanded={libraryOpen}
+          onClick={() => setLibraryOpen(!libraryOpen)}
+        >
           <div className="flex">
             Library
             <div className="flexSpacer" />
             {libraryOpen ? <FaCaretUp /> : <FaCaretDown />}
           </div>
-        </div>
+        </button>
 
         {libraryOpen && (
           <>

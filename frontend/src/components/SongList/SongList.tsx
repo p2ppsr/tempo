@@ -18,12 +18,14 @@ import {
 } from '@tanstack/react-table'
 import { FaPlay } from 'react-icons/fa'
 import { IoIosCloseCircleOutline } from 'react-icons/io'
+import uuid4 from 'uuid4'
 
 import { usePlaybackStore } from '../../stores/stores'
 import { useLibraryStore } from '../../stores/libraryStore'
 import ActionsDropdown from './ActionsDropdown'
 import placeholderImage from '../../assets/Images/placeholder-image.png'
 import ArtworkImage from '../ArtworkImage/ArtworkImage'
+import LibrarySyncStatus from '../LibrarySyncStatus/LibrarySyncStatus'
 import { prepareSongPlayback } from '../../utils/playbackSelection'
 
 import type { Song } from '../../types/interfaces'
@@ -58,7 +60,7 @@ interface SongListProps {
  * Features:
  * - Double-click to start playback.
  * - Navigate to artist page on click.
- * - Local playlist management using localStorage.
+ * - Wallet-backed playlist management with an offline browser cache.
  * - Modals for adding to playlists and confirming deletion.
  */
 const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly = false }: SongListProps) => {
@@ -69,8 +71,13 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly = false }:
   const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false)
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false)
   const [isDeletingSong, setIsDeletingSong] = useState(false)
+  const [isCreatingPlaylist, setIsCreatingPlaylist] = useState(false)
+  const [newPlaylistName, setNewPlaylistName] = useState('')
+  const [isSavingPlaylist, setIsSavingPlaylist] = useState(false)
   const playlists = useLibraryStore(state => state.playlists)
-  const setPlaylists = useLibraryStore(state => state.setPlaylists)
+  const initializeLibrary = useLibraryStore(state => state.initializeLibrary)
+  const createPlaylist = useLibraryStore(state => state.createPlaylist)
+  const addSongToLibraryPlaylist = useLibraryStore(state => state.addSongToPlaylist)
   const [localSongs, setLocalSongs] = useState<Song[]>(songs)
   const scrollPositionRef = useRef(0)
 
@@ -116,6 +123,10 @@ useEffect(() => {
     setLocalSongs([...songs])
   }
 }, [isAddToPlaylistModalOpen, isConfirmDeleteModalOpen, songs])
+
+  useEffect(() => {
+    if (isAddToPlaylistModalOpen) void initializeLibrary()
+  }, [initializeLibrary, isAddToPlaylistModalOpen])
 
 
   useEffect(() => {
@@ -177,18 +188,40 @@ const handleDeleteSong = async () => {
   }
 
   /**
-   * Add the selected song to the chosen playlist, updating local state and localStorage.
+   * Add the selected song to the chosen wallet-backed playlist.
    */
-  const addSongToPlaylist = (playlistId: string, song: Song) => {
-    const updated = playlists.map(p => {
-      if (p.id === playlistId && !p.songs.some(s => s.songURL === song.songURL)) {
-        toast.success(`Added ${song.title} to ${p.name}`)
-        return { ...p, songs: [...p.songs, song] }
-      }
-      return p
-    })
-    setPlaylists(updated)
+  const addSongToPlaylist = async (playlistId: string, song: Song) => {
+    const playlist = playlists.find(item => item.id === playlistId)
+    if (!playlist) return
+    if (playlist.songs.some(item => item.songURL === song.songURL)) {
+      toast.info(`${song.title} is already in ${playlist.name}`)
+      setIsAddToPlaylistModalOpen(false)
+      return
+    }
+    await addSongToLibraryPlaylist(playlistId, song)
+    toast.success(`Added ${song.title} to ${playlist.name}`)
     setIsAddToPlaylistModalOpen(false)
+  }
+
+  const createPlaylistWithSelectedSong = async () => {
+    const name = newPlaylistName.trim()
+    if (!name || !selectedSong) return
+    setIsSavingPlaylist(true)
+    try {
+      await createPlaylist(uuid4(), name, [selectedSong])
+      toast.success(`Created ${name} and added ${selectedSong.title}`)
+      setNewPlaylistName('')
+      setIsCreatingPlaylist(false)
+      setIsAddToPlaylistModalOpen(false)
+    } finally {
+      setIsSavingPlaylist(false)
+    }
+  }
+
+  const closeAddToPlaylistModal = () => {
+    setIsAddToPlaylistModalOpen(false)
+    setIsCreatingPlaylist(false)
+    setNewPlaylistName('')
   }
 
   const columns = [
@@ -277,32 +310,64 @@ const handleDeleteSong = async () => {
   return (
     <>
       {/* Add to Playlist Modal */}
-      <Modal open={isAddToPlaylistModalOpen} onClose={() => setIsAddToPlaylistModalOpen(false)}>
+      <Modal open={isAddToPlaylistModalOpen} onClose={closeAddToPlaylistModal}>
         <div className="addToPlayListModal">
           <div className="modalHeaderRow">
             <h1>Add to playlist</h1>
             <div className="flexSpacer" />
-            <IoIosCloseCircleOutline
-              color="white"
-              onClick={() => setIsAddToPlaylistModalOpen(false)}
-              className="modalCloseIcon"
-            />
+            <button type="button" className="modalCloseButton" onClick={closeAddToPlaylistModal} aria-label="Close add to playlist">
+              <IoIosCloseCircleOutline color="white" className="modalCloseIcon" aria-hidden="true" />
+            </button>
           </div>
+          <LibrarySyncStatus />
+          {!isCreatingPlaylist ? (
+            <button
+              type="button"
+              className="createPlaylistInModalButton"
+              onClick={() => setIsCreatingPlaylist(true)}
+            >
+              + Create new playlist
+            </button>
+          ) : (
+            <form
+              className="createPlaylistInModalForm"
+              onSubmit={event => {
+                event.preventDefault()
+                void createPlaylistWithSelectedSong()
+              }}
+            >
+              <label htmlFor="new-playlist-name">Playlist name</label>
+              <div>
+                <input
+                  id="new-playlist-name"
+                  autoFocus
+                  value={newPlaylistName}
+                  placeholder="e.g. Evening drive"
+                  onChange={event => setNewPlaylistName(event.target.value)}
+                />
+                <button type="submit" disabled={!newPlaylistName.trim() || isSavingPlaylist}>
+                  {isSavingPlaylist ? 'Saving…' : 'Create & add'}
+                </button>
+              </div>
+            </form>
+          )}
           {playlists.map(p => (
-            <div
+            <button
+              type="button"
+              className="playlistName"
               key={p.id}
               onClick={() => {
                 if (selectedSong) {
-                  addSongToPlaylist(p.id, selectedSong)
-                  setIsAddToPlaylistModalOpen(false)
+                  void addSongToPlaylist(p.id, selectedSong)
                 }
               }}
             >
-              <h2 className="playlistName">{p.name}</h2>
-            </div>
+              {p.name}
+              <span>{p.songs.length} {p.songs.length === 1 ? 'song' : 'songs'}</span>
+            </button>
           ))}
           {playlists.length === 0 && (
-            <p className="emptyModalState">Create a playlist first to save this track.</p>
+            <p className="emptyModalState">No playlists yet. Create one here and this song will be added automatically.</p>
           )}
         </div>
       </Modal>
@@ -313,11 +378,14 @@ const handleDeleteSong = async () => {
           <div className="modalHeaderRow">
             <h1>Are you sure you want to delete this song?</h1>
             <div className="flexSpacer" />
-            <IoIosCloseCircleOutline
-              color="white"
+            <button
+              type="button"
+              className="modalCloseButton"
               onClick={() => setIsConfirmDeleteModalOpen(false)}
-              className="modalCloseIcon"
-            />
+              aria-label="Close delete confirmation"
+            >
+              <IoIosCloseCircleOutline color="white" className="modalCloseIcon" aria-hidden="true" />
+            </button>
           </div>
           <div className="flex">
             <button
