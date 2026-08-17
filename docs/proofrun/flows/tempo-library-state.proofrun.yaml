@@ -1,0 +1,114 @@
+proofrunVersion: 1
+id: tempo-library-state
+name: Tempo likes and playlists state integrity
+surface:
+  repo: p2ppsr/tempo
+  workspace: /Users/tyeverett/projects/tempo
+  dossier: /Users/tyeverett/projects/network-ops/docs/repos/p2ppsr/tempo.md
+  category: retain
+  audience: "A returning Tempo listener organizing music on desktop or mobile."
+environment:
+  kind: production
+  baseUrl: https://tempomusic.net
+  deployment:
+    system: cars
+    workflow: Deploy Tempo Production
+    namespace: cars-project-50247d539b678476a0b00db7bd5584e8
+    workload: frontend and backend deployments
+    releaseSource: master
+safety:
+  stateChanging: true
+  spendCap:
+    amount: 0
+    unit: sats
+  testIdentities: []
+  cleanup:
+    required: true
+    instructions: "Unlike the test song and delete the test playlist; confirm both empty states."
+matrix:
+  desktopBrowsers:
+    - chrome
+  mobileBrowsers:
+    - ios-simulator-safari
+  mobileSimulators:
+    - ios-simulator
+  desktopWallets: []
+  mobileWallets: []
+  serverWallets: []
+  networks:
+    - mainnet
+preflight:
+  commands:
+    - description: Check source state
+      command: git status --short --branch
+      cwd: /Users/tyeverett/projects/tempo
+    - description: Check public frontend
+      command: curl -fsS https://tempomusic.net/
+      cwd: /Users/tyeverett/projects/tempo
+  requiredState:
+    - "Production release identity and CARS deployment ID are recorded."
+    - "The browser profile starts with no Tempo likes or playlists."
+flow:
+  steps:
+    - id: verify-unliked
+      actor: listener
+      action: "Open a song action menu without previously liking the song."
+      expected:
+        ui:
+          - "The first action is Like, not Unlike."
+          - "The Likes page has no song rows."
+    - id: like-song
+      actor: listener
+      action: "Choose Like, reopen the menu, and visit Likes."
+      expected:
+        ui:
+          - "The action changes immediately to Unlike."
+          - "Likes contains exactly the selected song and no unselected songs."
+    - id: unlike-song
+      actor: listener
+      action: "Choose Unlike from the Likes list."
+      expected:
+        ui:
+          - "The song is removed and the empty Likes state appears."
+    - id: create-playlist
+      actor: listener
+      action: "Create and name a playlist."
+      expected:
+        ui:
+          - "Edit and Delete controls remain visible without hover or row selection."
+          - "Controls have at least 44 by 44 CSS pixel targets on desktop and mobile."
+    - id: use-playlist
+      actor: listener
+      action: "Add one song, open the playlist, remove the song, rename the playlist, then delete it."
+      expected:
+        ui:
+          - "Every page reflects each change immediately without reload."
+          - "The final Playlists empty state appears."
+assertions:
+  uiAppearance:
+    - "Desktop and iOS layouts have no clipped controls or horizontal overflow."
+  customerTrust:
+    - "Only explicitly liked song URLs are rendered in Likes."
+  flowSuccess:
+    - "Like, unlike, create, add, remove, rename, and delete all complete in one pass."
+  reliabilityRepeatability:
+    - "Reloading preserves the current library state, and a second tab receives storage changes."
+  performance:
+    - "Local library actions update visibly within 500 ms."
+evidence:
+  publicSafe:
+    - "Run record under docs/proofrun/runs/."
+  privateArtifacts:
+    - "network-ops/artifacts/proofrun/p2ppsr/tempo/<timestamp>-tempo-library-state/"
+performanceThresholds:
+  firstMeaningfulContentMs: 2000
+  uiFeedbackAfterActionMs: 500
+  walletPromptShownMs: 0
+  approvalToConfirmationMs: 0
+  fullFlowMs: 120000
+  telemetryVisibleMs: 0
+recording:
+  runRecordTemplate: /Users/tyeverett/projects/network-ops/docs/runbooks/proofrun-run-record-template.md
+  productRunPath: docs/proofrun/runs/<YYYYMMDDTHHMMSSZ>-tempo-library-state.md
+  updateDossier: true
+  updateReadinessRegistry: true

@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom'
 import type { Playlist } from '../../types/interfaces'
 import { FaEdit, FaPlusCircle, FaTrash } from 'react-icons/fa'
 import './Playlists.scss'
+import { useLibraryStore } from '../../stores/libraryStore'
 
 /**
  * Playlists Component
@@ -31,15 +32,8 @@ const Playlists = () => {
   const navigate = useNavigate()
 
   // ================ State Management =================
-  const [playlists, setPlaylists] = useState<Playlist[]>(() => {
-    const storagePlaylists = localStorage.getItem('playlists')
-    return storagePlaylists ? JSON.parse(storagePlaylists) as Playlist[] : []
-  })
-
-  // Persist playlists to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('playlists', JSON.stringify(playlists))
-  }, [playlists])
+  const playlists = useLibraryStore(state => state.playlists)
+  const setPlaylists = useLibraryStore(state => state.setPlaylists)
 
   const [editingPlaylist, setEditingPlaylist] = useState({ index: -1, text: '' })
   const editingInputRef = useRef<HTMLInputElement>(null)
@@ -52,9 +46,9 @@ const Playlists = () => {
       if (!editingInputRef.current || editingInputRef.current.contains(event.target as Node)) return
 
       const { index, text } = editingPlaylist
-      setPlaylists(current => text.trim()
-        ? current.map((playlist, idx) => idx === index ? { ...playlist, name: text.trim() } : playlist)
-        : current.filter((_, idx) => idx !== index))
+      setPlaylists(text.trim()
+        ? playlists.map((playlist, idx) => idx === index ? { ...playlist, name: text.trim() } : playlist)
+        : playlists.filter((_, idx) => idx !== index))
       setEditingPlaylist({ index: -1, text: '' })
     }
 
@@ -64,7 +58,7 @@ const Playlists = () => {
         document.removeEventListener('mousedown', handleClickOutside)
       }
     }
-  }, [editingPlaylist])
+  }, [editingPlaylist, playlists, setPlaylists])
 
   // ================ Playlist Handlers =================
 
@@ -87,9 +81,12 @@ const Playlists = () => {
    * @param newName - New name to set
    */
   const updatePlaylistName = (index: number, newName: string) => {
-    const updatedPlaylists = playlists.map((playlist: Playlist, idx: number) =>
-      idx === index ? { ...playlist, name: newName.trim() } : playlist
-    )
+    const trimmedName = newName.trim()
+    const updatedPlaylists = trimmedName
+      ? playlists.map((playlist: Playlist, idx: number) =>
+        idx === index ? { ...playlist, name: trimmedName } : playlist
+      )
+      : playlists.filter((_, idx) => idx !== index)
     setPlaylists(updatedPlaylists)
   }
 
@@ -108,7 +105,7 @@ const Playlists = () => {
    * @param event - Mouse event to stop propagation
    * @param index - Index of playlist to delete
    */
-  const handleDelete = (event: React.MouseEvent<SVGElement, MouseEvent>, index: number) => {
+  const handleDelete = (event: React.MouseEvent<HTMLButtonElement>, index: number) => {
     event.stopPropagation()
     const updatedPlaylists = playlists.filter((_, idx) => idx !== index)
     setPlaylists(updatedPlaylists)
@@ -157,21 +154,27 @@ const Playlists = () => {
                   <p>{playlist.name}</p>
                 )}
                 <div className="flexSpacer" />
-                <FaEdit
-                  color="white"
-                  className="playlistIcon playlistEditIcon"
+                <button
+                  type="button"
+                  className="playlistAction playlistEditAction"
+                  aria-label={`Edit ${playlist.name || 'playlist'}`}
                   onClick={event => {
                     event.stopPropagation()
                     setEditingPlaylist({ index: index, text: playlist.name })
                   }}
-                />
-                <FaTrash
-                  color="white"
-                  className="playlistIcon playlistDeleteIcon"
+                >
+                  <FaEdit className="playlistIcon" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  className="playlistAction playlistDeleteAction"
+                  aria-label={`Delete ${playlist.name || 'playlist'}`}
                   onClick={event => {
                     handleDelete(event, index)
                   }}
-                />
+                >
+                  <FaTrash className="playlistIcon" aria-hidden="true" />
+                </button>
               </div>
             )
           })}

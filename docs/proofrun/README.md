@@ -10,3 +10,4 @@ Required production gates:
 - Babbage Go / BRC-116 grouped permission onboarding;
 - redundant UHRP publication through purchase and full-track playback;
 - in-product UserCom feedback and analytics correlation.
+- exact likes plus playlist create, add, remove, rename, and delete state on desktop and mobile.

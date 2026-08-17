@@ -157,7 +157,13 @@
     min-width: 158px;
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
 
-    div {
+    button {
+      display: block;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      text-align: left;
+      font-family: inherit;
       padding: 0.45rem 0.72rem;
       cursor: pointer;
       color: #deebfb;

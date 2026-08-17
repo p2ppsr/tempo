@@ -20,12 +20,13 @@ import { FaPlay } from 'react-icons/fa'
 import { IoIosCloseCircleOutline } from 'react-icons/io'
 
 import { usePlaybackStore } from '../../stores/stores'
+import { useLibraryStore } from '../../stores/libraryStore'
 import ActionsDropdown from './ActionsDropdown'
 import placeholderImage from '../../assets/Images/placeholder-image.png'
 import ArtworkImage from '../ArtworkImage/ArtworkImage'
 import { prepareSongPlayback } from '../../utils/playbackSelection'
 
-import type { Playlist, Song } from '../../types/interfaces'
+import type { Song } from '../../types/interfaces'
 
 import './SongList.scss'
 
@@ -68,7 +69,8 @@ const SongList = ({ songs, style, onRemoveFromPlaylist, isMySongsOnly = false }:
   const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false)
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false)
   const [isDeletingSong, setIsDeletingSong] = useState(false)
-  const [playlists, setPlaylists] = useState<Playlist[]>([])
+  const playlists = useLibraryStore(state => state.playlists)
+  const setPlaylists = useLibraryStore(state => state.setPlaylists)
   const [localSongs, setLocalSongs] = useState<Song[]>(songs)
   const scrollPositionRef = useRef(0)
 
@@ -140,12 +142,6 @@ useEffect(() => {
     togglePlayPreviousSong
   ])
 
-  useEffect(() => {
-    const local = localStorage.getItem('playlists')
-    if (local) setPlaylists(JSON.parse(local))
-  }, [])
-
-
   /**
    * Handle double-clicking a song row to start playback.
    */
@@ -192,7 +188,6 @@ const handleDeleteSong = async () => {
       return p
     })
     setPlaylists(updated)
-    localStorage.setItem('playlists', JSON.stringify(updated))
     setIsAddToPlaylistModalOpen(false)
   }
 

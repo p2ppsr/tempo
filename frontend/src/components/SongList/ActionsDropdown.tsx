@@ -93,7 +93,10 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
   return (
     <div className="actionsContainer flex">
       <button
+        type="button"
         className="dropdownToggle"
+        aria-label={`Actions for ${song.title}`}
+        aria-expanded={dropdownVisible === info.row.id}
         onClick={(e) => {
           e.stopPropagation()
           setDropdownVisible(dropdownVisible === info.row.id ? null : info.row.id)
@@ -103,30 +106,38 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
       </button>
 
       {dropdownVisible === info.row.id && (
-        <div className="dropdownMenu" ref={dropdownRef} onClick={(event) => event.stopPropagation()}>
-          <div onClick={() => toggleSongLike(song.songURL)}>{isLiked ? 'Unlike' : 'Like'}</div>
+        <div className="dropdownMenu" role="menu" ref={dropdownRef} onClick={(event) => event.stopPropagation()}>
+          <button type="button" role="menuitem" onClick={() => toggleSongLike(song.songURL)}>
+            {isLiked ? 'Unlike' : 'Like'}
+          </button>
 
-          <div
+          <button
+            type="button"
+            role="menuitem"
             onClick={() => {
               openAddToPlaylistModal(song)
               setDropdownVisible(null)
             }}
           >
             Add to Playlist
-          </div>
+          </button>
 
           {isInPlaylistsPage && (
-            <div
+            <button
+              type="button"
+              role="menuitem"
               onClick={() => {
                 onRemoveFromPlaylist?.(song.songURL)
                 setDropdownVisible(null)
               }}
             >
               Remove from this playlist
-            </div>
+            </button>
           )}
 
-          <div
+          <button
+            type="button"
+            role="menuitem"
             onClick={() => {
               const url = `${window.location.origin}/Song/${song.songURL}`
               copyLinkToClipboard(url)
@@ -135,9 +146,11 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
             }}
           >
             Copy song link
-          </div>
+          </button>
 
-          <div
+          <button
+            type="button"
+            role="menuitem"
             onClick={() => {
               setSocialShareLink(`${window.location.origin}/Song/${song.songURL}`)
               setSocialShareModalOpen(true)
@@ -145,10 +158,12 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
             }}
           >
             Share
-          </div>
+          </button>
 
           {isMySongsOnly && (
-            <div
+            <button
+              type="button"
+              role="menuitem"
               onClick={(e) => {
                 e.stopPropagation()
                 openConfirmDeleteModal(song)
@@ -156,7 +171,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
               }}
             >
               Delete
-            </div>
+            </button>
           )}
         </div>
       )}
