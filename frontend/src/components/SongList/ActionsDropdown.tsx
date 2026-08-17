@@ -6,10 +6,11 @@
  * removing from a playlist, copying its link, sharing, and deleting (if user owns the song).
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { HiOutlineDotsHorizontal } from 'react-icons/hi'
 import useOutsideClick from '../../hooks/useOutsideClick'
-import { useLikesStore, useModals } from '../../stores/stores'
+import { useModals } from '../../stores/stores'
+import { useLibraryStore } from '../../stores/libraryStore'
 import type { Song } from '../../types/interfaces'
 import { copyLinkToClipboard } from '../../utils/copyLinkToClipboard'
 
@@ -74,17 +75,8 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
 
   const isInPlaylistsPage = location.pathname.includes('Playlists')
 
-  // Likes state management
-  const [likedSongs, setLikedSongs] = useState<string[]>([])
-  useEffect(() => {
-    const stored = localStorage.getItem('likedSongs')
-    setLikedSongs(stored ? stored.split(',') : [])
-  }, [])
-
-  const [likesHasChanged, setLikesHasChanged] = useLikesStore((state) => [
-    state.likesHasChanged,
-    state.setLikesHasChanged
-  ])
+  const likedSongIds = useLibraryStore(state => state.likedSongIds)
+  const toggleSongLike = useLibraryStore(state => state.toggleSongLike)
 
   const [, setSocialShareModalOpen, setSocialShareLink] = useModals((state) => [
     state.socialShareModalOpen,
@@ -96,19 +88,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
   useOutsideClick(dropdownRef, () => setDropdownVisible(null))
 
   const song = info.row.original
-  const isLiked = likedSongs.includes(song.songURL)
-
-  /**
-   * Toggle song's liked status, updating local state and localStorage.
-   */
-  const toggleSongLike = () => {
-    const updated = isLiked
-      ? likedSongs.filter((url) => url !== song.songURL)
-      : [...likedSongs, song.songURL]
-    setLikedSongs(updated)
-    localStorage.setItem('likedSongs', updated.join(','))
-    setLikesHasChanged(!likesHasChanged)
-  }
+  const isLiked = likedSongIds.includes(song.songURL)
 
   return (
     <div className="actionsContainer flex">
@@ -124,7 +104,7 @@ const ActionsDropdown: React.FC<ActionsDropdownProps> = ({
 
       {dropdownVisible === info.row.id && (
         <div className="dropdownMenu" ref={dropdownRef} onClick={(event) => event.stopPropagation()}>
-          <div onClick={toggleSongLike}>{isLiked ? 'Unlike' : 'Like'}</div>
+          <div onClick={() => toggleSongLike(song.songURL)}>{isLiked ? 'Unlike' : 'Like'}</div>
 
           <div
             onClick={() => {

@@ -2,71 +2,20 @@ import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import SongList from '../../components/SongList/SongList'
 import loadDemoSongs from '../../utils/loadDemoSongs'
+import bundledPreviewSongs from '../../utils/bundledPreviewSongs'
 
 // Styles
 import './NoMncPreview.scss'
 
-// Assets
-import dawnvisionsArtwork from '../../assets/AlbumArtwork/dawnvisions.jpg'
-import dawnvisionsPreview from '../../assets/Music/Previews/Dawnvisions_preview.mp3'
-
-import MurosArtwork from '../../assets/AlbumArtwork/muros.jpg'
-import MurosPreview from '../../assets/Music/Previews/MurosInstrumental_preview.mp3'
-
-import starfallArtwork from '../../assets/AlbumArtwork/starfall.jpg'
-import starfallPreview from '../../assets/Music/Previews/Starfall_preview.mp3'
-import type { Song } from '../../types/interfaces'
-
-const previewToken = {
-  inputs: {}, mapiResponses: {}, outputScript: '', proof: {}, rawTX: '', satoshis: 0, txid: '', vout: 0
-}
-
-const hardcodedPreviewSongs: Song[] = [
-  {
-    title: 'Dawnvisions',
-    artist: 'Dooblr',
-    songURL: dawnvisionsPreview,
-    decryptedSongURL: dawnvisionsPreview,
-    artworkURL: dawnvisionsArtwork,
-    isPublished: false,
-    description: 'Bundled Tempo preview',
-    duration: 15,
-    token: previewToken
-  },
-  {
-    title: 'Muros Instrumental',
-    artist: 'Muros',
-    songURL: MurosPreview,
-    decryptedSongURL: MurosPreview,
-    artworkURL: MurosArtwork,
-    isPublished: false,
-    description: 'Bundled Tempo preview',
-    duration: 15,
-    token: previewToken
-  },
-  {
-    title: 'Starfall',
-    artist: 'Dooblr',
-    songURL: starfallPreview,
-    decryptedSongURL: starfallPreview,
-    artworkURL: starfallArtwork,
-    isPublished: false,
-    description: 'Bundled Tempo preview',
-    duration: 15,
-    token: previewToken
-  }
-]
-
-
 const NoMncPreview = () => {
-  const [songs, setSongs] = useState(hardcodedPreviewSongs)
+  const [songs, setSongs] = useState(bundledPreviewSongs)
   const [catalogStatus, setCatalogStatus] = useState('Checking live catalogue availability…')
 
   useEffect(() => {
     ;(async () => {
       try {
         const overlaySongs = await loadDemoSongs()
-        const combined = [...hardcodedPreviewSongs, ...overlaySongs]
+        const combined = [...bundledPreviewSongs, ...overlaySongs]
         setSongs(combined)
         setCatalogStatus(overlaySongs.length > 0
           ? `${overlaySongs.length} live independent release${overlaySongs.length === 1 ? '' : 's'} verified now.`

@@ -285,6 +285,10 @@
   .songListTableWrap {
     overflow: visible;
     border-radius: 0;
+
+    &:has(.dropdownMenu) {
+      padding-bottom: 13rem;
+    }
   }
 
   .songListTable {
@@ -293,6 +297,7 @@
     border: none;
     background: transparent;
     margin-bottom: 1rem;
+    overflow: visible;
 
     thead {
       display: none;
@@ -372,6 +377,13 @@
     .dropdownToggle {
       min-width: 2.75rem;
       min-height: 2.75rem;
+    }
+
+    .dropdownMenu {
+      max-height: calc(100dvh - var(--shell-topbar-height) - var(--shell-footer-height) - 1.5rem);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scroll-margin-bottom: calc(var(--shell-footer-height) + 1rem);
     }
   }
 
