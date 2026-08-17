@@ -89,7 +89,7 @@ const NoMncPreview = () => {
           through one clear Babbage Go permission flow.
         </p>
         <div className="heroActions">
-          <a className="button primaryAction" href="#live-catalogue">Browse playable music</a>
+          <a className="button primaryAction" href="#live-catalogue">Browse music</a>
           <a className="button secondaryAction" href="/PublishSong">Publish a song</a>
         </div>
       </div>
