@@ -257,8 +257,8 @@ textarea {
 
 @media screen and (max-width: 768px) {
   :root {
-    --shell-topbar-height: 58px;
-    --shell-footer-height: 138px;
+    --shell-topbar-height: 60px;
+    --shell-footer-height: 142px;
   }
 
   .appLayout {
@@ -278,7 +278,7 @@ textarea {
 
   .mainContent {
     margin-left: 0;
-    padding: calc(var(--shell-topbar-height) + 0.38rem) 0.68rem calc(var(--shell-footer-height) + 0.5rem);
+    padding: calc(var(--shell-topbar-height) + 0.5rem) 0.75rem calc(var(--shell-footer-height) + max(0.75rem, env(safe-area-inset-bottom)));
   }
 
   .container {
@@ -290,5 +290,23 @@ textarea {
     width: 100%;
     padding: 0.78rem 1rem;
     font-size: 0.98rem;
+  }
+
+  button,
+  [role='button'],
+  a.button {
+    min-height: 2.75rem;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 1rem;
+  }
+
+  .Toastify__toast-container {
+    width: calc(100% - 1rem);
+    left: 0.5rem;
+    right: 0.5rem;
   }
 }

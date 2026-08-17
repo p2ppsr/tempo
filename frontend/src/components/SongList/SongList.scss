@@ -313,6 +313,7 @@
       border-radius: 0;
       background: transparent;
       padding: 0.48rem 0.12rem;
+      min-height: 4.25rem;
     }
 
     td {
@@ -367,6 +368,11 @@
 
   .actionsContainer {
     justify-content: flex-end;
+
+    .dropdownToggle {
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+    }
   }
 
   .songTitleContent > span:first-child,

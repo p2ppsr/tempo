@@ -16,6 +16,7 @@
   display: flex;
   align-items: center;
   gap: 0.45rem;
+  min-width: 0;
 }
 
 .navButton {
@@ -76,7 +77,7 @@
 
 @media screen and (max-width: 768px) {
   .topMenuContainer {
-    padding: 0.65rem 0.7rem;
+    padding: 0.45rem 0.6rem;
   }
 
   .topMenuPageLabel {
@@ -85,18 +86,7 @@
 
   .hamburger {
     display: inline-flex !important;
+    width: 2.75rem;
+    height: 2.75rem;
   }
-
-  .walletConnectButton { font-size: 0.78rem; padding: 0.48rem 0.68rem; }
-}
-.walletConnectButton {
-  border: 1px solid rgba(139, 124, 255, 0.6);
-  border-radius: 999px;
-  background: rgba(109, 93, 252, 0.16);
-  color: #f7f8ff;
-  padding: 0.5rem 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-
-  &:disabled { opacity: 0.74; cursor: default; }
 }

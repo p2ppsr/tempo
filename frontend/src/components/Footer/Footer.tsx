@@ -229,7 +229,7 @@ const Footer = () => {
         showJumpControls={false}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
-        onEnded={togglePlayNextSong}
+        onEnded={() => setIsPlaying(false)}
         onClickPrevious={togglePlayPreviousSong}
         onClickNext={togglePlayNextSong}
       />

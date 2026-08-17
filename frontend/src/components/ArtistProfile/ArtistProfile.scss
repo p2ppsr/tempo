@@ -20,3 +20,29 @@
     background-color: #44EE6F;
     color: black;
 }
+
+@media (max-width: 768px) {
+    .ArtistProfile {
+        flex-direction: column;
+        align-items: center;
+        padding: 0.75rem;
+        text-align: center;
+    }
+
+    .ArtistProfile h1 {
+        font-size: clamp(1.75rem, 9vw, 2.5rem);
+        padding: 1rem 0.5rem;
+        overflow-wrap: anywhere;
+    }
+
+    .ArtistProfile img {
+        width: min(15rem, 80vw);
+        height: auto;
+    }
+
+    .about {
+        width: 100%;
+        padding: 0.75rem 0;
+        font-size: 1rem;
+    }
+}

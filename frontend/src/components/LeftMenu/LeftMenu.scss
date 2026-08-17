@@ -51,6 +51,13 @@
   transition: border-color 120ms ease, transform 120ms ease, background-color 120ms ease;
 }
 
+.mobileFeedbackLink {
+  display: none;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+}
+
 .link:hover,
 .menuAccordionLink:hover {
   border-color: rgba(35, 198, 165, 0.55);
@@ -98,6 +105,11 @@
 
     .menuTagline {
       font-size: 0.8rem;
+    }
+
+    .mobileFeedbackLink {
+      display: block;
+      min-height: 2.75rem;
     }
   }
 }

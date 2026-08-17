@@ -8,6 +8,11 @@ import './LeftMenu/LeftMenu.scss'
 const MenuContent = ({ close }: { close?: () => void }) => {
   const [libraryOpen, setLibraryOpen] = useState(false)
 
+  const openFeedback = () => {
+    close?.()
+    window.dispatchEvent(new CustomEvent('tempo:open-feedback'))
+  }
+
   return (
     <aside className="mobileMenuContent">
       <div className="logoContainer">
@@ -54,6 +59,10 @@ const MenuContent = ({ close }: { close?: () => void }) => {
         <NavLink to="/PublishSong" onClick={close}>
           <li className="link">Publish</li>
         </NavLink>
+
+        <button type="button" className="link mobileFeedbackLink" onClick={openFeedback}>
+          Send feedback
+        </button>
       </ul>
     </aside>
   )

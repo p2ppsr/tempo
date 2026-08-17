@@ -81,4 +81,12 @@ label {
     padding: 1rem;
     border-radius: 14px;
   }
+
+  .textInput,
+  .formContainer select,
+  .formContainer textarea,
+  .dateInput,
+  .uploadInput {
+    font-size: 1rem;
+  }
 }

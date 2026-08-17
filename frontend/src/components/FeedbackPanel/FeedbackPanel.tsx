@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { toast } from 'react-toastify'
 import { captureError, captureSignal, submitFeedback } from '../../utils/usercom'
 import './FeedbackPanel.scss'
@@ -10,6 +10,15 @@ const FeedbackPanel = () => {
   const [email, setEmail] = useState('')
   const [category, setCategory] = useState('experience')
   const [contactConsent, setContactConsent] = useState(false)
+
+  useEffect(() => {
+    const openFeedback = () => {
+      setOpen(true)
+      captureSignal('feedback.opened', { surface: 'mobile-menu' })
+    }
+    window.addEventListener('tempo:open-feedback', openFeedback)
+    return () => window.removeEventListener('tempo:open-feedback', openFeedback)
+  }, [])
 
   const toggle = () => {
     const next = !open

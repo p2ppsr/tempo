@@ -149,7 +149,7 @@
   .footerContainer {
     gap: 0.34rem;
     min-height: 0;
-    padding: 0.4rem 0.55rem 0.45rem;
+    padding: 0.4rem 0.55rem max(0.45rem, env(safe-area-inset-bottom));
   }
 
   .playbackInfoContainer {
@@ -185,5 +185,20 @@
   .rhap_additional-controls,
   .rhap_volume-controls {
     display: none !important;
+  }
+
+  .rhap_controls-section,
+  .rhap_main-controls {
+    justify-content: center !important;
+  }
+
+  .rhap_main-controls {
+    flex: 0 0 auto;
+    gap: 0.3rem;
+  }
+
+  .rhap_main-controls-button {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
   }
 }
