@@ -18,6 +18,8 @@
 
   .publishHeaderHint {
     width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
     border: 1px solid rgba(35, 198, 165, 0.35);
     background: rgba(35, 198, 165, 0.09);
     color: #befdeb;
@@ -25,6 +27,7 @@
     font-weight: 600;
     border-radius: 999px;
     padding: 0.2rem 0.62rem;
+    overflow-wrap: anywhere;
   }
 
   .publishButton {
@@ -167,6 +170,10 @@
   }
 
   @media screen and (max-width: 768px) {
+    .publishHeaderHint {
+      border-radius: 14px;
+    }
+
     .publishLoadingCard {
       padding: 1rem 0.9rem;
 
