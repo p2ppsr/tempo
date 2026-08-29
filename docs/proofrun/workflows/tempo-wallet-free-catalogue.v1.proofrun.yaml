@@ -1,0 +1,135 @@
+apiVersion: proofrun.dev/v1
+kind: Workflow
+metadata:
+  id: tempo-wallet-free-catalogue
+  name: Tempo wallet-free catalogue and preview playback
+  version: 1.0.0
+  description: A music listener with no BSV or wallet knowledge.
+  labels:
+    migration: proofrunVersion-1
+    repository: p2ppsr/tempo
+    category: discover
+target:
+  type: web
+  url: https://tempomusic.net
+  environment: production
+matrix:
+  maxCases: 3
+  exclude:
+    - {}
+  include:
+    - agent: openai-computer
+      profile: customer.impatient-newcomer@1.0.0
+      accessibility: standard
+      device: device.chromium-desktop@1.0.0
+      legacyDesktopBrowser: chrome
+      legacyNetworks: mainnet
+    - agent: openai-computer
+      profile: customer.impatient-newcomer@1.0.0
+      accessibility: standard
+      device: device.webkit-mobile@1.0.0
+      legacyMobileBrowser: ios-simulator-safari
+      legacyNetworks: mainnet
+    - agent: openai-computer
+      profile: customer.impatient-newcomer@1.0.0
+      accessibility: standard
+      device: device.ios-simulator@1.0.0
+      legacyMobileSimulator: ios-simulator
+      legacyNetworks: mainnet
+capabilities:
+  - browser
+journeys:
+  - id: discover
+    goal: Tempo wallet-free catalogue and preview playback
+    role: A music listener with no BSV or wallet knowledge.
+    maxActions: 18
+    maxSeconds: 90
+    steps:
+      - id: open-catalogue
+        instruction: Open Tempo production and inspect the first screen.
+        expected: "UI: The listener understands that previews are wallet-free and publishing or purchase uses Metanet. UI: Catalogue status explains whether independent releases are playable now. Telemetry: app.opened is emitted."
+        evidence:
+          - screenshot
+          - trace
+          - log
+          - metric
+        onFailure: stop
+      - id: verify-admission
+        instruction: Inspect every visible independent song.
+        expected: "Domain: Every independent song has an active nonexpired audio host and a purchase key. Domain: A declared preview must also have an active nonexpired host. Telemetry: catalog.availability_completed is emitted with aggregate exclusion reasons only."
+        evidence:
+          - screenshot
+          - trace
+          - log
+          - metric
+        onFailure: stop
+      - id: play-preview
+        instruction: Play a bundled or publisher-provided preview.
+        expected: "UI: Playback starts in the persistent player without a wallet prompt. Telemetry: playback.started is emitted."
+        evidence:
+          - screenshot
+          - trace
+          - log
+          - metric
+        onFailure: stop
+assertions:
+  - id: uiappearance-1
+    type: visual
+    severity: fail
+    statement: Desktop and iOS Simulator layouts have no horizontal overflow or hidden player controls.
+  - id: audienceintuition-1
+    type: agent
+    severity: fail
+    statement: A listener can browse and start audio without maintainer knowledge.
+  - id: customertrust-1
+    type: security
+    severity: fail
+    statement: Expired, missing, or keyless songs are not shown.
+  - id: flowsuccess-1
+    type: oracle
+    severity: fail
+    statement: A visible preview reaches playing state with readyState at least 2.
+  - id: telemetryobservability-1
+    type: oracle
+    severity: fail
+    statement: Catalogue and playback events reach UserCom without keys, BEEF, or raw transactions.
+  - id: reliabilityrepeatability-1
+    type: oracle
+    severity: fail
+    statement: Reloading repeats catalogue admission and playback successfully.
+  - id: performance-1
+    type: performance
+    severity: fail
+    statement: First meaningful content is visible within 2 seconds on the test connection.
+  - id: required-state-1
+    type: oracle
+    severity: fail
+    statement: Production release identity and CARS deployment ID are recorded.
+    tags:
+      - migrated-preflight
+  - id: required-state-2
+    type: oracle
+    severity: fail
+    statement: iOS Simulator is booted and Safari can reach the production URL.
+    tags:
+      - migrated-preflight
+  - id: required-state-3
+    type: oracle
+    severity: fail
+    statement: No wallet window is open or invoked by passive catalogue browsing.
+    tags:
+      - migrated-preflight
+policy:
+  unsafeContent: stop
+  highImpactActions: deny
+  allowedHosts:
+    - tempomusic.net
+    - tempo-keyserver.babbage.systems
+  spendLimit: 0
+  warnExitCode: 0
+remediation:
+  mode: manual
+  allowed: true
+  proposalOnly: true
+  requiredApprovers: 1
+uses: []

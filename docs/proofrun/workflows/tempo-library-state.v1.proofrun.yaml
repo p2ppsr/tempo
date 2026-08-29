@@ -1,0 +1,156 @@
+apiVersion: proofrun.dev/v1
+kind: Workflow
+metadata:
+  id: tempo-library-state
+  name: Tempo likes and playlists state integrity
+  version: 1.0.0
+  description: A returning Tempo listener organizing music on desktop or mobile.
+  labels:
+    migration: proofrunVersion-1
+    repository: p2ppsr/tempo
+    category: retain
+target:
+  type: web
+  url: https://tempomusic.net
+  environment: production
+matrix:
+  maxCases: 4
+  exclude:
+    - {}
+  include:
+    - agent: openai-computer
+      profile: customer.impatient-newcomer@1.0.0
+      accessibility: standard
+      device: device.chromium-desktop@1.0.0
+      legacyDesktopBrowser: chrome
+      legacyMobileWallets: metanet-explorer-embedded-wallet
+      legacyNetworks: mainnet
+    - agent: openai-computer
+      profile: customer.impatient-newcomer@1.0.0
+      accessibility: standard
+      device: device.webkit-mobile@1.0.0
+      legacyMobileBrowser: ios-simulator-safari
+      legacyMobileWallets: metanet-explorer-embedded-wallet
+      legacyNetworks: mainnet
+    - agent: openai-computer
+      profile: customer.impatient-newcomer@1.0.0
+      accessibility: standard
+      device: device.ios-simulator@1.0.0
+      legacyMobileSimulator: ios-simulator
+      legacyMobileWallets: metanet-explorer-embedded-wallet
+      legacyNetworks: mainnet
+    - agent: openai-computer
+      profile: customer.impatient-newcomer@1.0.0
+      accessibility: standard
+      device: p2ppsr.metanet-client-macos@1.0.0
+      legacyDesktopWallet: metanet-client
+      legacyMobileWallets: metanet-explorer-embedded-wallet
+      legacyNetworks: mainnet
+capabilities:
+  - browser
+  - wallet.profile-restore
+journeys:
+  - id: retain
+    goal: Tempo likes and playlists state integrity
+    role: A returning Tempo listener organizing music on desktop or mobile.
+    maxActions: 36
+    maxSeconds: 120
+    steps:
+      - id: verify-unliked
+        instruction: Open a song action menu without previously liking the song.
+        expected: "UI: The first action is Like, not Unlike. UI: The Likes page has no song rows."
+        evidence:
+          - screenshot
+          - trace
+        onFailure: stop
+      - id: like-song
+        instruction: Choose Like, reopen the menu, and visit Likes.
+        expected: "UI: The action changes immediately to Unlike. UI: Likes contains exactly the selected song and no unselected songs."
+        evidence:
+          - screenshot
+          - trace
+        onFailure: stop
+      - id: unlike-song
+        instruction: Choose Unlike from the Likes list.
+        expected: "UI: The song is removed and the empty Likes state appears."
+        evidence:
+          - screenshot
+          - trace
+        onFailure: stop
+      - id: create-playlist
+        instruction: Create and name a playlist.
+        expected: "UI: Edit and Delete controls remain visible without hover or row selection. UI: Controls have at least 44 by 44 CSS pixel targets on desktop and mobile. UI: The saved name is visible after reload and from a second wallet-connected device."
+        evidence:
+          - screenshot
+          - trace
+        onFailure: stop
+      - id: create-from-song
+        instruction: Open Add to Playlist for a song, create a new named playlist in the modal, and submit it.
+        expected: "UI: Create new playlist is available whether or not any playlists exist. UI: The new playlist contains the selected song and shows its exact name."
+        evidence:
+          - screenshot
+          - trace
+        onFailure: stop
+      - id: use-playlist
+        instruction: Add one song, open the playlist, remove the song, rename the playlist, then delete it.
+        expected: "UI: Every page reflects each change immediately without reload. UI: The final Playlists empty state appears."
+        evidence:
+          - screenshot
+          - trace
+        onFailure: stop
+assertions:
+  - id: uiappearance-1
+    type: visual
+    severity: fail
+    statement: Desktop and iOS layouts have no clipped controls or horizontal overflow.
+  - id: customertrust-1
+    type: security
+    severity: fail
+    statement: Only explicitly liked song URLs are rendered in Likes.
+  - id: flowsuccess-1
+    type: oracle
+    severity: fail
+    statement: Like, unlike, create, add, remove, rename, and delete all complete in one pass.
+  - id: reliabilityrepeatability-1
+    type: oracle
+    severity: fail
+    statement: Reloading preserves the current library state, a second tab receives cached changes, and a second wallet-connected device receives the encrypted wallet document.
+  - id: reliabilityrepeatability-2
+    type: oracle
+    severity: fail
+    statement: Independent device changes merge by entity, while unlike, delete, and remove tombstones prevent stale-cache resurrection.
+  - id: performance-1
+    type: performance
+    severity: fail
+    statement: Local library actions update visibly within 500 ms.
+  - id: required-state-1
+    type: oracle
+    severity: fail
+    statement: Production release identity and CARS deployment ID are recorded.
+    tags:
+      - migrated-preflight
+  - id: required-state-2
+    type: oracle
+    severity: fail
+    statement: The wallet-backed library fixture starts empty or uses uniquely named playlists that will not collide with user data.
+    tags:
+      - migrated-preflight
+  - id: required-state-3
+    type: oracle
+    severity: fail
+    statement: The operator confirms wallet KV transaction fees remain below the 1000-sat flow cap before approving writes.
+    tags:
+      - migrated-preflight
+policy:
+  unsafeContent: stop
+  highImpactActions: require-approval
+  allowedHosts:
+    - tempomusic.net
+  spendLimit: 1000
+  warnExitCode: 0
+remediation:
+  mode: manual
+  allowed: true
+  proposalOnly: true
+  requiredApprovers: 1
+uses: []

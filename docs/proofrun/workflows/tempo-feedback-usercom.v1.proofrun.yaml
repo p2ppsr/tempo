@@ -1,0 +1,123 @@
+apiVersion: proofrun.dev/v1
+kind: Workflow
+metadata:
+  id: tempo-feedback-usercom
+  name: Tempo in-product feedback and UserCom observability
+  version: 1.0.0
+  description: A listener or artist reporting a bug, catalogue issue, or idea.
+  labels:
+    migration: proofrunVersion-1
+    repository: p2ppsr/tempo
+    category: feedback
+target:
+  type: web
+  url: https://tempomusic.net
+  environment: production
+matrix:
+  maxCases: 3
+  exclude:
+    - {}
+  include:
+    - agent: openai-computer
+      profile: customer.impatient-newcomer@1.0.0
+      accessibility: standard
+      device: device.chromium-desktop@1.0.0
+      legacyDesktopBrowser: chrome
+      legacyServerWallets: usercom
+      legacyNetworks: mainnet
+    - agent: openai-computer
+      profile: customer.impatient-newcomer@1.0.0
+      accessibility: standard
+      device: device.webkit-mobile@1.0.0
+      legacyMobileBrowser: ios-simulator-safari
+      legacyServerWallets: usercom
+      legacyNetworks: mainnet
+    - agent: openai-computer
+      profile: customer.impatient-newcomer@1.0.0
+      accessibility: standard
+      device: device.ios-simulator@1.0.0
+      legacyMobileSimulator: ios-simulator
+      legacyServerWallets: usercom
+      legacyNetworks: mainnet
+capabilities:
+  - browser
+journeys:
+  - id: feedback
+    goal: Tempo in-product feedback and UserCom observability
+    role: A listener or artist reporting a bug, catalogue issue, or idea.
+    maxActions: 12
+    maxSeconds: 90
+    steps:
+      - id: open-feedback
+        instruction: Open Feedback and choose Song availability.
+        expected: "UI: The form explains the accepted feedback types and email is optional. Telemetry: feedback.opened is emitted."
+        evidence:
+          - screenshot
+          - trace
+          - log
+          - metric
+        onFailure: stop
+      - id: submit-feedback
+        instruction: Submit a clearly labeled Commercial Readiness verification note without email.
+        expected: "UI: A clear success confirmation appears and the panel closes. Domain: UserCom stores the feedback with source tempomusic.net and category tag. Telemetry: feedback.submit_started, feedback.submitted, and feedback.client_acknowledged are queryable."
+        evidence:
+          - screenshot
+          - trace
+          - log
+          - metric
+        onFailure: stop
+assertions:
+  - id: uiappearance-1
+    type: visual
+    severity: fail
+    statement: Feedback controls remain above the player and mobile safe area.
+  - id: audienceintuition-1
+    type: agent
+    severity: fail
+    statement: Category, message, optional email, and consent semantics are obvious.
+  - id: customertrust-1
+    type: security
+    severity: fail
+    statement: Contact consent appears only when email is supplied.
+  - id: flowsuccess-1
+    type: oracle
+    severity: fail
+    statement: The UI acknowledgment and UserCom stored record agree.
+  - id: telemetryobservability-1
+    type: oracle
+    severity: fail
+    statement: Feedback carries safe source/surface/category context and no wallet material.
+  - id: reliabilityrepeatability-1
+    type: oracle
+    severity: fail
+    statement: The form can reopen and submit another distinct note.
+  - id: performance-1
+    type: performance
+    severity: fail
+    statement: Submission acknowledgment appears within 5 seconds.
+  - id: required-state-1
+    type: oracle
+    severity: fail
+    statement: Feedback dock is visible without wallet connection on desktop and iOS Simulator.
+    tags:
+      - migrated-preflight
+  - id: required-state-2
+    type: oracle
+    severity: fail
+    statement: No personal email is needed for this run.
+    tags:
+      - migrated-preflight
+policy:
+  unsafeContent: stop
+  highImpactActions: require-approval
+  allowedHosts:
+    - tempomusic.net
+    - usercom.babbage.systems
+  spendLimit: 0
+  warnExitCode: 0
+remediation:
+  mode: manual
+  allowed: true
+  proposalOnly: true
+  requiredApprovers: 1
+uses: []

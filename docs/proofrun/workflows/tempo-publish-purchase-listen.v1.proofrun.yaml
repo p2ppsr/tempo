@@ -1,0 +1,149 @@
+apiVersion: proofrun.dev/v1
+kind: Workflow
+metadata:
+  id: tempo-publish-purchase-listen
+  name: Tempo verified publication, catalogue admission, purchase, and listening
+  version: 1.0.0
+  description: An independent musician publishing a track and a listener purchasing it.
+  labels:
+    migration: proofrunVersion-1
+    repository: p2ppsr/tempo
+    category: publish
+target:
+  type: web
+  url: https://tempomusic.net
+  environment: production
+matrix:
+  maxCases: 2
+  exclude:
+    - {}
+  include:
+    - agent: openai-computer
+      profile: customer.domain-expert@1.0.0
+      accessibility: standard
+      device: device.chromium-desktop@1.0.0
+      legacyDesktopBrowser: chrome
+      legacyServerWallets: tempo-key-server-wallet-toolbox
+      legacyNetworks: mainnet
+    - agent: openai-computer
+      profile: customer.domain-expert@1.0.0
+      accessibility: standard
+      device: p2ppsr.metanet-client-macos@1.0.0
+      legacyDesktopWallet: metanet-desktop
+      legacyServerWallets: tempo-key-server-wallet-toolbox
+      legacyNetworks: mainnet
+capabilities:
+  - browser
+  - wallet.profile-restore
+journeys:
+  - id: publish
+    goal: Tempo verified publication, catalogue admission, purchase, and listening
+    role: An independent musician publishing a track and a listener purchasing it.
+    maxActions: 24
+    maxSeconds: 120
+    steps:
+      - id: upload-and-verify
+        instruction: Publish the generated audio and artwork fixture from the production form.
+        expected: "UI: The staged progress UI advances through upload, token, key, broadcast, verification, and complete. UI: Any failure preserves a visible recovery receipt rather than claiming success. Domain: Two providers accept every required asset and the public UHRP overlay reports at least one active, nonexpired download location. Telemetry: publish.started and publish.succeeded are emitted."
+        evidence:
+          - screenshot
+          - trace
+          - log
+          - metric
+        onFailure: stop
+      - id: inspect-receipt
+        instruction: Inspect the publication receipt and reload the catalogue.
+        expected: "Domain: Receipt has a transaction ID, two-provider storage, purchase key, overlay admission, and playable=true. Domain: The song appears only after all admission checks pass."
+        evidence:
+          - screenshot
+          - trace
+          - metric
+        onFailure: stop
+      - id: purchase-and-listen
+        instruction: Buy and play the full readiness track.
+        expected: "UI: The 1000-sat price is clear before approval and full-track playback starts after payment. Domain: Invoice and royalty records use the same 1000-sat price. Telemetry: purchase.started and purchase.succeeded are emitted."
+        evidence:
+          - screenshot
+          - trace
+          - log
+          - metric
+        onFailure: stop
+      - id: cleanup
+        instruction: Delete the readiness-test catalogue token and confirm it leaves the catalogue.
+        expected: "Domain: The test song no longer appears after overlay convergence."
+        evidence:
+          - screenshot
+          - trace
+          - metric
+        onFailure: stop
+assertions:
+  - id: uiappearance-1
+    type: visual
+    severity: fail
+    statement: Publication, receipt, purchase, player, and failure states are coherent.
+  - id: audienceintuition-1
+    type: agent
+    severity: fail
+    statement: An artist can understand each publication stage and a listener sees the purchase price.
+  - id: customertrust-1
+    type: security
+    severity: fail
+    statement: Success is withheld until storage, key, overlay, and playback checks agree.
+  - id: customertrust-2
+    type: security
+    severity: fail
+    statement: A saved receipt supports recovery without exposing encryption keys.
+  - id: flowsuccess-1
+    type: oracle
+    severity: fail
+    statement: The same published URL is admitted, purchased, decrypted, and played before cleanup.
+  - id: telemetryobservability-1
+    type: oracle
+    severity: fail
+    statement: Publish/purchase events and key-server counters change without secret leakage.
+  - id: reliabilityrepeatability-1
+    type: oracle
+    severity: fail
+    statement: Idempotent key publication, public UHRP admission polling, and catalogue filtering prevent duplicate or broken visible state.
+  - id: performance-1
+    type: performance
+    severity: fail
+    statement: Publication completes within 90 seconds and purchase confirmation within 30 seconds.
+  - id: required-state-1
+    type: oracle
+    severity: fail
+    statement: The fixture is original/generated, short, and safe to publish.
+    tags:
+      - migrated-preflight
+  - id: required-state-2
+    type: oracle
+    severity: fail
+    statement: Two-provider seven-year quote plus song purchase remains under 25000 sats.
+    tags:
+      - migrated-preflight
+  - id: required-state-3
+    type: oracle
+    severity: fail
+    statement: Metanet Desktop permission baseline and spend authorization are recorded.
+    tags:
+      - migrated-preflight
+  - id: required-state-4
+    type: oracle
+    severity: fail
+    statement: Key server reports MongoDB and production ChainTracks ready.
+    tags:
+      - migrated-preflight
+policy:
+  unsafeContent: stop
+  highImpactActions: require-approval
+  allowedHosts:
+    - tempomusic.net
+    - tempo-keyserver.babbage.systems
+  spendLimit: 25000
+  warnExitCode: 0
+remediation:
+  mode: manual
+  allowed: true
+  proposalOnly: true
+  requiredApprovers: 1
+uses: []
