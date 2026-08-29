@@ -1,0 +1,128 @@
+apiVersion: proofrun.dev/v1
+kind: Workflow
+metadata:
+  id: tempo-wallet-onboarding
+  name: Tempo Babbage Go and grouped Metanet permissions onboarding
+  version: 1.0.0
+  description: A listener or artist connecting Metanet Desktop for the first time.
+  labels:
+    migration: proofrunVersion-1
+    repository: p2ppsr/tempo
+    category: onboard
+target:
+  type: web
+  url: https://tempomusic.net
+  environment: production
+matrix:
+  maxCases: 2
+  exclude:
+    - {}
+  include:
+    - agent: openai-computer
+      profile: customer.impatient-newcomer@1.0.0
+      accessibility: standard
+      device: device.chromium-desktop@1.0.0
+      legacyDesktopBrowser: chrome
+      legacyNetworks: mainnet
+    - agent: openai-computer
+      profile: customer.impatient-newcomer@1.0.0
+      accessibility: standard
+      device: p2ppsr.metanet-client-macos@1.0.0
+      legacyDesktopWallet: metanet-desktop
+      legacyNetworks: mainnet
+capabilities:
+  - browser
+  - wallet.profile-restore
+journeys:
+  - id: onboard
+    goal: Tempo Babbage Go and grouped Metanet permissions onboarding
+    role: A listener or artist connecting Metanet Desktop for the first time.
+    maxActions: 18
+    maxSeconds: 90
+    steps:
+      - id: passive-open
+        instruction: Open Tempo and wait for the catalogue to settle without clicking Connect.
+        expected: "UI: No Metanet Desktop approval window opens."
+        evidence:
+          - screenshot
+          - trace
+          - metric
+        onFailure: stop
+      - id: connect
+        instruction: Click Connect wallet and inspect the Babbage Go or Metanet handoff.
+        expected: "UI: The user sees one app-level explanation instead of a sequence of low-level permission prompts. UI: The connected state is explicit after approval or an existing grant. Telemetry: wallet.connect_started and wallet.connect_succeeded are emitted."
+        evidence:
+          - screenshot
+          - trace
+          - log
+          - metric
+        onFailure: stop
+      - id: inspect-permissions
+        instruction: Inspect the resulting Tempo permission state in Metanet Desktop.
+        expected: "Domain: BRC-116 protocol, basket, spending, and PACT counterparty permissions match the manifest. Domain: No redundant per-call permission grants were created."
+        evidence:
+          - screenshot
+          - trace
+          - metric
+        onFailure: stop
+assertions:
+  - id: uiappearance-1
+    type: visual
+    severity: fail
+    statement: Connect and connected states are usable at desktop width.
+  - id: audienceintuition-1
+    type: agent
+    severity: fail
+    statement: The app explains why a wallet is needed before asking for permission.
+  - id: customertrust-1
+    type: security
+    severity: fail
+    statement: Passive browsing stays prompt-free and permission requests are consolidated.
+  - id: flowsuccess-1
+    type: oracle
+    severity: fail
+    statement: Tempo reaches Wallet connected and Metanet Desktop records the grouped grant.
+  - id: telemetryobservability-1
+    type: oracle
+    severity: fail
+    statement: Connect start/success or failure is queryable without identity keys.
+  - id: reliabilityrepeatability-1
+    type: oracle
+    severity: fail
+    statement: A second connect check reuses standing approval without a prompt storm.
+  - id: performance-1
+    type: performance
+    severity: fail
+    statement: Connect feedback appears immediately and completes within 10 seconds when already approved.
+  - id: required-state-1
+    type: oracle
+    severity: fail
+    statement: Metanet Desktop is running and its Tempo permission baseline is recorded.
+    tags:
+      - migrated-preflight
+  - id: required-state-2
+    type: oracle
+    severity: fail
+    statement: The live manifest has matching metanet and babbage groupPermissions and counterpartyPermissions.
+    tags:
+      - migrated-preflight
+  - id: required-state-3
+    type: oracle
+    severity: fail
+    statement: No payment is made by this flow.
+    tags:
+      - migrated-preflight
+policy:
+  unsafeContent: stop
+  highImpactActions: require-approval
+  allowedHosts:
+    - tempomusic.net
+    - tempo-keyserver.babbage.systems
+  spendLimit: 0
+  warnExitCode: 0
+remediation:
+  mode: manual
+  allowed: true
+  proposalOnly: true
+  requiredApprovers: 1
+uses: []
