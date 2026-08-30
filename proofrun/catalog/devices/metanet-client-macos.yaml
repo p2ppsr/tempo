@@ -1,0 +1,18 @@
+apiVersion: proofrun.dev/v1
+kind: DeviceProfile
+metadata:
+  id: p2ppsr.metanet-client-macos
+  version: 1.0.0
+  name: macOS with Metanet Client
+  description: Isolated macOS VM with Metanet Client preinstalled and a disposable QA profile.
+platform: macos
+driver: macos-host
+screen: {width: 1512, height: 982, scale: 2, orientation: landscape, colorScheme: light}
+browser: {engine: custom, name: System browser with Metanet Client}
+accessibility: [voiceover, keyboard, zoom, reduce-motion]
+capabilities: [device.screenshot, device.trace, desktop.input, app.preinstalled, wallet.profile-restore]
+provision:
+  bridgeProfile: metanet-client-macos
+  image: metanet-client-macos-v1
+  walletSnapshotHandle: PROOFRUN_P0_WALLET_SNAPSHOT
+isolation: {ephemeral: true, networkPolicy: allowlisted, trustedRefsOnly: true}

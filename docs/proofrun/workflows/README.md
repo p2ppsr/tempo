@@ -4,14 +4,14 @@ The YAML files in this directory are executable `proofrun.dev/v1` contracts.
 They were migrated from the operator checklists in `../flows`; those source
 checklists remain available for audit history during the transition.
 
-Execution resolves versioned customer and device contracts from the private
-`p2ppsr/proofrun-presets` catalog. The migration baseline is ProofRun core
-`283f357309a844dde0821dcdc61facbb7f9def64` and catalog
-`017c11ec2edbec22371a8e53e7b6511e47ab56b6`.
+Execution resolves versioned customer and device contracts from the vendored
+`proofrun/catalog` inputs. Their README records the exact private catalog
+revision and immutable update rule. The GitHub workflow submits the complete
+bundle to the private control plane without requiring an operator checkout.
 
-Ordinary Chromium/WebKit viewport cases can run on Playwright workers today.
-Cases naming `ios-simulator`, `android-emulator`, Metanet Explorer, or
-Metanet Client remain unschedulable until a runner advertises the corresponding
-real device bridge and capabilities. A workflow never executes the arbitrary
-local shell commands from the legacy `preflight.commands`; required-state
-statements were converted to V1 oracle assertions.
+Chromium and WebKit cases run on hosted Playwright workers. Capability-matched
+iOS Simulator, Android Emulator, Metanet Explorer, and Metanet Client cases are
+leased to the managed Evans Creek macOS runner with state-snapshot restoration.
+State-changing and spending journeys still stop at the V1 manual approval
+boundary. A workflow never executes arbitrary legacy `preflight.commands`;
+required-state statements are portable oracle assertions.

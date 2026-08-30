@@ -1,0 +1,58 @@
+name: ProofRun product journeys
+
+on:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '31 5 * * 6'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: proofrun-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  journeys:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        workflow:
+          - docs/proofrun/workflows/tempo-feedback-usercom.v1.proofrun.yaml
+          - docs/proofrun/workflows/tempo-library-state.v1.proofrun.yaml
+          - docs/proofrun/workflows/tempo-publish-purchase-listen.v1.proofrun.yaml
+          - docs/proofrun/workflows/tempo-wallet-free-catalogue.v1.proofrun.yaml
+          - docs/proofrun/workflows/tempo-wallet-onboarding.v1.proofrun.yaml
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify ProofRun API ingress
+        run: curl --fail --show-error --location --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 https://app.proofrun.metanet.app/healthz
+      - name: Checkout pinned private ProofRun action
+        uses: actions/checkout@v4
+        with:
+          repository: p2ppsr/proofrun-github
+          ref: e2c18409dfad50aff196cbf4d59a9f0b60592c67
+          ssh-key: ${{ secrets.PROOFRUN_ACTION_SSH_KEY }}
+          persist-credentials: false
+          path: .proofrun/action
+      - uses: ./.proofrun/action
+        with:
+          mode: hosted
+          workflow: ${{ matrix.workflow }}
+          profiles: |
+            proofrun/catalog/profiles/impatient-newcomer.yaml
+            proofrun/catalog/profiles/domain-expert.yaml
+          devices: |
+            proofrun/catalog/devices/chromium-desktop.yaml
+            proofrun/catalog/devices/ios-simulator.yaml
+            proofrun/catalog/devices/metanet-client-macos.yaml
+            proofrun/catalog/devices/webkit-mobile.yaml
+          platform-url: https://app.proofrun.metanet.app
+          token: ${{ secrets.PROOFRUN_TOKEN }}
+          warn-behavior: success
+          timeout-seconds: '6900'
