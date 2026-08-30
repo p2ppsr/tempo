@@ -32,7 +32,15 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify ProofRun API ingress
         run: curl --fail --show-error --location --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 https://app.proofrun.metanet.app/healthz
-      - uses: p2ppsr/proofrun-github@5b8f25cf190bb2f258e09b1e1a2e924a14f6641f
+      - name: Checkout pinned private ProofRun action
+        uses: actions/checkout@v4
+        with:
+          repository: p2ppsr/proofrun-github
+          ref: 5b8f25cf190bb2f258e09b1e1a2e924a14f6641f
+          ssh-key: ${{ secrets.PROOFRUN_ACTION_SSH_KEY }}
+          persist-credentials: false
+          path: .proofrun/action
+      - uses: ./.proofrun/action
         with:
           mode: hosted
           workflow: ${{ matrix.workflow }}
