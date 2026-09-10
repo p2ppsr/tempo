@@ -20,6 +20,6 @@
     "sass-embedded": "^1.89.2"
   },
   "overrides": {
-    "@bsv/sdk": "2.4.0"
+    "@bsv/sdk": "2.5.0"
   }
 }
