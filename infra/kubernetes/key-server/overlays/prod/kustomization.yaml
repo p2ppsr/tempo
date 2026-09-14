@@ -14,27 +14,6 @@ images:
 
 patches:
   - target:
-      kind: Ingress
-      name: tempo-key-server
-    patch: |-
-      - op: replace
-        path: /spec/tls/0/hosts
-        value:
-          - tempo-keyserver.babbage.systems
-      - op: replace
-        path: /spec/rules
-        value:
-          - host: tempo-keyserver.babbage.systems
-            http:
-              paths:
-                - path: /
-                  pathType: Prefix
-                  backend:
-                    service:
-                      name: tempo-key-server
-                      port:
-                        number: 8081
-  - target:
       kind: Certificate
       name: tempo-key-server-tls
     patch: |-
