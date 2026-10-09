@@ -3,7 +3,7 @@ kind: Workflow
 metadata:
   id: tempo-feedback-usercom
   name: Tempo in-product feedback and UserCom observability
-  version: 1.0.0
+  version: 1.0.1
   description: A listener or artist reporting a bug, catalogue issue, or idea.
   labels:
     migration: proofrunVersion-1
@@ -57,9 +57,9 @@ journeys:
           - log
           - metric
         onFailure: stop
-      - id: submit-feedback
-        instruction: Submit a clearly labeled Commercial Readiness verification note without email.
-        expected: "UI: A clear success confirmation appears and the panel closes. Domain: UserCom stores the feedback with source tempomusic.net and category tag. Telemetry: feedback.submit_started, feedback.submitted, and feedback.client_acknowledged are queryable."
+      - id: prepare-feedback
+        instruction: Enter a clearly labeled Commercial Readiness verification note without email, inspect the form's validation and confirmation boundary, and stop before choosing Send feedback. Do not submit or transmit the note.
+        expected: "UI: The note can be prepared without an email, the Send feedback action is clearly identifiable, and no submission or external side effect occurs."
         evidence:
           - screenshot
           - trace
@@ -74,27 +74,27 @@ assertions:
   - id: audienceintuition-1
     type: agent
     severity: fail
-    statement: Category, message, optional email, and consent semantics are obvious.
+    statement: Category, message, optional email, and any optional contact or follow-up explanation are obvious.
   - id: customertrust-1
     type: security
     severity: fail
-    statement: Contact consent appears only when email is supplied.
+    statement: The form makes clear that contact information is optional and that no feedback is sent before the user chooses Send feedback.
   - id: flowsuccess-1
     type: oracle
     severity: fail
-    statement: The UI acknowledgment and UserCom stored record agree.
+    statement: The form accepts a draft message without email and remains at the final Send feedback boundary without submitting it.
   - id: telemetryobservability-1
     type: oracle
     severity: fail
-    statement: Feedback carries safe source/surface/category context and no wallet material.
+    statement: Opening and preparing feedback exposes no wallet material and does not emit a submitted-feedback acknowledgment.
   - id: reliabilityrepeatability-1
     type: oracle
     severity: fail
-    statement: The form can reopen and submit another distinct note.
+    statement: The form can be closed and reopened without creating a submission.
   - id: performance-1
     type: performance
     severity: fail
-    statement: Submission acknowledgment appears within 5 seconds.
+    statement: Feedback controls and client-side validation respond within 5 seconds.
   - id: required-state-1
     type: oracle
     severity: fail

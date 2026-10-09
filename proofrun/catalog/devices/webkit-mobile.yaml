@@ -1,0 +1,13 @@
+apiVersion: proofrun.dev/v1
+kind: DeviceProfile
+metadata:
+  id: device.webkit-mobile
+  version: 1.0.0
+  name: WebKit mobile viewport 390x844
+platform: web
+driver: playwright
+screen: {width: 390, height: 844, scale: 3, orientation: portrait, colorScheme: light}
+browser: {engine: webkit, channel: stable}
+accessibility: [keyboard, axe, zoom]
+capabilities: [browser.screenshot, browser.dom, browser.trace, touch]
+isolation: {ephemeral: true, networkPolicy: allowlisted, trustedRefsOnly: false}

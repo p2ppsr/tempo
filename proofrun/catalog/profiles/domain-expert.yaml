@@ -1,0 +1,24 @@
+apiVersion: proofrun.dev/v1
+kind: CustomerProfile
+metadata:
+  id: customer.domain-expert
+  version: 1.0.0
+  name: Domain expert
+  description: High familiarity, high technical confidence, still sensitive to wasted motion.
+  labels: {family: expert}
+traits:
+  goals: [Complete advanced tasks efficiently, Verify operational detail]
+  domainFamiliarity: 0.95
+  technicalConfidence: 0.95
+  riskTolerance: 0.5
+  language: en-US
+  readingLevel: expert
+  accessibilityNeeds: []
+cognition:
+  attentionBudget: 45
+  confusionThreshold: 35
+  jargonTolerance: 0.9
+  patienceActions: 35
+  maxIdleSeconds: 6
+  onConfused: backtrack
+  onBored: skip

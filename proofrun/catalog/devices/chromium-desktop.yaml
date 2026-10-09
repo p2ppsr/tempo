@@ -1,0 +1,13 @@
+apiVersion: proofrun.dev/v1
+kind: DeviceProfile
+metadata:
+  id: device.chromium-desktop
+  version: 1.0.0
+  name: Chromium desktop 1440x900
+platform: web
+driver: playwright
+screen: {width: 1440, height: 900, scale: 1, orientation: landscape, colorScheme: light}
+browser: {engine: chromium, channel: stable}
+accessibility: [keyboard, axe, zoom]
+capabilities: [browser.screenshot, browser.dom, browser.trace]
+isolation: {ephemeral: true, networkPolicy: allowlisted, trustedRefsOnly: false}

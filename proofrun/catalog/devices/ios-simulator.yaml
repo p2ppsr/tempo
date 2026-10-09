@@ -1,0 +1,18 @@
+apiVersion: proofrun.dev/v1
+kind: DeviceProfile
+metadata:
+  id: device.ios-simulator
+  version: 1.0.0
+  name: Generic iOS small-phone simulator
+  description: A portable contract that opens the workflow target in Mobile Safari on an isolated iOS Simulator.
+platform: ios
+driver: ios-simulator
+screen: {width: 390, height: 844, scale: 3, orientation: portrait, colorScheme: light}
+browser: {engine: custom, name: Mobile Safari}
+accessibility: [voiceover, dynamic-type, reduce-motion]
+capabilities: [device.screenshot, device.trace, device.lifecycle, touch]
+provision:
+  bridgeProfile: generic-ios-simulator
+  mode: browser
+  image: ios-small-phone
+isolation: {ephemeral: true, networkPolicy: allowlisted, trustedRefsOnly: true}
