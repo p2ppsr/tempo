@@ -1,0 +1,20 @@
+name: Node security image qualification
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  linux-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dockerfile: key-server/Dockerfile
+            context: key-server
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the production recipe and assert its pinned Node runtime
+        run: docker build --pull -f "${{ matrix.dockerfile }}" -t node-security-ci "${{ matrix.context }}"
